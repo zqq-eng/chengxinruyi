@@ -1,0 +1,20 @@
+<view class="admin-login-page">
+  <view class="title">管理员登录</view>
+
+  <view class="input-box" style="width: 574rpx; height: 89rpx; display: block; box-sizing: border-box">
+    <input style="width: 533rpx; height: 93rpx; display: block; box-sizing: border-box" placeholder="管理员账号"
+           class="admin-input"
+           bindinput="onAccountInput" />
+  </view>
+
+  <view class="input-box">
+    <input style="width: 560rpx; height: 91rpx; display: block; box-sizing: border-box" placeholder="管理员密码"
+           password="true"
+           class="admin-input"
+           bindinput="onPasswordInput" />
+  </view>
+
+  <button class="admin-btn" bindtap="loginAdmin" style="position: relative; left: -1rpx; top: 50rpx">
+    登录后台
+  </button>
+</view>

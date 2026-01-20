@@ -1,0 +1,13 @@
+<view class="page">
+  <view class="card" wx:for="{{list}}" wx:key="_id">
+    <view class="line">用户：{{item.contactName}}（{{item.contactPhone}}）</view>
+    <view class="line">奖品：{{item.prizeName}} / {{item.pointsCost}} 分</view>
+    <view class="line">地址：{{item.address}}</view>
+    <view class="line">状态：{{item.status}}</view>
+
+    <view class="btn-row" wx:if="{{item.status === 'pending'}}">
+      <button class="btn reject" bindtap="updateStatus" data-id="{{item._id}}" data-status="rejected">驳回</button>
+      <button class="btn approve" bindtap="updateStatus" data-id="{{item._id}}" data-status="approved">通过</button>
+    </view>
+  </view>
+</view>

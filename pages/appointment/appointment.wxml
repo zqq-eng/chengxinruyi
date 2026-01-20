@@ -1,0 +1,107 @@
+<particle-bg>
+  <view class="appointment-page">
+    <view class="float-deco ap-deco-cloud"></view>
+
+    <view class="card">
+      <view class="page-title">预约心理 / 体重管理咨询</view>
+      <view class="ap-sub">
+        请选择合适的时间与类型，我们会尽量为你安排温柔、专业的老师 💗
+      </view>
+
+      <!-- 咨询类型 -->
+      <view class="input-wrapper">
+        <view class="input-label">咨询类型</view>
+        <picker mode="selector" range="{{typeOptions}}" value="{{typeIndex}}" bindchange="onTypeChange">
+          <view class="pink-input picker-display" style="width: 485rpx; height: 91rpx; display: flex; box-sizing: border-box">
+            {{typeOptions[typeIndex]}}
+          </view>
+        </picker>
+      </view>
+
+      <!-- 地点 -->
+      <view class="input-wrapper">
+        <view class="input-label">校区 / 地点</view>
+        <picker mode="selector" range="{{placeOptions}}" value="{{placeIndex}}" bindchange="onPlaceChange">
+          <view class="pink-input picker-display" style="width: 499rpx; height: 87rpx; display: flex; box-sizing: border-box">
+            {{placeOptions[placeIndex]}}
+          </view>
+        </picker>
+      </view>
+
+      <!-- 日期 + 时间 -->
+      <view class="flex-row">
+        <view class="flex-half input-wrapper">
+          <view class="input-label">日期</view>
+          <picker mode="date" value="{{date}}" start="{{dateMin}}" end="{{dateMax}}" bindchange="onDateChange">
+            <view class="pink-input picker-display" style="width: 250rpx; height: 114rpx; display: flex; box-sizing: border-box">
+              {{date || '选择日期'}}
+            </view>
+          </picker>
+        </view>
+
+        <view class="flex-half input-wrapper">
+          <view class="input-label">时间</view>
+          <picker mode="time" value="{{time}}" start="08:00" end="21:00" bindchange="onTimeChange">
+            <view class="pink-input picker-display" style="width: 274rpx; height: 122rpx; display: flex; box-sizing: border-box">
+              {{time || '选择时间'}}
+            </view>
+          </picker>
+        </view>
+      </view>
+
+      <!-- 备注 -->
+      <view class="input-wrapper">
+        <view class="input-label">想对老师说的话（可选）</view>
+        <textarea style="position: relative; left: 0rpx; top: 35rpx; width: 597rpx; height: 235rpx; display: block; box-sizing: border-box"
+          class="pink-input textarea-input"
+          placeholder="可以简单写下你的困扰、最近的状态，或者希望老师注意什么～"
+          value="{{remark}}"
+          maxlength="200"
+          bindinput="onRemarkInput"
+        />
+      </view>
+
+      <view class="btn-area">
+        <button class="irregular-btn" bindtap="onSubmit" style="position: relative; left: 122rpx; top: 42rpx">
+          <text>🧸 提交预约</text>
+        </button>
+      </view>
+    </view>
+
+    <!-- 我的预约记录 -->
+    <view class="card">
+      <view class="section-title">我的预约记录</view>
+      <view wx:if="{{myAppointments.length === 0}}" class="no-ap">
+        暂无记录，提交成功后可以在这里查看状态～
+      </view>
+
+      <view
+        class="ap-item"
+        wx:for="{{myAppointments}}"
+        wx:key="_id"
+      >
+        <view class="ap-row-top">
+          <view class="ap-type">{{item.type}}</view>
+          <view class="ap-status {{'status-' + item.status}}">
+            {{statusTextMap[item.status]}}
+          </view>
+        </view>
+        <view class="ap-row-mid">
+          <text>{{item.date}} {{item.time}}</text>
+          <text> · {{item.place}}</text>
+        </view>
+        <view wx:if="{{item.remark}}" class="ap-remark">
+          备注：{{item.remark}}
+        </view>
+      </view>
+    </view>
+<!-- 底部返回按钮 -->
+<view class="bottom-back-wrapper" style="position: fixed; left: -39rpx; top: 1385rpx">
+  <button class="back-btn" bindtap="onBack" style="position: relative; left: -27rpx; top: -13rpx">
+    返回上一页
+  </button>
+</view>
+
+    <view class="tabbar-space"></view>
+  </view>
+</particle-bg>

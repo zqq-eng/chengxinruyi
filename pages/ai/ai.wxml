@@ -1,0 +1,239 @@
+<particle-bg>
+  <view class="ai-page">
+
+
+    <!-- 顶部卡片 + 模式开关 -->
+    <view class="top-card">
+      <view class="top-row">
+        <text class="title">AI 分析助手</text>
+        <view class="mode-toggle" bindtap="handleToggleMode">
+          <text class="mode-text">
+            {{ useCloud ? '云端 AI' : '离线分析' }}
+          </text>
+          <view class="toggle-btn {{useCloud ? 'on' : 'off'}}">
+            <view class="toggle-dot"></view>
+          </view>
+        </view>
+      </view>
+
+      <button class="primary-btn" loading="{{loading}}" bindtap="handleGenerate">
+        生成 AI 分析
+      </button>
+
+      <view wx:if="{{errorMsg}}" class="error-tip">
+        {{errorMsg}}
+      </view>
+      <view wx:elif="{{useCloud}}" class="sub-tip">
+        先在下面三类里简单填一下你的情况，再点「生成 AI 分析」。优先使用云端 AI，网络不佳时会自动切到离线。
+      </view>
+      <view wx:elif="{{!useCloud}}" class="sub-tip">
+        当前为离线分析模式，适合网络不稳定或节省调用次数的时候使用。
+      </view>
+    </view>
+
+    <!-- 横向 Tab -->
+    <view class="tab-bar">
+      <view
+        class="tab-item {{currentTab === 0 ? 'active' : ''}}"
+        data-index="0"
+        bindtap="switchTab"
+      >
+        身体情况
+      </view>
+      <view
+        class="tab-item {{currentTab === 1 ? 'active' : ''}}"
+        data-index="1"
+        bindtap="switchTab"
+      >
+        饮食 · 食物
+      </view>
+      <view
+        class="tab-item {{currentTab === 2 ? 'active' : ''}}"
+        data-index="2"
+        bindtap="switchTab"
+      >
+        心理压力
+      </view>
+    </view>
+
+    <!-- 1. 身体情况 可爱表单 -->
+    <view wx:if="{{currentTab === 0}}" class="cute-card">
+
+      <view class="cute-header">
+        <view class="cute-title">身体基本情况（可爱表单）</view>
+        <view class="cute-sub">身高 · 体重 · 运动 · 睡眠</view>
+      </view>
+
+      <!-- 背景光斑 -->
+      <view class="light-dot dot1"></view>
+      <view class="light-dot dot2"></view>
+
+      <!-- 两列表格 -->
+      <view class="cute-grid">
+
+        <!-- 身高 -->
+        <view class="cute-item">
+          <text class="cute-label">身高</text>
+          <view class="cute-input-box">
+            <input
+              class="cute-input"
+              placeholder="169"
+              value="{{bodyForm.height}}"
+              data-field="height"
+              bindinput="handleBodyFormInput"
+            />
+            <text class="cute-unit">cm</text>
+          </view>
+        </view>
+
+        <!-- 体重 -->
+        <view class="cute-item">
+          <text class="cute-label">体重</text>
+          <view class="cute-input-box">
+            <input
+              class="cute-input"
+              placeholder="52"
+              value="{{bodyForm.weight}}"
+              data-field="weight"
+              bindinput="handleBodyFormInput"
+            />
+            <text class="cute-unit">kg</text>
+          </view>
+        </view>
+      <!-- 性别选择 -->
+<view class="gender-row">
+  <view 
+    class="gender-btn {{gender === 'female' ? 'active' : ''}}" 
+    data-gender="female"
+    bindtap="handleChooseGender">
+    女生
+  </view>
+
+  <view 
+    class="gender-btn {{gender === 'male' ? 'active' : ''}}" 
+    data-gender="male"
+    bindtap="handleChooseGender">
+    男生
+  </view>
+</view>
+        <!-- 运动 -->
+        <view class="cute-item">
+          <text class="cute-label">运动</text>
+          <view class="cute-input-box">
+            <input
+              class="cute-input"
+              placeholder="一周几次？"
+              value="{{bodyForm.exercise}}"
+              data-field="exercise"
+              bindinput="handleBodyFormInput"
+            />
+            <text class="cute-unit">次/周</text>
+          </view>
+        </view>
+
+        <!-- 睡眠 -->
+        <view class="cute-item">
+          <text class="cute-label">睡眠</text>
+          <view class="cute-input-box">
+            <input
+              class="cute-input"
+              placeholder="每天睡多久？"
+              value="{{bodyForm.sleep}}"
+              data-field="sleep"
+              bindinput="handleBodyFormInput"
+            />
+            <text class="cute-unit">小时</text>
+          </view>
+        </view>
+
+      </view>
+
+      <!-- 其他补充 -->
+      <view class="cute-extra-title">其他补充（可选）</view>
+      <textarea
+        class="cute-textarea"
+        placeholder="例如：最近体重有些波动，经常熬夜到 12 点以后…"
+        value="{{bodyForm.others}}"
+        data-field="others"
+        bindinput="handleBodyFormInput"
+      />
+
+      <view class="result-title">AI 建议（身体情况）</view>
+      <view class="section-body">
+        <text class="section-text">
+{{result.body}}
+        </text>
+      </view>
+    </view>
+
+    <!-- 2. 饮食 · 食物 -->
+    <view wx:if="{{currentTab === 1}}" class="section-card">
+      <view class="section-header">
+        <view>
+          <view class="section-title">饮食与食物情况</view>
+          <view class="section-tag">三餐 · 零食 · 奶茶 · 宵夜</view>
+        </view>
+        <button class="mini-btn" size="mini" bindtap="handleChooseImage">
+          拍照 / 选图
+        </button>
+      </view>
+
+      <view class="section-body">
+        <textarea
+          class="input-area"
+          placeholder="例如：早饭经常不吃，中午在食堂吃盖饭，晚上点外卖；一周 2～3 次奶茶，爱吃炸鸡薯条…"
+          show-confirm-bar="false"
+          auto-height="true"
+          value="{{foodInput}}"
+          data-field="foodInput"
+          bindinput="handleInput"
+        />
+
+        <!-- 食物图片预览 -->
+        <image
+          wx:if="{{foodImagePath}}"
+          src="{{foodImagePath}}"
+          mode="aspectFill"
+          class="food-image"
+        />
+      </view>
+
+      <view class="result-title">AI 建议（饮食 & 热量）</view>
+      <view class="section-body">
+        <text class="section-text">
+{{result.food}}
+        </text>
+      </view>
+    </view>
+
+    <!-- 3. 心理压力 -->
+    <view wx:if="{{currentTab === 2}}" class="section-card">
+      <view class="section-header">
+        <view>
+          <view class="section-title">心理压力与情绪</view>
+          <view class="section-tag">学习 · 家庭 · 人际 · 自我期待</view>
+        </view>
+      </view>
+
+      <view class="section-body">
+        <textarea
+          class="input-area"
+          placeholder="例如：最近在准备考试和项目，事情很多；担心家里经济压力；有时会怀疑自己是不是不够努力…"
+          show-confirm-bar="false"
+          auto-height="true"
+          value="{{stressInput}}"
+          data-field="stressInput"
+          bindinput="handleInput"
+        />
+      </view>
+
+      <view class="result-title">AI 建议（心理压力）</view>
+      <view class="section-body">
+        <text class="section-text">
+{{result.stress}}
+        </text>
+      </view>
+    </view>
+
+  </view>
+</particle-bg>

@@ -1,0 +1,8 @@
+<view class="vine-card-container">
+  <!-- 藤蔓光效层 -->
+  <view class="vine-border"></view>
+  <!-- 卡片主体 -->
+  <view class="vine-card">
+    <slot></slot>
+  </view>
+</view>

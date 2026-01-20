@@ -1,0 +1,76 @@
+.vine-card-container {
+  position: relative;
+  margin: 30rpx 0;
+}
+
+.vine-card {
+  padding: 40rpx;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20rpx);
+  border-radius: 40rpx;
+  box-shadow: 0 0 30rpx rgba(255, 150, 230, 0.35);
+  position: relative;
+  z-index: 2;
+}
+
+/* ✨藤蔓外框层 */
+.vine-border {
+  position: absolute;
+  top: -10rpx;
+  left: -10rpx;
+  right: -10rpx;
+  bottom: -10rpx;
+  border-radius: 50rpx;
+  pointer-events: none;
+
+  border: 6rpx dashed transparent;
+  background: linear-gradient(130deg, #ffa9dc, #cf9bff, #8ce6ff, #ffe082);
+  background-size: 300% 300%;
+  animation: vineGlow 4s ease-in-out infinite, vineMove 6s linear infinite;
+  z-index: 1;
+}
+
+/* ✨藤蔓光彩 */
+@keyframes vineGlow {
+  0% { filter: brightness(1.0) blur(1rpx); }
+  50% { filter: brightness(1.45) blur(3rpx); }
+  100% { filter: brightness(1.0) blur(1rpx); }
+}
+
+/* ✨藤蔓渐变缓慢流动 */
+@keyframes vineMove {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+/* 🌸 小花瓣 + 嫩叶（完全不用图片） */
+.vine-border::before,
+.vine-border::after {
+  content: "";
+  position: absolute;
+  width: 26rpx;
+  height: 26rpx;
+  background: radial-gradient(circle at center,
+      #ffbde8 0%, #ff7fcf 50%, transparent 80%);
+  border-radius: 50%;
+  animation: petalBlink 1.5s infinite;
+}
+
+.vine-border::before {
+  top: -12rpx;
+  left: 40rpx;
+}
+
+.vine-border::after {
+  bottom: -12rpx;
+  right: 50rpx;
+  animation-delay: 0.7s;
+}
+
+/* ✨花瓣闪烁 */
+@keyframes petalBlink {
+  0% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.6; }
+}

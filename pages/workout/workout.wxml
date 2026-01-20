@@ -1,0 +1,220 @@
+<particle-bg>
+  <view class="workout-page">
+
+
+    <!-- 训练视频库 -->
+    <view class="card video-card">
+      <view class="card-header">
+        <view class="title-row">
+          <text class="card-title">我的训练视频库</text>
+        </view>
+
+        <!-- 分类操作区 -->
+        <view class="category-bar">
+          <scroll-view scroll-x="true" class="category-scroll">
+            <view
+              class="category-pill {{item._id === currentCategoryId ? 'active' : ''}}"
+              wx:for="{{categories}}"
+              wx:key="_id"
+              data-id="{{item._id}}"
+              data-name="{{item.category}}"
+              bindtap="onSelectCategory"
+            >
+              <text>{{item.category}}</text>
+            </view>
+          </scroll-view>
+
+          <button class="btn-small" size="mini" bindtap="addCategory">新建分类</button>
+        </view>
+
+        <!-- 当前分类 & 上传 -->
+        <view class="category-info">
+          <text class="current-cat">
+            当前分类：
+            <text class="highlight">
+              {{ currentCategoryName || '请先创建分类' }}
+            </text>
+          </text>
+
+          <view class="cat-ops" wx:if="{{currentCategoryId}}">
+            <button
+              class="text-btn"
+              size="mini"
+              data-id="{{currentCategoryId}}"
+              data-name="{{currentCategoryName}}"
+              bindtap="renameCategory"
+            >重命名</button>
+
+            <button
+              class="text-btn danger"
+              size="mini"
+              data-id="{{currentCategoryId}}"
+              bindtap="deleteCategory"
+            >删除</button>
+
+            <button
+              class="btn-upload"
+              size="mini"
+              bindtap="uploadVideo"
+              loading="{{uploading}}"
+            >上传视频</button>
+          </view>
+        </view>
+
+        <!-- 搜索框 -->
+        <view class="search-row">
+          <input
+            class="search-input"
+            placeholder="搜索当前分类中的视频名称"
+            value="{{searchKeyword}}"
+            bindinput="onSearchInput"
+          />
+        </view>
+      </view>
+
+      <!-- 视频列表 -->
+      <view class="video-list" wx:if="{{filteredVideoList.length}}">
+        <block wx:for="{{filteredVideoList}}" wx:key="fileID">
+          <view class="video-item">
+            <view class="thumb">
+              <view class="thumb-placeholder">
+                <text>▶</text>
+              </view>
+            </view>
+
+            <view class="video-info">
+              <text class="video-name">{{item.name}}</text>
+              <view class="video-meta">
+                <text>{{item.duration}} 秒</text>
+                <text> · {{item.sizeMB}} MB</text>
+              </view>
+              <text class="video-time">上传于 {{item.uploadTime}}</text>
+
+              <view class="video-actions">
+                <button
+                  class="text-btn primary"
+                  size="mini"
+                  data-fileid="{{item.fileID}}"
+                  bindtap="playVideo"
+                >播放</button>
+
+                <button
+                  class="text-btn"
+                  size="mini"
+                  data-index="{{index}}"
+                  bindtap="renameVideo"
+                >改名</button>
+
+                <button
+                  class="text-btn"
+                  size="mini"
+                  data-index="{{index}}"
+                  bindtap="moveVideoUp"
+                >上移</button>
+
+                <button
+                  class="text-btn"
+                  size="mini"
+                  data-index="{{index}}"
+                  bindtap="moveVideoDown"
+                >下移</button>
+
+                <button
+                  class="text-btn"
+                  size="mini"
+                  data-item="{{item}}"
+                  bindtap="favoriteVideo"
+                >收藏</button>
+
+                <button
+                  class="text-btn danger"
+                  size="mini"
+                  data-index="{{index}}"
+                  bindtap="deleteVideo"
+                >删除</button>
+              </view>
+            </view>
+          </view>
+        </block>
+      </view>
+
+      <view class="empty-hint" wx:if="{{!filteredVideoList.length}}">
+        <text wx:if="{{!currentCategoryId}}">请先创建一个分类，然后选择分类上传视频~</text>
+        <text wx:elif="{{currentCategoryId}}">当前分类还没有视频，点击“上传视频”开始添加吧~</text>
+      </view>
+    </view>
+
+    <!-- 跑步数据卡片 -->
+    <view class="card stats-card">
+      <view class="stats-row">
+        <view class="stat-block">
+          <view class="stat-label">累计打卡天数</view>
+          <view class="stat-value">{{totalDays}}</view>
+          <view class="stat-unit">天</view>
+        </view>
+        <view class="stat-block">
+          <view class="stat-label">累计跑步距离</view>
+          <view class="stat-value">{{totalDistance}}</view>
+          <view class="stat-unit">km</view>
+        </view>
+        <view class="stat-block">
+          <view class="stat-label">累计运动时长</view>
+          <view class="stat-value">{{totalMinutes}}</view>
+          <view class="stat-unit">min</view>
+        </view>
+      </view>
+
+      <view class="btn-area">
+        <button class="btn-primary" bindtap="goRun">去跑圈打卡</button>
+        <button class="btn-secondary" bindtap="goSportTrend">查看运动趋势</button>
+      </view>
+    </view>
+
+    <!-- 手动添加运动记录 -->
+    <view class="card manual-card">
+      <view class="section-title">手动添加运动记录</view>
+      <view class="manual-row">
+        <view class="field">
+          <view class="field-label">距离 (km)</view>
+          <input
+            type="digit"
+            class="field-input"
+            placeholder="例如 2.5"
+            value="{{runDistance}}"
+            bindinput="onRunDistanceInput"
+          />
+        </view>
+        <view class="field">
+          <view class="field-label">用时 (分钟)</view>
+          <input
+            type="digit"
+            class="field-input"
+            placeholder="例如 30"
+            value="{{runMinutes}}"
+            bindinput="onRunMinutesInput"
+          />
+        </view>
+      </view>
+      <button class="btn-primary" bindtap="saveManualRun">保存记录</button>
+    </view>
+
+    <!-- 视频预览浮层 -->
+    <view wx:if="{{previewVisible}}" class="preview-mask" catchtouchmove="true">
+      <view class="preview-box">
+        <video
+          class="preview-video"
+          src="{{previewUrl}}"
+          controls
+          autoplay
+        ></video>
+        <button class="btn-close" bindtap="closePreview">关闭</button>
+      </view>
+    </view>
+<!-- 顶部返回 + 标题 -->
+<view class="top-bar">
+      <button class="back-btn" bindtap="goBack">返回</button>
+      
+    </view>
+    <view class="tabbar-space"></view>
+  </view>
+</particle-bg>

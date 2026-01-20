@@ -1,0 +1,207 @@
+.bg-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* 柔光渐变覆盖层（增加梦幻感） */
+.gradient-overlay {
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(circle at 10% 0%, rgba(255, 255, 255, 0.7), transparent 55%),
+              radial-gradient(circle at 90% 20%, rgba(255, 210, 255, 0.7), transparent 55%),
+              radial-gradient(circle at 50% 100%, rgba(210, 240, 255, 0.7), transparent 65%);
+  pointer-events: none;
+}
+
+/* 漂浮云朵：使用大块圆角矩形模拟 */
+.cloud {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 999px;
+  box-shadow: 0 12px 25px rgba(208, 191, 255, 0.38);
+  opacity: 0.8;
+}
+
+.cloud::before,
+.cloud::after {
+  content: "";
+  position: absolute;
+  background: inherit;
+  border-radius: 999px;
+}
+
+.cloud-1 {
+  width: 110px;
+  height: 42px;
+  top: 12vh;
+  left: -20px;
+  animation: cloudFloatRight 26s linear infinite;
+}
+.cloud-1::before {
+  width: 48px;
+  height: 38px;
+  top: -14px;
+  left: 16px;
+}
+.cloud-1::after {
+  width: 55px;
+  height: 36px;
+  top: -10px;
+  right: 6px;
+}
+
+.cloud-2 {
+  width: 90px;
+  height: 34px;
+  top: 38vh;
+  right: -60px;
+  opacity: 0.9;
+  animation: cloudFloatLeft 30s linear infinite;
+}
+.cloud-2::before {
+  width: 40px;
+  height: 32px;
+  top: -10px;
+  left: 18px;
+}
+.cloud-2::after {
+  width: 32px;
+  height: 28px;
+  top: -6px;
+  right: 6px;
+}
+
+.cloud-3 {
+  width: 120px;
+  height: 40px;
+  bottom: 16vh;
+  left: 20vw;
+  opacity: 0.7;
+  animation: cloudFloatMid 34s linear infinite;
+}
+.cloud-3::before {
+  width: 46px;
+  height: 34px;
+  top: -12px;
+  left: 14px;
+}
+.cloud-3::after {
+  width: 50px;
+  height: 32px;
+  top: -8px;
+  right: 8px;
+}
+
+@keyframes cloudFloatRight {
+  0%   { transform: translateX(0px) translateY(0px); }
+  50%  { transform: translateX(180px) translateY(-10px); }
+  100% { transform: translateX(360px) translateY(4px); }
+}
+@keyframes cloudFloatLeft {
+  0%   { transform: translateX(0px) translateY(0px); }
+  50%  { transform: translateX(-220px) translateY(8px); }
+  100% { transform: translateX(-360px) translateY(-4px); }
+}
+@keyframes cloudFloatMid {
+  0%   { transform: translateX(0px) translateY(0px); }
+  50%  { transform: translateX(80px) translateY(-8px); }
+  100% { transform: translateX(-60px) translateY(6px); }
+}
+
+/* 背景猫爪：用多个圆形叠加出猫爪轮廓 */
+.paw {
+  position: absolute;
+  width: 60px;
+  height: 50px;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), rgba(255, 182, 193, 0.5));
+  border-radius: 60% 60% 55% 55%;
+  box-shadow: 0 8px 14px rgba(255, 192, 203, 0.4);
+  opacity: 0.35;
+  animation: pawPulse 8s ease-in-out infinite;
+}
+
+.paw::before,
+.paw::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background: inherit;
+  border-radius: 50%;
+}
+
+.paw::before {
+  top: -10px;
+  left: 6px;
+}
+.paw::after {
+  top: -12px;
+  right: 8px;
+}
+
+.paw-1 {
+  top: 24vh;
+  right: 16vw;
+}
+.paw-2 {
+  bottom: 22vh;
+  left: 10vw;
+  animation-delay: 1.5s;
+}
+.paw-3 {
+  bottom: 8vh;
+  right: 8vw;
+  transform: rotate(14deg);
+  animation-delay: 0.7s;
+}
+
+@keyframes pawPulse {
+  0% {
+    transform: scale(0.96) rotate(-4deg);
+    opacity: 0.25;
+  }
+  50% {
+    transform: scale(1.06) rotate(2deg);
+    opacity: 0.45;
+  }
+  100% {
+    transform: scale(0.98) rotate(-3deg);
+    opacity: 0.3;
+  }
+}
+
+/* 闪闪亮点星星 */
+.star {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 0%, #ffd1ff 40%, transparent 70%);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+  opacity: 0.4;
+  animation: starTwinkle 3s ease-in-out infinite alternate;
+}
+
+@keyframes starTwinkle {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.2;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(0.85);
+    opacity: 0.4;
+  }
+}
+
+/* 插槽内容层，覆盖在所有装饰之上 */
+.content-slot {
+  position: relative;
+  z-index: 10;
+  padding-bottom: 70rpx; /* 避开底部 tabBar 一点空间 */
+}

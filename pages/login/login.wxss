@@ -1,0 +1,278 @@
+/* pages/login/login.wxss */
+
+.login-page {
+  position: relative;
+  min-height: 100vh;
+  padding: 40px 20px 32px;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* LOGO 区域 */
+.logo-area {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.app-name {
+  font-size: 30px;
+  font-weight: 800;
+  color: #ff6fa8;
+  text-shadow: 0 0 16px rgba(255, 182, 193, 0.9);
+  letter-spacing: 0.08em;
+}
+
+.app-subtitle {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #b495f0;
+}
+
+/* 登录卡片：宽度限定 + 居中 */
+.login-card {
+  width: 100%;
+  max-width: 640rpx;
+  margin-top: 18px;
+  border-radius: 26px;
+  padding: 22px 18px 18px;
+  box-sizing: border-box;
+
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255,255,255,0.96), rgba(255,255,255,0.80)),
+    linear-gradient(135deg, rgba(255,220,244,0.96), rgba(230,209,255,0.92));
+  box-shadow: 0 22px 40px rgba(167, 120, 206, 0.3);
+}
+
+/* 轻微进场动画 */
+.animated-card {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: cardFloatIn 0.7s ease-out forwards;
+}
+
+/* 标题 */
+.page-title {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #7d6ab6;
+}
+
+/* 顶部三个小标签 */
+.tag-row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 10px 0 6px;
+}
+
+.tag-paw {
+  font-size: 11px;
+  padding: 4px 10px;
+  margin: 3px 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #ff6fa8;
+  box-shadow: 0 4px 10px rgba(200, 160, 238, 0.3);
+}
+
+/* 输入区域 */
+.input-wrapper {
+  margin-top: 10px;
+}
+
+.input-label {
+  font-size: 13px;
+  color: #8f7fb3;
+  margin-bottom: 4px;
+}
+.pink-input {
+  width: 92%;          /* 🔥 从 100% 改为 92%，更贴合卡片内边距 */
+  padding: 12px 16px;  /* 🔥 加厚输入框，提高视觉柔和性 */
+  border-radius: 999px;
+  border: none;
+  box-sizing: border-box;
+
+  font-size: 15px;     /* 字体略放大 */
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: inset 0 0 0 1px rgba(255, 182, 193, 0.4);
+}
+/* 输入框更宽更高 */
+.pink-input {
+  width: 96%;            /* 📌 从92%扩大到96% 几乎占满宽度 */
+  height: 44px;          /* 📌 明确设定高度，让输入框更饱满 */
+  padding: 0 18px;       /* 📌 左右padding增加，内容更居中 */
+  
+  border-radius: 999px;
+  border: none;
+  box-sizing: border-box;
+
+  font-size: 15px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: inset 0 0 0 1.2px rgba(255, 182, 193, 0.45);
+}
+
+/* 登录卡片整体下移 */
+.login-card {
+  width: 100%;
+  max-width: 640rpx;
+  margin-top: 40px;   /* 修改这里即可 */
+  border-radius: 26px;
+  padding: 22px 18px 18px;
+}
+
+
+
+  
+/* 错误提示 */
+.error-text {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #ff4b81;
+  text-align: center;
+}
+
+/* 登录按钮区域 */
+.btn-area {
+  display: flex;
+  justify-content: center;
+  margin-top: 18px;
+}
+
+.login-btn {
+  width: 75%;
+}
+
+/* 按钮高光动画 */
+.glow-btn {
+  position: relative;
+  overflow: hidden;
+  animation: btnGlow 2.2s ease-in-out infinite;
+}
+
+/* 额外文字 */
+.extra-row {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.extra-text {
+  color: #8f7fb3;
+}
+
+.extra-link {
+  color: #ff6fa8;
+  margin-left: 4px;
+  font-weight: 600;
+}
+
+/* 底部提示 */
+.tips-text {
+  margin-top: 10px;
+  font-size: 11px;
+  color: #b09bd7;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* 管理员入口 */
+.admin-entry {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 14px;
+  color: #9b59ff;
+  text-decoration: underline;
+  padding-bottom: 20px;
+  opacity: 0.85;
+}
+
+.admin-entry:active {
+  opacity: 1;
+  color: #7b3fe6;
+}
+
+/* ================= 漂浮装饰 ================= */
+
+.float-deco {
+  position: absolute;
+}
+
+/* 云朵：缓慢左右飘 */
+.deco-cloud {
+  width: 78px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 999px;
+  top: 6vh;
+  right: 16px;
+  box-shadow: 0 8px 20px rgba(200, 188, 255, 0.8);
+  animation: cloudLogin 18s linear infinite;
+}
+
+/* 星星：闪烁高光 */
+.deco-star {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff, #ffd7ff);
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.95);
+  top: 22vh;
+  left: 12vw;
+  animation: starTwinkleLogin 3s ease-in-out infinite alternate;
+}
+
+/* 爪印：轻微摆动 */
+.deco-paw {
+  width: 52px;
+  height: 44px;
+  border-radius: 60% 60% 50% 50%;
+  background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.96), rgba(255, 182, 193, 0.7));
+  bottom: 8vh;
+  left: -6px;
+  opacity: 0.85;
+  box-shadow: 0 10px 24px rgba(255, 182, 193, 0.75);
+  animation: pawSwing 5s ease-in-out infinite;
+}
+
+/* ================= 动画 keyframes ================= */
+
+@keyframes starTwinkleLogin {
+  0%   { transform: scale(0.8); opacity: 0.3; }
+  50%  { transform: scale(1.25); opacity: 1;   }
+  100% { transform: scale(0.9); opacity: 0.5; }
+}
+
+@keyframes cloudLogin {
+  0%   { transform: translateX(0px); }
+  50%  { transform: translateX(-18px); }
+  100% { transform: translateX(10px); }
+}
+
+@keyframes pawSwing {
+  0%   { transform: rotate(-6deg) translateY(0); }
+  50%  { transform: rotate(4deg) translateY(-3px); }
+  100% { transform: rotate(-4deg) translateY(1px); }
+}
+
+/* 卡片进入动画 */
+@keyframes cardFloatIn {
+  0%   { opacity: 0; transform: translateY(16px) scale(0.98); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* 按钮高光扫光效果 */
+@keyframes btnGlow {
+  0% {
+    box-shadow: 0 12px 24px rgba(255, 182, 193, 0.3);
+  }
+  50% {
+    box-shadow: 0 12px 30px rgba(255, 182, 193, 0.65);
+  }
+  100% {
+    box-shadow: 0 12px 24px rgba(255, 182, 193, 0.3);
+  }
+}

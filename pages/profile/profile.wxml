@@ -1,0 +1,105 @@
+<particle-bg>
+  <view class="profile-page">
+
+    <!-- 头部信息 -->
+    <view class="card profile-header">
+      <view class="profile-row">
+        <!-- 头像：默认首字 + 可点击上传 -->
+        <view class="profile-avatar" bindtap="onAvatarTap" style="width: 112rpx; height: 104rpx; display: block; box-sizing: border-box" style="width: 185rpx; display: block; box-sizing: border-box">
+          <image
+            wx:if="{{userInfo.avatarUrl}}"
+            class="avatar-img"
+            src="{{userInfo.avatarUrl}}"
+            mode="aspectFill"
+          ></image>
+          <view wx:else class="avatar-placeholder">
+            {{userInfo.name ? userInfo.name[0] : "我"}}
+          </view>
+        </view>
+
+        <view class="profile-info">
+          <view class="profile-name">
+            {{userInfo.name || '未设置姓名'}}
+          </view>
+          <view class="profile-meta">
+            {{userInfo.school || '陕西高校'}} · {{userInfo.major || '专业未设置'}}
+          </view>
+          <view class="profile-tip">点击头像可更换个人照片</view>
+        </view>
+      </view>
+
+      <view class="profile-tag-row">
+        <view class="tag-paw">身高：{{userInfo.height || '--'}} cm</view>
+        <!-- 👉 显示当前体重（没有就退回目标体重） -->
+        <view class="tag-paw">
+          当前体重：{{userInfo.currentWeight || userInfo.targetWeight || '--'}} kg
+        </view>
+      </view>
+    </view>
+
+    <!-- 基础信息设置 -->
+    <view class="card">
+      <view class="section-title">基础信息设置</view>
+
+      <view class="input-wrapper">
+        <view class="input-label">身高（cm）</view>
+        <input class="blue-input" type="digit" value="{{heightInput}}" bindinput="onHeightInput" />
+      </view>
+
+      <view class="input-wrapper">
+        <view class="input-label">年龄</view>
+        <input class="blue-input" type="digit" value="{{ageInput}}" bindinput="onAgeInput" />
+      </view>
+
+      <view class="input-wrapper">
+        <view class="input-label">性别</view>
+        <picker mode="selector" range="{{genderOptions}}" value="{{genderIndex}}" bindchange="onGenderChange">
+          <view class="blue-input">{{genderOptions[genderIndex]}}</view>
+        </picker>
+      </view>
+
+      <view class="input-wrapper">
+        <!-- 👉 文案改为“当前体重”，实际字段仍用 targetInput，逻辑保持 -->
+        <view class="input-label">当前体重（kg）</view>
+        <input class="blue-input" type="digit" value="{{targetInput}}" bindinput="onTargetInput" />
+      </view>
+
+      <view class="btn-area">
+        <button class="primary-btn" bindtap="onSaveProfile">
+          <text>保存信息</text>
+        </button>
+      </view>
+    </view>
+
+    <!-- 其它信息 -->
+    <view class="card">
+      <view class="section-title">其它</view>
+
+      <view class="misc-line">
+        <text>版本信息：</text>
+        <text class="misc-strong">秤心如意 v1.0 正式版</text>
+      </view>
+
+      <view class="misc-line">
+        <text>作者：</text>
+        <text>陕西大学生体重管理课题小组</text>
+      </view>
+    </view>
+
+    <!-- 功能 -->
+    <view class="card">
+      <view class="section-title">功能</view>
+
+      <view class="menu-item" bindtap="goAppointment">
+        📘 预约学校咨询室
+      </view>
+
+      <view wx:if="{{isAdmin}}" class="menu-item" bindtap="goAdmin">
+        🔐 管理员入口
+      </view>
+    </view>
+
+    <view class="tabbar-space"></view>
+
+  </view>
+</particle-bg>

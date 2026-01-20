@@ -1,0 +1,48 @@
+.admin-login-page {
+  padding: 60px 24px 40px;   /* 页面整体更下移，更舒适 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;       /* ⭐ 输入框、标题、按钮全居中 */
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+  color: #a163e9;
+  margin-bottom: 40px;       /* 标题下移更多空间 */
+}
+
+/* 输入框外容器（用于居中） */
+.input-box {
+  width: 92%;                /* ⭐ 控制输入框宽度，不再贴满 */
+  margin-bottom: 18px;
+}
+
+/* 输入框：更圆润、更好看 */
+.admin-input {
+  width: 100%;
+  height: 46px;              /* ⭐ 设定高度更统一 */
+  padding: 0 16px;
+  border-radius: 999px;      /* 脂肪圆角风格，和主登录页一致 */
+  border: none;
+
+  font-size: 15px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: inset 0 0 0 1px rgba(170, 120, 255, 0.4);
+}
+
+/* 按钮保持居中 */
+.admin-btn {
+  width: 92%;                /* ⭐ 与输入框同宽更统一 */
+  margin-top: 20px;
+  background: linear-gradient(135deg, #bb7bff, #ff93c9);
+  color: #fff;
+
+  padding: 12px 0;
+  border-radius: 26px;
+  font-size: 16px;
+  font-weight: 600;
+
+  box-shadow: 0 8px 18px rgba(195, 145, 255, 0.45);
+}

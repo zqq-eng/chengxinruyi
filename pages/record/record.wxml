@@ -1,0 +1,65 @@
+<particle-bg>
+  <view class="record-page">
+<!-- 顶部返回 + 标题 -->
+<view class="top-bar">
+      <button class="back-btn" bindtap="goBack" style="position: relative; left: -1rpx; top: 1475rpx; width: 297rpx; height: 75rpx; display: block; box-sizing: border-box">退出日历</button>
+      
+    </view>
+    <view class="card" style="width: 643rpx; height: 708rpx; display: block; box-sizing: border-box">
+      <view class="calendar-header">
+        <view class="cal-arrow" bindtap="prevMonth">〈</view>
+        <view class="cal-title">{{currentYear}} 年 {{currentMonth}} 月</view>
+        <view class="cal-arrow" bindtap="nextMonth">〉</view>
+      </view>
+
+      <view class="calendar-week-row">
+        <view class="week-cell" wx:for="{{weekNames}}" wx:key="index">{{item}}</view>
+      </view>
+
+      <view class="calendar-grid">
+        <view
+          class="day-cell {{item.inMonth?'':'day-out'}}"
+          wx:for="{{days}}"
+          wx:key="date"
+          data-date="{{item.date}}"
+          bindtap="onDayTap"
+        >
+          <view class="day-number">{{item.day}}</view>
+
+          <!-- 体重爪印 -->
+          <view wx:if="{{item.hasRecord}}" class="weight-paw">🐾</view>
+
+          <!-- 运动爪印 -->
+          <view wx:if="{{item.sportLevel>0}}" class="sport-paw">{{item.sportIcon}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 体重+运动详情 -->
+    <view class="card">
+      <view class="section-title">详情：{{selectedDate || '请选择日期'}}</view>
+
+      <view wx:if="{{sportInfo}}">
+        <view class="detail-line">🏃 距离：{{sportInfo.distanceKm}} km</view>
+        <view class="detail-line">⌚ 用时：{{sportInfo.durationStr}}</view>
+        <view class="detail-line">⚡ 配速：{{sportInfo.paceStr}}</view>
+      </view>
+
+      <view class="input-wrapper">
+        <view class="input-label">体重（kg）</view>
+        <input style="width: 589rpx; display: block; box-sizing: border-box; height: 77rpx" class="pink-input" value="{{inputWeight}}" bindinput="onWeightInput"/>
+      </view>
+
+      <view class="input-wrapper">
+        <view class="input-label">备注</view>
+        <input style="width: 589rpx; display: block; box-sizing: border-box; height: 75rpx" class="pink-input" value="{{inputNote}}" bindinput="onNoteInput"/>
+      </view>
+
+      <view class="btn-area">
+        <button class="irregular-btn" bindtap="onSaveRecord" style="position: relative; left: 118rpx; top: 0rpx">💗 保存记录</button>
+      </view>
+    </view>
+
+    <view class="tabbar-space"></view>
+  </view>
+</particle-bg>

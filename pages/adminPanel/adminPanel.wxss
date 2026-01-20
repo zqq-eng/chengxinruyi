@@ -1,0 +1,329 @@
+/* 整体容器：下移 + 背景渐变 + 粒子光斑 */
+.admin-container {
+  min-height: 100vh;
+  padding: 64px 18px 32px;          /* 🔥 上边距增大，让整体下移 */
+  box-sizing: border-box;
+
+  /* 渐变背景 + 两个柔光斑，增强颗粒感 */
+  background:
+    radial-gradient(circle at 18% 20%, rgba(255,255,255,0.95), rgba(255,255,255,0) 55%),
+    radial-gradient(circle at 82% 70%, rgba(255,255,255,0.9), rgba(255,255,255,0) 55%),
+    linear-gradient(180deg, #f8e9ff 0%, #ffeaf5 45%, #f6f7ff 100%);
+}
+
+/* 通用卡片：更大阴影 + 进场动画 */
+.card {
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: 22px;
+  padding: 14px 16px;
+  box-shadow: 0 10px 26px rgba(190, 150, 225, 0.42);
+  margin-top: 16px;
+
+  animation: cardFadeUp 0.6s ease-out both;
+}
+
+/* 第一张卡片稍微更显眼一点、带微浮动动画 */
+.admin-header {
+  margin-bottom: 8px;
+  animation-delay: 0.05s;
+  animation-name: cardFadeUpSoft;
+}
+
+/* 标题区域 */
+.admin-title-row {
+  margin-bottom: 12px;
+}
+
+/* 标题更大、更清晰，带渐变文字效果 */
+.admin-title {
+  font-size: 20px;                  /* 🔥 字更大 */
+  font-weight: 800;
+  background: linear-gradient(120deg, #a968ff, #ff78c9);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* 副标题略大一点 */
+.admin-subtitle {
+  font-size: 13px;                  /* 🔥 原 12 */
+  color: #b18adf;
+  margin-top: 4px;
+}
+
+/* 菜单区域 */
+.admin-menu {
+  margin-top: 12px;
+}
+
+.admin-menu-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 2px;
+  border-bottom: 1px solid rgba(230, 220, 255, 0.9);
+}
+
+.admin-menu-item:last-child {
+  border-bottom: none;
+}
+
+/* 图标稍微放大一点 */
+.admin-menu-item .icon {
+  width: 30px;
+  font-size: 18px;
+}
+
+/* 文本更大、更深一点 */
+.admin-menu-item .text {
+  font-size: 15px;                  /* 🔥 原 14 */
+  color: #7a57c3;
+}
+
+/* 分区标题：更明显 */
+.section-title {
+  font-size: 16px;                  /* 🔥 原 15 */
+  font-weight: 600;
+  color: #a45ad0;
+  margin-bottom: 6px;
+}
+
+.sub-tip {
+  font-size: 12px;
+  color: #b09ad1;
+}
+
+/* 用户统计行：更有层次 */
+.user-row {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(220, 200, 255, 0.85);
+  display: flex;
+  justify-content: space-between;
+}
+
+.user-main {
+  max-width: 60%;
+}
+
+.user-name {
+  font-size: 15px;                  /* 🔥 原 14 */
+  color: #7b4fb8;
+  font-weight: 600;
+}
+
+.user-school {
+  margin-top: 2px;
+  font-size: 12px;                  /* 🔥 原 11 */
+  color: #a28ac4;
+}
+
+.user-stats {
+  text-align: right;
+  font-size: 12px;                  /* 🔥 原 11 */
+  color: #8a6fb5;
+}
+
+/* 退出卡片居中 */
+.exit-card {
+  text-align: center;
+}
+
+/* 退出按钮：更大、更显眼一点，带轻微光影动画 */
+.admin-exit-btn {
+  width: 76%;
+  margin: 4px auto 2px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #f067a7;
+  border: 1px solid #f4a4cf;
+  padding: 10px 0;
+  font-size: 15px;                  /* 🔥 原 14 */
+  font-weight: 600;
+  box-shadow: 0 8px 18px rgba(245, 165, 210, 0.55);
+
+  animation: exitGlow 3s ease-in-out infinite;
+}
+
+/* 底部预留空间，用于避免被 TabBar 遮挡（若有） */
+.tabbar-space {
+  height: 30px;
+}
+
+/* ============ 旧样式保留（有些页面可能在用） ============ */
+
+.admin-page {
+  padding: 16px 12px 24px;
+}
+
+.header-card {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 22px;
+  padding: 14px 16px;
+  box-shadow: 0 8px 22px rgba(180, 140, 220, 0.35);
+  margin-bottom: 12px;
+}
+.header-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #a45ad0;
+}
+.header-sub {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #b28dd6;
+}
+
+.main-card {
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: 24px;
+  padding: 10px 12px;
+  box-shadow: 0 10px 26px rgba(191, 154, 230, 0.45);
+  margin-bottom: 14px;
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 4px;
+  border-bottom: 1px solid #f1e5ff;
+}
+.menu-item:last-child {
+  border-bottom: none;
+}
+.icon {
+  width: 28px;
+  font-size: 18px;
+}
+.menu-text {
+  font-size: 14px;
+  color: #70458f;
+}
+
+.user-info {
+  font-size: 12px;
+  color: #9b7cbc;
+}
+
+.empty-tip {
+  font-size: 12px;
+  color: #b09ad1;
+  margin-top: 8px;
+}
+
+/* 视频相关旧样式保留 */
+.preview-video {
+  width: 100%;
+  border-radius: 18px;
+  margin-top: 8px;
+}
+.video-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid #f3e8ff;
+}
+.video-row:last-child {
+  border-bottom: none;
+}
+.video-main {
+  flex: 1;
+}
+.video-title {
+  font-size: 13px;
+  color: #6e4998;
+}
+.video-time {
+  font-size: 11px;
+  color: #b39ad2;
+}
+.video-actions {
+  display: flex;
+  gap: 4px;
+  margin-left: 6px;
+}
+.green-btn {
+  margin-top: 10px;
+  background-color: #34c759;
+  color: #ffffff;
+  border-radius: 20px;
+}
+
+/* 退出按钮旧样式保留 */
+.exit-btn {
+  width: 100%;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #ffb5c7, #ffaac2);
+  color: #ffffff;
+}
+
+.admin-video {
+  width: 100%;
+  border-radius: 16px;
+  margin-top: 8px;
+}
+.admin-video-btn-row {
+  display: flex;
+  margin-top: 10px;
+}
+.admin-video-btn {
+  flex: 1;
+}
+.admin-plain-btn {
+  margin-left: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid #f0a7d5;
+  background: #ffffff;
+  font-size: 13px;
+  color: #f06aa9;
+}
+.admin-video-tip {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #9a7cc9;
+}
+
+/* ============ 动画 keyframes ============ */
+
+/* 卡片从下往上轻微浮现 */
+@keyframes cardFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 头部卡片：浮现后慢慢上下轻浮一下，显得更灵动 */
+@keyframes cardFadeUpSoft {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.01);
+  }
+}
+
+/* 退出按钮轻微呼吸光影 */
+@keyframes exitGlow {
+  0% {
+    box-shadow: 0 8px 18px rgba(245, 165, 210, 0.45);
+    transform: translateY(0);
+  }
+  50% {
+    box-shadow: 0 12px 26px rgba(245, 165, 210, 0.75);
+    transform: translateY(-1px);
+  }
+  100% {
+    box-shadow: 0 8px 18px rgba(245, 165, 210, 0.45);
+    transform: translateY(0);
+  }
+}

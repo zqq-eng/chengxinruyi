@@ -1,0 +1,24 @@
+<view class="bg-container">
+  <!-- 梦幻色块柔光层 -->
+  <view class="gradient-overlay"></view>
+
+  <!-- 漂浮云朵 -->
+  <view class="cloud cloud-1"></view>
+  <view class="cloud cloud-2"></view>
+  <view class="cloud cloud-3"></view>
+
+  <!-- 背景猫爪 -->
+  <view class="paw paw-1"></view>
+  <view class="paw paw-2"></view>
+  <view class="paw paw-3"></view>
+
+  <!-- 闪闪星光粒子（使用循环） -->
+  <block wx:for="{{stars}}" wx:key="index">
+    <view class="star" style="top: {{item.top}}vh; left: {{item.left}}vw; animation-delay: {{item.delay}}s;"></view>
+  </block>
+
+  <!-- 让插槽里的真实内容显示在背景之上 -->
+  <view class="content-slot">
+    <slot></slot>
+  </view>
+</view>

@@ -1,0 +1,222 @@
+<scroll-view scroll-y class="user-manage-page">
+
+<!-- 顶部返回 + 标题 -->
+<view class="top-bar">
+  <button class="back-btn" bindtap="goBack">〈 返回</button>
+  <text class="top-title">用户信息管理</text>
+</view>
+
+<!-- 功能区：统计 & 导出 -->
+<view class="card tool-card" style="width: 620rpx; height: 349rpx; display: flex; box-sizing: border-box">
+  <view class="tool-left">
+    <view class="tool-title" style="width: 499rpx; height: 300rpx; display: block; box-sizing: border-box">  注册用户信息 · 管理总览</view>
+    <view class="tool-sub" style="width: 477rpx; display: block; box-sizing: border-box">
+      共 {{userList.length}} 位用户，可按表头排序并导出为文档
+    </view>
+  </view>
+  <view class="tool-right">
+    <button
+      class="export-btn"
+      loading="{{exportLoading}}"
+      bindtap="onExportDoc"
+     style="position: relative; left: -439rpx; top: 0rpx">
+      导出文档
+    </button>
+  </view>
+</view>
+
+<!-- 用户信息表格（含原来的体重/运动统计） -->
+<view class="card table-card">
+  <view class="table-header-row">
+    <view
+      class="th name-col sortable"
+      data-field="name"
+      bindtap="onHeaderTap"
+    >
+      姓名
+      <text wx:if="{{sortField==='name'}}" class="sort-arrow">
+        {{sortOrder === 'asc' ? '↑' : '↓'}}
+      </text>
+    </view>
+
+    <view
+      class="th school-col sortable"
+      data-field="school"
+      bindtap="onHeaderTap"
+    >
+      学校
+      <text wx:if="{{sortField==='school'}}" class="sort-arrow">
+        {{sortOrder === 'asc' ? '↑' : '↓'}}
+      </text>
+    </view>
+
+    <view
+      class="th major-col sortable"
+      data-field="major"
+      bindtap="onHeaderTap"
+    >
+      专业
+      <text wx:if="{{sortField==='major'}}" class="sort-arrow">
+        {{sortOrder === 'asc' ? '↑' : '↓'}}
+      </text>
+    </view>
+
+    <view
+      class="th small-col sortable"
+      data-field="height"
+      bindtap="onHeaderTap"
+    >
+      身高
+      <text wx:if="{{sortField==='height'}}" class="sort-arrow">
+        {{sortOrder === 'asc' ? '↑' : '↓'}}
+      </text>
+    </view>
+
+    <view
+      class="th small-col sortable"
+      data-field="weightCount"
+      bindtap="onHeaderTap"
+    >
+      体重
+      <text wx:if="{{sortField==='weightCount'}}" class="sort-arrow">
+        {{sortOrder === 'asc' ? '↑' : '↓'}}
+      </text>
+    </view>
+
+    <view
+      class="th small-col sortable"
+      data-field="runCount"
+      bindtap="onHeaderTap"
+    >
+      运动
+      <text wx:if="{{sortField==='runCount'}}" class="sort-arrow">
+        {{sortOrder === 'asc' ? '↑' : '↓'}}
+      </text>
+    </view>
+  </view>
+
+  <scroll-view scroll-y class="table-body">
+    <view
+      class="table-row"
+      wx:for="{{userList}}"
+      wx:key="_id"
+      data-id="{{item._id}}"
+      bindtap="onRowTap"
+    >
+      <view class="td name-col">
+        <view class="row-name">{{item.name || '未命名'}}</view>
+        <view class="row-account" wx:if="{{item.account}}">
+          账号：{{item.account}}
+        </view>
+      </view>
+
+      <view class="td school-col">
+        <view class="row-school">
+          {{item.school || '学校未填'}}
+        </view>
+      </view>
+
+      <view class="td major-col">
+        <view class="row-major">
+          {{item.major || '专业未填'}}
+        </view>
+      </view>
+
+      <view class="td small-col">
+        <view class="row-num">
+          {{item.height || '--'}}cm
+        </view>
+      </view>
+
+      <view class="td small-col">
+        <view class="row-num">
+          {{item.weightCount}} 次
+        </view>
+      </view>
+
+      <view class="td small-col">
+        <view class="row-num">
+          {{item.runCount}} 次
+        </view>
+      </view>
+    </view>
+
+    <view
+      wx:if="{{!loading && !userList.length}}"
+      class="empty-tip"
+    >
+      暂无用户数据～
+    </view>
+  </scroll-view>
+</view>
+
+<!-- 详情弹层：注册信息 + 统计信息 -->
+<view
+  wx:if="{{showDetail}}"
+  class="detail-mask"
+  bindtap="closeDetail"
+>
+  <view class="detail-panel" catchtap="true">
+    <view class="detail-header">
+      <view class="detail-title">
+        {{detailUser.name || '用户'}} · 详细资料
+      </view>
+      <view class="detail-close" bindtap="closeDetail">×</view>
+    </view>
+
+    <view class="detail-section">
+      <view class="detail-label">账号</view>
+      <view class="detail-value">{{detailUser.account || '—'}}</view>
+    </view>
+
+    <view class="detail-section">
+      <view class="detail-label">学校 / 专业</view>
+      <view class="detail-value">
+        {{detailUser.school || '学校未填'}} · {{detailUser.major || '专业未填'}}
+      </view>
+    </view>
+
+    <view class="detail-section">
+      <view class="detail-label">性别</view>
+      <view class="detail-value">{{detailUser.gender || '未填写'}}</view>
+    </view>
+
+    <view class="detail-section">
+      <view class="detail-label">身高 / 目标体重</view>
+      <view class="detail-value">
+        {{detailUser.height || '--'}} cm
+        <text class="divider-dot">·</text>
+        目标 {{detailUser.targetWeight || '--'}} kg
+      </view>
+    </view>
+
+    <view class="detail-section">
+      <view class="detail-label">联系电话</view>
+      <view class="detail-value">{{detailUser.phone || '未填写'}}</view>
+    </view>
+
+    <view class="detail-section">
+      <view class="detail-label">体重记录</view>
+      <view class="detail-value">{{detailUser.weightCount}} 次</view>
+    </view>
+
+    <view class="detail-section">
+      <view class="detail-label">运动记录</view>
+      <view class="detail-value">{{detailUser.runCount}} 次</view>
+    </view>
+
+    <view class="detail-section">
+      <view class="detail-label">注册时间</view>
+      <view class="detail-value">
+        {{detailUser.createdAtStr || '—'}}
+      </view>
+    </view>
+
+    <view class="detail-foot-tip">
+      注册信息由学生在小程序端填写，若需修改请联系系统维护老师统一处理。
+    </view>
+  </view>
+</view>
+
+<view class="tabbar-space"></view>
+</scroll-view>

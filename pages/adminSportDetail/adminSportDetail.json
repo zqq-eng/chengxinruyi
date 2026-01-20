@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "运动记录详情",
+  "usingComponents": {
+    "particle-bg": "/components/particle-bg/particle-bg"
+  }
+}

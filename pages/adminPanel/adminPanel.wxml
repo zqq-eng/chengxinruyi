@@ -1,0 +1,35 @@
+<scroll-view scroll-y class="admin-container">
+  <!-- 顶部标题卡片 -->
+  <view class="card admin-header">
+    <view class="admin-title-row">
+      <view class="admin-title">🐱 管理员后台系统</view>
+      <view class="admin-subtitle">欢迎回来，感谢守护同学们的健康</view>
+    </view>
+
+    <view class="admin-menu">
+      <view class="admin-menu-item" bindtap="goUserManage">
+        <text class="icon">👤</text>
+        <text class="text">用户信息管理</text>
+      </view>
+      <view class="admin-menu-item" bindtap="goSportManage">
+        <text class="icon">🏃</text>
+        <text class="text">运动记录管理</text>
+      </view>
+      <view class="admin-menu-item" bindtap="goAppointmentManage">
+        <text class="icon">📅</text>
+        <text class="text">预约审核中心</text>
+      </view>
+    </view>
+  </view>
+
+  
+
+  <!-- 退出后台 -->
+  <view class="card exit-card">
+    <button class="admin-exit-btn" bindtap="exitAdmin" style="position: relative; left: -1rpx; top: -1rpx">
+      退出管理员后台
+    </button>
+  </view>
+
+  <view class="tabbar-space"></view>
+</scroll-view>

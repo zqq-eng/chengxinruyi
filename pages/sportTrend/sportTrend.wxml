@@ -1,0 +1,57 @@
+<particle-bg>
+  <view class="trend-page">
+
+    <!-- 30天运动趋势 -->
+    <view class="card animate-card">
+      <view class="page-title">30 天运动趋势</view>
+      <view class="sub-text">每天的运动距离（柱状图）</view>
+
+      <canvas canvas-id="barCanvas" class="chart animate-scale"></canvas>
+
+      <!-- 日期行 -->
+      <view class="row days">
+        <view wx:for="{{days}}" wx:key="i" 
+          class="day-label animate-day" 
+          style="animation-delay: {{i * 0.03}}s">
+          {{item}}
+        </view>
+      </view>
+    </view>
+    <button class="to-stats-btn" bindtap="goStats">查看更详细的运动统计</button>
+
+    <!-- 运动时长趋势 -->
+    <view class="card animate-card">
+      <view class="page-title">运动时长趋势</view>
+      <view class="sub-text">每日运动分钟数（折线图）</view>
+
+      <canvas canvas-id="lineCanvas" class="chart animate-scale"></canvas>
+    </view>
+
+    <!-- 爪印等级 -->
+    <view class="card animate-card">
+      <view class="page-title">运动爪印等级</view>
+
+      <view class="row paw-row">
+        <view wx:for="{{icons}}" wx:key="i" 
+              class="paw-item paw-animate"
+              style="animation-delay: {{i * 0.05}}s">
+          {{item}}
+        </view>
+      </view>
+
+      <view class="legend">
+        <view>🐾 轻度</view>
+        <view>🐾🐾 中度</view>
+        <view>✨🐾✨ 高强度</view>
+      </view>
+    </view>
+
+    <!-- 悬浮返回按钮 -->
+    <view class="floating-back">
+      <button class="back-btn" bindtap="goBack">返回</button>
+    </view>
+
+    <view class="tabbar-space"></view>
+
+  </view>
+</particle-bg>

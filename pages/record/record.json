@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "体重日历",
+  "usingComponents": {
+    "particle-bg": "/components/particle-bg/particle-bg"
+  }
+}

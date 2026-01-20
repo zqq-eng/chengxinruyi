@@ -1,0 +1,25 @@
+<particle-bg>
+  <view class="import-page">
+
+    <view class="card">
+      <view class="page-title">批量导入学生体重信息</view>
+
+      <view class="upload-area" bindtap="chooseFile">
+        <view class="upload-text">点击上传 CSV / XLSX 文件</view>
+      </view>
+
+      <view wx:if="{{fileName}}" class="file-name">
+        已选择：{{fileName}}
+      </view>
+
+      <view class="btn-area">
+        <button class="irregular-btn" bindtap="startImport">开始生成报告</button>
+      </view>
+
+      <view wx:if="{{loading}}" class="loading-text">
+        正在处理，请稍候…
+      </view>
+    </view>
+
+  </view>
+</particle-bg>

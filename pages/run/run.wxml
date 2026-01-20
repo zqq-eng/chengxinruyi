@@ -1,0 +1,77 @@
+<!-- pages/run/run.wxml -->
+<particle-bg>
+  <view class="run-page">
+
+    <!-- 顶部返回 + 标题 -->
+    <view class="top-bar">
+      <button class="back-btn" bindtap="goBack">返回</button>
+      <text class="top-title">小猫陪跑</text>
+    </view>
+
+    <!-- 顶部信息卡片 -->
+    <view class="card run-info-card animated-card">
+      <view class="run-top-row">
+        <view class="run-distance-block">
+          <view class="run-label">本次距离</view>
+          <view class="run-value">{{distanceKm}}</view>
+          <view class="run-unit">km</view>
+        </view>
+
+        <view class="run-middle">
+          <view class="run-label">用时</view>
+          <view class="run-time">{{durationStr}}</view>
+        </view>
+
+        <view class="run-pace-block">
+          <view class="run-label">平均配速</view>
+          <view class="run-pace">{{paceStr}}</view>
+          <view class="run-unit">min/km</view>
+        </view>
+      </view>
+
+      <view class="run-sub">
+        小猫在前方用爪爪带路，注意安全，量力而行～ 🐾
+      </view>
+    </view>
+
+    <!-- 地图区域（需要真机授权定位） -->
+    <view class="card map-card animated-card">
+      <map
+        id="runMap"
+        class="run-map"
+        latitude="{{latitude}}"
+        longitude="{{longitude}}"
+        scale="17"
+        polyline="{{polyline}}"
+        enable-traffic="false"
+        show-location="true"
+      ></map>
+      <view class="map-tip">
+        * 地图轨迹仅作记录，实际效果取决于真机定位与网络～
+      </view>
+    </view>
+
+    <!-- 控制按钮 -->
+    <view class="card run-control-card animated-card">
+      <view class="btn-area">
+        <button
+          wx:if="{{!running}}"
+          class="irregular-btn"
+          bindtap="startRun"
+        >
+          🐾 开始跑步
+        </button>
+
+        <button
+          wx:elif="{{running}}"
+          class="irregular-btn stop-btn"
+          bindtap="stopRun"
+        >
+          ⏸ 结束本次跑步
+        </button>
+      </view>
+    </view>
+
+    <view class="tabbar-space"></view>
+  </view>
+</particle-bg>

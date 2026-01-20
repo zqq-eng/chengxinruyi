@@ -1,0 +1,306 @@
+.ai-page {
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+/* 顶部卡片 */
+.top-card {
+  background: #ffe9f4;
+  border-radius: 32rpx;
+  padding: 24rpx 24rpx 32rpx;
+  box-shadow: 0 8rpx 24rpx rgba(255, 120, 180, 0.25);
+  margin-bottom: 24rpx;
+}
+
+.top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #ff4fa0;
+}
+
+.mode-toggle {
+  display: flex;
+  align-items: center;
+}
+
+.mode-text {
+  font-size: 22rpx;
+  color: #9b7bb8;
+  margin-right: 12rpx;
+}
+
+.toggle-btn {
+  width: 72rpx;
+  height: 40rpx;
+  border-radius: 40rpx;
+  padding: 4rpx;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.toggle-btn.on {
+  background: #ff8ac0;
+  justify-content: flex-end;
+}
+
+.toggle-btn.off {
+  background: #ddd;
+  justify-content: flex-start;
+}
+
+.toggle-dot {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.primary-btn {
+  margin-top: 12rpx;
+  background: #ff5aa5;
+  color: #fff;
+  border-radius: 999rpx;
+}
+
+.error-tip {
+  margin-top: 16rpx;
+  padding: 12rpx 16rpx;
+  border-radius: 16rpx;
+  background: #ffe0e5;
+  color: #d94b68;
+  font-size: 22rpx;
+}
+
+.sub-tip {
+  margin-top: 12rpx;
+  font-size: 22rpx;
+  color: #9b7bb8;
+}
+
+/* Tabs */
+.tab-bar {
+  display: flex;
+  margin-top: 20rpx;
+  margin-bottom: 16rpx;
+  background: #f7edf9;
+  border-radius: 999rpx;
+  padding: 6rpx;
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 12rpx 0;
+  font-size: 24rpx;
+  color: #b89ad2;
+  border-radius: 999rpx;
+}
+
+.tab-item.active {
+  background: #fff;
+  color: #ff5aa5;
+  font-weight: 600;
+}
+
+/* 身体 cute 卡片 */
+.cute-card {
+  position: relative;
+  background: #fff7ff;
+  border-radius: 32rpx;
+  padding: 24rpx;
+  box-shadow: 0 8rpx 24rpx rgba(200, 150, 250, 0.18);
+}
+
+.cute-header {
+  margin-bottom: 16rpx;
+}
+
+.cute-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #7f5ac9;
+}
+
+.cute-sub {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: #c1a8e8;
+}
+
+/* 光斑 */
+.light-dot {
+  position: absolute;
+  border-radius: 999rpx;
+  opacity: 0.28;
+}
+
+.dot1 {
+  width: 100rpx;
+  height: 100rpx;
+  background: #ff9ad4;
+  top: -20rpx;
+  right: 40rpx;
+}
+
+.dot2 {
+  width: 120rpx;
+  height: 120rpx;
+  background: #c4a9ff;
+  bottom: -30rpx;
+  left: 30rpx;
+}
+
+.cute-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 16rpx 20rpx;
+  margin-top: 12rpx;
+}
+
+.cute-item {}
+
+.cute-label {
+  font-size: 22rpx;
+  color: #a07ad1;
+  margin-bottom: 6rpx;
+  display: block;
+}
+
+.cute-input-box {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 999rpx;
+  padding: 10rpx 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(200, 150, 250, 0.18);
+}
+
+.cute-input {
+  flex: 1;
+  font-size: 24rpx;
+}
+
+.cute-unit {
+  font-size: 22rpx;
+  color: #c1a8e8;
+  margin-left: 8rpx;
+}
+
+.cute-extra-title {
+  margin-top: 20rpx;
+  font-size: 24rpx;
+  color: #a07ad1;
+}
+
+.cute-textarea {
+  margin-top: 10rpx;
+  min-height: 140rpx;
+  padding: 16rpx;
+  border-radius: 24rpx;
+  background: #ffffff;
+  box-shadow: 0 4rpx 12rpx rgba(200, 150, 250, 0.18);
+  font-size: 24rpx;
+}
+
+/* 通用 section 卡片 */
+.section-card {
+  margin-top: 4rpx;
+  background: #fff7ff;
+  border-radius: 32rpx;
+  padding: 24rpx;
+  box-shadow: 0 8rpx 24rpx rgba(200, 150, 250, 0.18);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #7f5ac9;
+}
+
+.section-tag {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: #c1a8e8;
+}
+
+.mini-btn {
+  background: #ffe0f2;
+  color: #ff5aa5;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+}
+
+.section-body {
+  margin-top: 16rpx;
+}
+
+.input-area {
+  min-height: 160rpx;
+  padding: 16rpx;
+  border-radius: 24rpx;
+  background: #ffffff;
+  box-shadow: 0 4rpx 12rpx rgba(200, 150, 250, 0.18);
+  font-size: 24rpx;
+}
+
+.food-image {
+  margin-top: 12rpx;
+  width: 100%;
+  height: 260rpx;
+  border-radius: 24rpx;
+}
+
+/* 结果标题 + 文本 */
+.result-title {
+  margin-top: 20rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #7f5ac9;
+}
+
+.section-text {
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: #6d567c;
+  white-space: pre-wrap;
+}
+.gender-row {
+  display: flex;
+  justify-content: center;
+  gap: 30rpx;
+  margin: 20rpx 0;
+}
+
+.gender-btn {
+  padding: 16rpx 40rpx;
+  border-radius: 40rpx;
+  background: #f3f0f5;
+  color: #666;
+  font-size: 30rpx;
+  border: 2rpx solid #e3ddea;
+  transition: all 0.25s ease;
+  box-shadow: 0 0 12rpx rgba(0,0,0,0.05);
+}
+
+.gender-btn.active {
+  background: linear-gradient(135deg, #ff9ac7, #ff6fa8);
+  color: white;
+  border-color: #ff6fa8;
+  box-shadow: 0 0 20rpx rgba(255, 111, 168, 0.5);
+  transform: scale(1.08);
+}

@@ -1,0 +1,416 @@
+/* pages/home/home.wxss */
+.home-page {
+  padding: 18px 14px 24px;
+  position: relative;
+}
+
+/* 顶部丝带背景 */
+.top-ribbon {
+  position: absolute;
+  top: 0;
+  left: -40px;
+  right: -40px;
+  height: 140rpx;
+  background: linear-gradient(180deg, #ffe9f4, #f5efff);
+  opacity: 0.9;
+  z-index: -2;
+}
+
+/* 浮动高阶装饰：不挡点击 */
+.float-deco {
+  position: fixed;
+  z-index: -2;
+}
+
+/* 云朵 */
+.deco-cloud {
+  width: 90px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 999px;
+  top: 7vh;
+  left: -10px;
+  box-shadow: 0 6px 18px rgba(180, 170, 255, 0.3);
+  animation: gentleFloatCloud 8s ease-in-out infinite;
+}
+
+/* 左右花朵 */
+.deco-flower-left,
+.deco-flower-right {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 20%, #ffe9f6, #ffb3d9);
+  box-shadow: 0 8px 20px rgba(255, 170, 210, 0.4);
+  animation: flowerSpin 10s linear infinite;
+}
+
+.deco-flower-left {
+  top: 35vh;
+  left: -20px;
+}
+
+.deco-flower-right {
+  top: 18vh;
+  right: -18px;
+}
+
+/* 闪烁星星 */
+.deco-star-1,
+.deco-star-2 {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff, #ffe8ff);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
+  animation: starBlink 2.6s ease-in-out infinite;
+}
+
+.deco-star-1 {
+  top: 12vh;
+  right: 40px;
+}
+
+.deco-star-2 {
+  top: 50vh;
+  left: 60px;
+  animation-delay: 1.2s;
+}
+
+/* 浮动动画 */
+@keyframes gentleFloatCloud {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes flowerSpin {
+  0%   { transform: rotate(0deg) translateY(0); }
+  50%  { transform: rotate(180deg) translateY(-4px); }
+  100% { transform: rotate(360deg) translateY(0); }
+}
+
+@keyframes starBlink {
+  0%   { opacity: 0.2; transform: scale(0.8); }
+  50%  { opacity: 1;   transform: scale(1.2); }
+  100% { opacity: 0.2; transform: scale(0.8); }
+}
+
+/* 通用玻璃卡片 */
+.fancy-card {
+  position: relative;
+  margin-top: 18px;
+  padding: 16px 16px 18px;
+  background: rgba(255, 255, 255, 0.52);
+  border-radius: 22px;
+  backdrop-filter: blur(18px);
+  box-shadow: 0 4px 18px rgba(200, 170, 230, 0.25);
+  overflow: hidden;
+  animation: cardIn 0.5s ease-out both;
+}
+
+.card-hello {
+  margin-top: 24px;
+}
+
+.fancy-border {
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+  border: 2px solid transparent;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 190, 220, 0.45),
+    rgba(205, 180, 255, 0.45),
+    rgba(180, 210, 255, 0.45)
+  );
+  z-index: -1;
+  opacity: 0.55;
+}
+
+/* 卡片入场 */
+@keyframes cardIn {
+  0% { opacity: 0; transform: translateY(16px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* 顶部问候 */
+.home-hello-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.hello-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ff7fab;
+}
+
+.hello-sub {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #a78acb;
+}
+
+/* 右侧高科技小轨道 */
+.hello-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hello-orbit {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px dashed rgba(255, 170, 215, 0.7);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: orbitRotate 8s linear infinite;
+}
+
+.orbit-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ffd2f0;
+  top: 2px;
+  right: 10px;
+  box-shadow: 0 0 8px rgba(255, 182, 222, 0.9);
+}
+
+.hello-paw-icon {
+  font-size: 24px;
+}
+
+@keyframes orbitRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 身体信息 + BMI 圆环 */
+.body-info {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.info-block {
+  flex: 1;
+  text-align: center;
+}
+
+.info-label {
+  font-size: 11px;
+  color: #b09ad3;
+}
+
+.info-value {
+  font-size: 17px;
+  font-weight: 700;
+  color: #ff6fa8;
+  margin-top: 3px;
+}
+
+.info-unit {
+  font-size: 11px;
+  margin-left: 2px;
+  color: #c28dd1;
+}
+
+/* BMI 圆环：使用 conic-gradient 模拟进度 */
+.bmi-circle-block {
+  flex: 1;
+  text-align: center;
+}
+
+.bmi-ring {
+  width: 70rpx;
+  height: 70rpx;
+  border-radius: 50%;
+  margin: 0 auto;
+  position: relative;
+  background: conic-gradient(
+    from 0deg,
+    #ffc7dd 0,
+    #d6b5ff var(--percent),
+    #f0f0f5 var(--percent)
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(210, 170, 250, 0.4);
+}
+
+.bmi-inner {
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.bmi-text {
+  position: absolute;
+  font-size: 12px;
+  color: #844c9b;
+}
+
+.bmi-label {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #b692d0;
+}
+
+.today-tips {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #9b86b4;
+}
+
+/* 顶部按钮 */
+.small-btn-area {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.small-btn {
+  margin-top: 2px;
+  padding: 8px 20px;
+  font-size: 13px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffc7dd, #d5c7ff);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(210, 170, 250, 0.35);
+}
+
+/* 配合运动的小计划 */
+.workout-card {
+  margin-top: 20px;
+}
+
+.workout-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #a46ed4;
+}
+
+.workout-sub {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #8a6fa8;
+  line-height: 1.6;
+}
+
+.workout-tags {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.workout-tag {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  color: #ff7ba8;
+  background: rgba(255, 210, 230, 0.7);
+  box-shadow: 0 3px 8px rgba(255, 180, 210, 0.25);
+}
+
+.workout-btn-area {
+  margin-top: 14px;
+  display: flex;
+  justify-content: center;
+}
+
+.workout-btn {
+  padding: 10px 32px;
+  border-radius: 999px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  background: radial-gradient(circle at 20% 0%, #ffe1f0, #ff9acb 45%, #f5b9ff 100%);
+  box-shadow: 0 10px 24px rgba(255, 155, 210, 0.55);
+}
+
+/* 温柔建议 + 菜谱推荐 */
+.suggestion-card {
+  margin-top: 20px;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #a46ed4;
+}
+
+.section-subtitle {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #a28bc5;
+}
+
+/* 时间段列表 */
+.time-list {
+  margin-top: 8px;
+}
+
+.time-block {
+  margin-top: 6px;
+  padding: 8px 10px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.time-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  color: #ff7ba8;
+  background: rgba(255, 210, 230, 0.8);
+}
+
+.badge-blue {
+  color: #6b7fff;
+  background: rgba(202, 210, 255, 0.9);
+}
+
+.time-lines {
+  margin-top: 4px;
+}
+
+.time-line {
+  font-size: 12px;
+  color: #816d94;
+  line-height: 1.6;
+}
+
+/* 分割线 */
+.divider {
+  margin-top: 10px;
+  margin-bottom: 6px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(200, 170, 230, 0), rgba(200, 170, 230, 0.7), rgba(200, 170, 230, 0));
+}
+
+.mt16 {
+  margin-top: 10px;
+}
+
+.diet-more {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #9b7fe0;
+  text-align: right;
+}
+
+/* tabbar 占位 */
+.tabbar-space {
+  height: 90px;
+}

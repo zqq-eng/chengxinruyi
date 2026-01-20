@@ -1,0 +1,59 @@
+{
+  "pages": [
+    "pages/login/login",
+    "pages/register/register",
+    "pages/home/home",
+    "pages/ai/ai",
+    "pages/community/community",
+    "pages/appointment/appointment",
+    "pages/workout/workout",
+    "pages/run/run",
+    "pages/sportStats/sportStats",
+    "pages/record/record",
+    "pages/profile/profile",
+    "pages/admin_import/admin_import",
+    "pages/adminLogin/adminLogin",
+    "pages/adminPanel/adminPanel",
+    "pages/adminUser/adminUser",
+    "pages/adminSport/adminSport",
+    "pages/adminSportDetail/adminSportDetail",
+    "pages/admin_appointment/admin_appointment",
+    "pages/sportTrend/sportTrend"
+  ],
+
+  "window": {
+    "navigationStyle": "custom",
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTitleText": "秤心如意",
+    "navigationBarTextStyle": "black"
+  },
+
+  "tabBar": {
+    "color": "#9b7bb8",
+    "selectedColor": "#ff6fa8",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "体重"
+      },
+      {
+        "pagePath": "pages/ai/ai",
+        "text": "AI分析"
+      },
+      {
+        "pagePath": "pages/community/community",
+        "text": "社区"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的"
+      }
+    ]
+  },
+
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

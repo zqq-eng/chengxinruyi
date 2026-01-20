@@ -1,0 +1,47 @@
+<view class="page">
+
+<view class="top-bar">
+  <button class="back-btn" bindtap="goBack">返回</button>
+  <text class="top-title">预约审核中心</text>
+</view>
+
+<scroll-view scroll-y class="list-wrap">
+  <view wx:if="{{list.length === 0}}" class="empty">
+    暂无预约记录～
+  </view>
+
+  <view wx:for="{{list}}" wx:key="_id" class="item">
+    <view class="row1">
+      <text class="type">{{item.type}}</text>
+      <text class="status status-{{item.status}}">
+        {{statusText[item.status] || '未知状态'}}
+      </text>
+    </view>
+
+    <view class="row2">
+      <text>{{item.date}} {{item.time}}</text>
+    </view>
+
+    <view wx:if="{{item.place}}" class="row2">
+      地点：{{item.place}}
+    </view>
+
+    <view wx:if="{{item.note}}" class="row-note">
+      备注：{{item.note}}
+    </view>
+
+    <view class="row-op">
+      <button size="mini" class="op-btn" data-id="{{item._id}}" data-status="accepted" bindtap="changeStatus">
+        通过
+      </button>
+      <button size="mini" class="op-btn warn" data-id="{{item._id}}" data-status="rejected" bindtap="changeStatus">
+        驳回
+      </button>
+      <button size="mini" class="op-btn" data-id="{{item._id}}" data-status="finished" bindtap="changeStatus">
+        已完成
+      </button>
+    </view>
+  </view>
+</scroll-view>
+
+</view>

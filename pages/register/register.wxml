@@ -1,0 +1,80 @@
+<particle-bg>
+  <view class="register-page">
+    <view class="float-deco reg-deco-cloud"></view>
+    <view class="float-deco reg-deco-star"></view>
+
+    <view class="card reg-card" style="width: 637rpx; height: 1064rpx; display: block; box-sizing: border-box">
+      <view class="page-title">新用户注册</view>
+      <view class="reg-subtitle">为你的体重与心理，建一个温柔的家 💗</view>
+
+      <view class="input-wrapper">
+        <view class="input-label">学号 / 账号</view>
+        <input
+          class="pink-input"
+          placeholder="建议使用学号"
+          bindinput="onAccountInput"
+        />
+      </view>
+
+      <view class="input-wrapper">
+        <view class="input-label">姓名</view>
+        <input
+          class="pink-input"
+          placeholder="请输入姓名"
+          bindinput="onNameInput"
+        />
+      </view>
+
+      <view class="input-wrapper">
+        <view class="input-label">所属学校</view>
+        <input
+          class="pink-input"
+          placeholder="例如：陕西某某大学"
+          bindinput="onSchoolInput"
+        />
+      </view>
+
+      <view class="input-wrapper">
+        <view class="input-label">年级 / 专业</view>
+        <input
+          class="pink-input"
+          placeholder="如：大二 · 计算机科学与技术"
+          bindinput="onMajorInput"
+        />
+      </view>
+
+      <view class="input-wrapper">
+        <view class="input-label">密码</view>
+        <input
+          class="pink-input"
+          password="true"
+          placeholder="设置登录密码"
+          bindinput="onPasswordInput"
+        />
+      </view>
+
+      <view class="input-wrapper">
+        <view class="input-label">确认密码</view>
+        <input
+          class="pink-input"
+          password="true"
+          placeholder="再次输入密码"
+          bindinput="onConfirmPasswordInput"
+        />
+      </view>
+
+      <view wx:if="{{errorMsg}}" class="error-text">{{errorMsg}}</view>
+
+      <view class="btn-area">
+        <button class="irregular-btn reg-btn" bindtap="onRegisterTap">
+          <text>🎀 完成注册</text>
+        </button>
+      </view>
+
+      <view class="extra-row">
+        <text class="extra-text">已经有账号啦？</text>
+        <text class="extra-link" bindtap="goLogin">去登录</text>
+      </view>
+    </view>
+  </view>
+</particle-bg>

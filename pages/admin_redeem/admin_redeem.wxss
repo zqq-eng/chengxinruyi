@@ -1,0 +1,32 @@
+.page {
+  padding: 16px;
+}
+.card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+.line {
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.btn-row {
+  display:flex;
+  justify-content:flex-end;
+  margin-top:6px;
+}
+.btn {
+  font-size:12px;
+  padding:4px 10px;
+  border-radius:6px;
+  margin-left:6px;
+}
+.reject {
+  background:#eee;
+}
+.approve {
+  background:#2F80ED;
+  color:#fff;
+}

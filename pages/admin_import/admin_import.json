@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "批量导入（管理员）",
+  "usingComponents": {
+    "particle-bg": "/components/particle-bg/particle-bg"
+  }
+}

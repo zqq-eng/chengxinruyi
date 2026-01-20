@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "运动打卡",
+  "usingComponents": {
+    "particle-bg": "/components/particle-bg/particle-bg"
+  }
+}

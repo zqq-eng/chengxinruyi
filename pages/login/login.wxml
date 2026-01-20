@@ -1,0 +1,70 @@
+<!-- pages/login/login.wxml -->
+<particle-bg>
+  <view class="login-page">
+
+    <!-- 漂浮装饰层 -->
+    <view class="float-deco deco-cloud"></view>
+    <view class="float-deco deco-star"></view>
+    <view class="float-deco deco-paw"></view>
+
+    <!-- 顶部 LOGO -->
+    <view class="logo-area">
+      <view class="app-subtitle">陕西大学生体重小助手</view>
+      <view class="app-name cute-text">秤心如意</view>
+    </view>
+
+    <!-- 登录卡片 -->
+    <view class="card login-card animated-card">
+      <view class="page-title">欢迎回来</view>
+
+      <view class="tag-row">
+        <view class="tag-paw">🐾 体重记录</view>
+        <view class="tag-paw">☁ 情绪守护</view>
+        <view class="tag-paw">✨ AI分析</view>
+      </view>
+
+      <view class="input-wrapper">
+        <view class="input-label">学号 / 账号</view>
+        <input
+          class="pink-input"
+          placeholder="请输入学号或账号"
+          maxlength="30"
+          bindinput="onAccountInput"
+        />
+      </view>
+
+      <view class="input-wrapper">
+        <view class="input-label">密码</view>
+        <input
+          class="pink-input"
+          password="true"
+          placeholder="请输入密码"
+          maxlength="30"
+          bindinput="onPasswordInput"
+        />
+      </view>
+
+      <view wx:if="{{errorMsg}}" class="error-text">{{errorMsg}}</view>
+
+      <view class="btn-area">
+        <button class="irregular-btn login-btn glow-btn" bindtap="onLoginTap" style="position: relative; left: -1rpx; top: 0rpx">
+          ✨ 登录
+        </button>
+      </view>
+
+      <view class="extra-row">
+        <text class="extra-text">还没有账号？</text>
+        <text class="extra-link" bindtap="goRegister">去注册~</text>
+      </view>
+
+      <view class="tips-text">
+        小贴士：先注册，再开始记录体重和运动~
+      </view>
+    </view>
+
+    <!-- 管理员登录入口 -->
+    <view class="admin-entry" bindtap="goAdminLogin">
+      🔐 管理员登录
+    </view>
+  </view>
+</particle-bg>

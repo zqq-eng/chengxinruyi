@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "小猫陪跑",
+  "usingComponents": {
+    "particle-bg": "/components/particle-bg/particle-bg"
+  }
+}

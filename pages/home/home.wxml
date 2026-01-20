@@ -1,0 +1,149 @@
+<!-- pages/home/home.wxml --> 
+<particle-bg>
+  <view class="home-page">
+
+    <!-- 顶部丝带背景 -->
+    <view class="top-ribbon"></view>
+
+    <!-- 浮动装饰：云朵 + 花朵 + 闪烁星星（不挡点击） -->
+    <view class="float-deco deco-cloud"></view>
+    <view class="float-deco deco-flower-left"></view>
+    <view class="float-deco deco-flower-right"></view>
+    <view class="float-deco deco-star-1"></view>
+    <view class="float-deco deco-star-2"></view>
+
+    <!-- 顶部信息卡片 -->
+    <view class="fancy-card card-hello">
+      <view class="fancy-border"></view>
+
+      <view class="home-hello-row">
+        <view class="hello-left">
+          <view class="hello-title">
+            你好，{{userInfo.name || '同学'}}
+          </view>
+          <view class="hello-sub">
+            现在是{{timePeriod}}，我们一起好好照顾身体和情绪吧 ✨
+          </view>
+        </view>
+        <view class="hello-right">
+          <view class="hello-orbit">
+            <view class="orbit-dot"></view>
+            <view class="hello-paw-icon">🐾</view>
+          </view>
+        </view>
+      </view>
+
+      <view class="body-info">
+        <view class="info-block">
+          <view class="info-label">身高</view>
+          <view class="info-value">
+            {{userInfo.height || '--'}}<text class="info-unit">cm</text>
+          </view>
+        </view>
+
+        <view class="bmi-circle-block">
+          <view class="bmi-ring">
+            <view class="bmi-inner"></view>
+            <view class="bmi-text">{{todayBMI || '--'}}</view>
+          </view>
+          <view class="bmi-label">BMI</view>
+        </view>
+
+        <view class="info-block">
+          <view class="info-label">今日体重</view>
+          <view class="info-value">
+            {{todayWeight || '--'}}<text class="info-unit">kg</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="today-tips">
+        {{todayTip}}
+      </view>
+
+      <view class="btn-area small-btn-area">
+        <button class="small-btn" bindtap="goRecord">
+          📅 去猫爪日历记录
+        </button>
+      </view>
+    </view>
+
+    <!-- 配合运动的小计划 -->
+    <view class="fancy-card workout-card">
+      <view class="fancy-border"></view>
+
+      <view class="workout-title">配合运动的小计划</view>
+      <view class="workout-sub">
+        根据今天的状态，选择一段温柔的运动或视频训练，哪怕只是 10 分钟，也是在为自己积累力量。
+      </view>
+
+      <view class="workout-tags">
+        <view class="workout-tag">拉伸舒展</view>
+        <view class="workout-tag">轻量有氧</view>
+        <view class="workout-tag">放松冥想</view>
+      </view>
+
+      <view class="btn-area workout-btn-area">
+        <button class="workout-btn" bindtap="goWorkoutPlan">
+          ✨ 前往运动打卡 
+        </button>
+      </view>
+    </view>
+
+    <!-- 温柔建议 + 菜谱推荐（按时间段显示单组） -->
+    <view class="fancy-card suggestion-card">
+      <view class="fancy-border"></view>
+
+      <!-- 今日温柔建议（只显示当前时间段） -->
+      <view class="section-title">今日温柔建议 · {{currentCare.label}}</view>
+      <view class="section-subtitle">
+        不同时间的小小提醒，帮你把一天过得更温柔、也更有节奏感。
+      </view>
+
+      <view class="time-list">
+        <view class="time-block">
+          <view class="time-badge">{{currentCare.label}}</view>
+
+          <view class="time-lines">
+            <view
+              class="time-line"
+              wx:for="{{currentCare.items}}"
+              wx:key="idx"
+            >
+               ❀{{item}}
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 分割线 -->
+      <view class="divider"></view>
+
+      <!-- 简单菜谱推荐（只显示当前时间段） -->
+      <view class="section-title mt16">简单菜谱推荐 · {{currentDiet.label}}</view>
+      <view class="section-subtitle">
+        按照早中晚的节奏搭配饮食，让胃和心情都轻松一点。
+      </view>
+
+      <view class="time-list">
+        <view class="time-block recipe-block">
+          <view class="time-badge badge-blue">
+            {{currentDiet.label}}
+          </view>
+          <view class="time-lines">
+            <view
+              class="time-line"
+              wx:for="{{currentDiet.items}}"
+              wx:key="idx"
+            >
+              ⭐ {{item}}
+            </view>
+          </view>
+        </view>
+      </view>
+
+    </view>
+
+    <view class="tabbar-space"></view>
+  </view>
+</particle-bg>

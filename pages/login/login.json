@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "登录 - 秤心如意",
+  "usingComponents": {
+    "particle-bg": "/components/particle-bg/particle-bg"
+  }
+}

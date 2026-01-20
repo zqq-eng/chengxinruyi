@@ -1,0 +1,63 @@
+<particle-bg>
+  <view class="detail-page">
+
+    <!-- 标题 -->
+    <view class="title">跑步详情</view>
+
+    <!-- 基本数据 -->
+    <view class="card">
+      <view class="row">
+        <text>日期：</text>
+        <text>{{record.dateStr}}</text>
+      </view>
+
+      <view class="row">
+        <text>距离：</text>
+        <text>{{record.distanceKm}} km</text>
+      </view>
+
+      <view class="row">
+        <text>用时：</text>
+        <text>{{record.durationStr}}</text>
+      </view>
+
+      <view class="row">
+        <text>平均配速：</text>
+        <text>{{record.paceStr}}</text>
+      </view>
+
+      <view class="row">
+        <text>运动等级：</text>
+        <text class="paw-level">{{pawText}}</text>
+      </view>
+    </view>
+
+    <!-- 小地图 -->
+    <view class="card">
+      <map
+        latitude="{{centerLat}}"
+        longitude="{{centerLng}}"
+        scale="15"
+        polyline="{{polyline}}"
+        markers="{{markers}}"
+        style="width:100%; height:260px; border-radius:16px;"
+      ></map>
+    </view>
+
+    <!-- 管理员备注 -->
+    <view class="card">
+      <view class="section-title">管理员备注</view>
+
+      <textarea
+        class="note-input"
+        placeholder="可为该次跑步添加说明、建议或提醒"
+        value="{{adminNote}}"
+        bindinput="onNoteInput"
+      />
+
+      <button class="save-btn" bindtap="saveNote">保存备注</button>
+    </view>
+
+    <view class="bottom-space"></view>
+  </view>
+</particle-bg>

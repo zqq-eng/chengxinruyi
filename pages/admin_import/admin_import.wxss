@@ -1,0 +1,29 @@
+.import-page {
+  padding: 18px 14px;
+}
+
+.upload-area {
+  background: rgba(255,255,255,0.8);
+  border-radius: 20px;
+  padding: 40px 0;
+  text-align: center;
+  margin-top: 14px;
+  border: 2px dashed #d8a7ff;
+}
+
+.upload-text {
+  color: #9a63d4;
+  font-size: 14px;
+}
+
+.file-name {
+  text-align: center;
+  color: #a774d9;
+  margin-top: 6px;
+}
+
+.loading-text {
+  margin-top: 10px;
+  text-align: center;
+  color: #9b63d4;
+}

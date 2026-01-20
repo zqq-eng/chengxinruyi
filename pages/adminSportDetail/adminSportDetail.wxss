@@ -1,0 +1,59 @@
+.detail-page {
+  padding: 16px 14px 80px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #b56cff;
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.card {
+  background: rgba(255,255,255,0.6);
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 16px rgba(180,140,230,0.25);
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #7c6b9b;
+}
+
+.paw-level {
+  color: #ff74c7;
+  font-weight: 600;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #a564d8;
+}
+
+.note-input {
+  width: 100%;
+  min-height: 90px;
+  padding: 10px;
+  background: rgba(255,240,250,0.8);
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.save-btn {
+  background: linear-gradient(135deg, #d4a2ff, #ffa7d3);
+  color: white;
+  border-radius: 20px;
+  padding: 10px 0;
+}
+
+.bottom-space {
+  height: 60px;
+}

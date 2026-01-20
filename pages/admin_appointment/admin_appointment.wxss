@@ -1,0 +1,140 @@
+/* 页面整体：下移 + 渐变背景 + 光斑颗粒感 */
+.page {
+  min-height: 100vh;
+  padding: 56px 18px 24px;  /* 🔥 整体往下挪一点 */
+  box-sizing: border-box;
+
+  background:
+    radial-gradient(circle at 16% 18%, rgba(255,255,255,0.95), rgba(255,255,255,0) 55%),
+    radial-gradient(circle at 82% 78%, rgba(255,255,255,0.9), rgba(255,255,255,0) 55%),
+    linear-gradient(180deg, #f8e9ff 0%, #ffeaf5 45%, #f6f7ff 100%);
+}
+
+/* 顶部返回栏 */
+.top-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+/* 返回按钮：圆角胶囊风格 */
+.back-btn {
+  padding: 4px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  border: none;
+  background: rgba(255, 255, 255, 0.96);
+  color: #8b5ade;
+  box-shadow: 0 4px 12px rgba(185, 150, 230, 0.45);
+}
+
+/* 顶部标题：稍微大一点 */
+.top-title {
+  margin-left: 10px;
+  font-size: 18px;           /* 🔥 原 16 */
+  color: #8a58cf;
+  font-weight: 700;
+}
+
+/* 列表区域 */
+.list-wrap {
+  height: calc(100vh - 120px);  /* 预留顶部/底部空间 */
+}
+
+/* 空状态提示 */
+.empty {
+  margin-top: 40px;
+  text-align: center;
+  font-size: 14px;           /* 🔥 原 13 */
+  color: #a28ad0;
+}
+
+/* 单条预约卡片：跟后台卡片风格统一 + 进场动画 */
+.item {
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 10px 24px rgba(190, 150, 225, 0.4);
+
+  animation: cardFadeUp 0.45s ease-out both;
+}
+
+/* 第一行：类型 + 状态 */
+.row1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.type {
+  font-size: 15px;           /* 🔥 原 14 */
+  color: #7a4fb8;
+  font-weight: 600;
+}
+.status {
+  font-size: 12px;
+  padding: 2px 9px;
+  border-radius: 999px;
+}
+
+/* 不同状态的颜色 */
+.status-pending {
+  background: #ffe9c5;
+  color: #c67319;
+}
+.status-accepted {
+  background: #d7f5d8;
+  color: #2f8b4d;
+}
+.status-rejected {
+  background: #ffd7e5;
+  color: #d9326a;
+}
+.status-finished {
+  background: #dde7ff;
+  color: #4a5cc9;
+}
+
+/* 时间、地点、备注信息：字体统一加大一点 */
+.row2 {
+  margin-top: 4px;
+  font-size: 13px;           /* 🔥 原 12 */
+  color: #7b628f;
+}
+.row-note {
+  margin-top: 4px;
+  font-size: 13px;           /* 🔥 原 12 */
+  color: #8d6a97;
+}
+
+/* 操作按钮区域 */
+.row-op {
+  margin-top: 10px;
+}
+
+/* 按钮：圆角、字体稍大一点，风格统一 */
+.op-btn {
+  margin-right: 6px;
+  font-size: 13px;           /* 🔥 原 12 */
+  padding: 0 12px;
+  border-radius: 999px;
+}
+
+.op-btn.warn {
+  background: #ff6666;
+  color: #fff;
+}
+
+/* ========== 动画 ========== */
+
+/* 卡片从下往上轻微浮现 */
+@keyframes cardFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

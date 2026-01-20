@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "预约学校咨询室",
+  "usingComponents": {
+    "particle-bg": "/components/particle-bg/particle-bg"
+  }
+}

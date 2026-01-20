@@ -1,0 +1,123 @@
+<particle-bg>
+  <scroll-view scroll-y class="comm-page">
+
+    <!-- 漂浮装饰，不影响滑动 -->
+    <view class="float-deco deco-bubble-1"></view>
+    <view class="float-deco deco-bubble-2"></view>
+    <view class="float-deco deco-cloud-1"></view>
+
+    <!-- 发布卡片 -->
+    <view class="card post-card">
+      <view class="section-title">发布今日体重小记</view>
+
+      <view class="input-wrapper">
+        <view class="input-label">今日体重（kg）</view>
+        <input
+          class="pink-input"
+          type="digit"
+          placeholder="例如：52.3"
+          value="{{inputWeight}}"
+          bindinput="onWeightInput"
+        />
+      </view>
+
+      <view class="input-wrapper">
+        <view class="input-label">心情 / 想说的话</view>
+        <textarea
+          class="pink-input text-area"
+          placeholder="想给今天的自己留一句话～"
+          value="{{inputMood}}"
+          bindinput="onMoodInput"
+        />
+      </view>
+
+      <!-- 图片选择 -->
+      <view class="input-wrapper">
+        <view class="input-label">配图（可选）</view>
+        <view class="img-row">
+          <view
+            wx:if="{{!selectedImage}}"
+            class="img-picker"
+            bindtap="onChooseImage"
+          >
+            <text class="img-plus">＋</text>
+            <text class="img-tip">添加一张今天的照片</text>
+          </view>
+
+          <view wx:else class="img-preview-wrap">
+            <image
+              class="img-preview"
+              mode="aspectFill"
+              src="{{selectedImage}}"
+            />
+            <view class="img-actions">
+              <text class="img-change" bindtap="onChooseImage">重新选择</text>
+              <text class="img-clear" bindtap="clearImage">删除图片</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="btn-area">
+        <button class="irregular-btn" bindtap="onPost">
+          <text wx:if="{{!editingId}}">🐾 发布今日报告</text>
+          <text wx:else>✨ 保存修改</text>
+        </button>
+      </view>
+    </view>
+
+    <!-- 列表卡片 -->
+    <view class="card list-card">
+      <view class="section-title">最近的小伙伴们</view>
+      <view class="comm-list">
+        <view
+          class="comm-item"
+          wx:for="{{posts}}"
+          wx:key="_id"
+        >
+          <view class="comm-header">
+            <view class="comm-avatar">{{item.avatarText}}</view>
+
+            <view class="comm-info">
+              <view class="comm-name">{{item.name || '匿名同学'}}</view>
+              <view class="comm-meta">
+                {{item.school || '陕西高校'}} · {{item.date}} · {{item.time}}
+              </view>
+            </view>
+
+            <view class="comm-right">
+              <view class="comm-weight">{{item.displayWeight}}kg</view>
+
+              <!-- 仅自己发布的显示更多按钮 -->
+              <view
+                wx:if="{{item.isMine}}"
+                class="more-dot"
+                data-id="{{item._id}}"
+                bindtap="onMoreTap"
+              >
+                ⋯
+              </view>
+            </view>
+          </view>
+
+          <view class="comm-mood">
+            {{item.mood || '今天悄悄路过，什么都没说~'}}
+          </view>
+
+          <image
+            wx:if="{{item.imageFileId}}"
+            class="comm-image"
+            mode="aspectFill"
+            src="{{item.imageFileId}}"
+          />
+        </view>
+
+        <view wx:if="{{!posts.length}}" class="empty-text">
+          还没有人发帖，做第一个分享温柔态度的人吧 🌸
+        </view>
+      </view>
+    </view>
+
+    <view class="tabbar-space"></view>
+  </scroll-view>
+</particle-bg>

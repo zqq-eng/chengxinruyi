@@ -1,82 +1,344 @@
 .record-page {
   padding: 16px 16px 80px;
+  font-size: 16px; /* ✅整体字号变大 */
 }
 
+/* 通用卡片：绿色清新 */
 .card {
-  background: rgba(255,255,255,0.55);
+  background: rgba(255, 255, 255, 0.62);
   backdrop-filter: blur(14px);
-  border-radius: 18px;
-  padding: 14px;
+  border-radius: 20px;
+  padding: 16px;
   margin-bottom: 14px;
-  box-shadow: 0 6px 18px rgba(200,170,230,0.25);
+  box-shadow: 0 8px 22px rgba(46, 163, 114, 0.18);
+  border: 1px solid rgba(53, 191, 131, 0.18);
 }
 
+/* 日历头部 */
 .calendar-header {
-  display: flex; justify-content: space-between; align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-.cal-title { font-size: 16px; color: #a670d7; font-weight: 600; }
-.cal-arrow { font-size: 20px; color: #c08fe6; padding: 4px 10px; }
+.cal-title {
+  font-size: 18px;
+  color: #166c4e;
+  font-weight: 700;
+}
+.cal-arrow {
+  font-size: 22px;
+  color: #1f8f63;
+  padding: 4px 12px;
+}
 
-.calendar-week-row { display: flex; margin-top: 8px; }
-.week-cell { flex: 1; text-align: center; color: #b795d2; font-size: 12px; }
+/* 周标题 */
+.calendar-week-row { display: flex; margin-top: 10px; }
+.week-cell {
+  flex: 1;
+  text-align: center;
+  color: #2aa86f;
+  font-size: 14px;
+  font-weight: 600;
+}
 
-.calendar-grid { display: flex; flex-wrap: wrap; margin-top: 6px; }
+/* 日期格子 */
+.calendar-grid { display: flex; flex-wrap: wrap; margin-top: 8px; }
 
 .day-cell {
   width: 14.28%;
-  min-height: 44px;
-  padding-top: 4px;
+  min-height: 48px;
+  padding-top: 6px;
   text-align: center;
-  border-radius: 10px;
+  border-radius: 12px;
   position: relative;
 }
-.day-out .day-number { color: #c8bad6; }
-.day-number { font-size: 12px; color: #8667a3; }
+.day-out .day-number { color: rgba(18, 122, 88, 0.35); }
+.day-number {
+  font-size: 14px;
+  color: #138a62;
+  font-weight: 600;
+}
 
 /* 体重图标 */
 .weight-paw {
-  position: absolute; bottom: 4px; left: 6px;
-  font-size: 14px;
-  color: #ff9acb;
+  position: absolute;
+  bottom: 4px;
+  left: 6px;
+  font-size: 16px;
+  color: #1d6e5b;
 }
 
 /* 运动图标 */
 .sport-paw {
-  position: absolute; bottom: 4px; right: 4px;
-  font-size: 14px;
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  font-size: 16px;
 }
 
 /* 信息编辑 */
 .section-title {
-  font-size: 15px; font-weight: 600;
-  color: #a46ed4;
-  margin-bottom: 6px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #1b7b55;
+  margin-bottom: 10px;
 }
 
-.input-wrapper { margin-top: 10px; }
-.input-label { font-size: 13px; color: #8f7fb3; }
+/* 输入区 */
+.input-wrapper { margin-top: 12px; }
+.input-label {
+  font-size: 15px;
+  color: #1a7a57;
+  font-weight: 700;
+}
 
 .pink-input {
-  width: 100%; padding: 8px 10px;
-  border-radius: 10px; margin-top: 4px;
-  background: rgba(255,238,247,0.7);
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  margin-top: 6px;
+  background: rgba(232, 255, 246, 0.7);
+  border: 1px solid rgba(37, 171, 117, 0.22);
+  font-size: 16px;
+  color: #135c43;
 }
 
-.btn-area { margin-top: 12px; }
+/* 按钮 */
+.btn-area { margin-top: 14px; }
+
 .irregular-btn {
-  width: 100%; padding: 10px;
-  border-radius: 30px; color: white;
-  background: linear-gradient(135deg,#ffc3e0,#d5b8ff);
+  width: 100%;
+  padding: 12px;
+  border-radius: 30px;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #21b17c, #7be3b7);
+  box-shadow: 0 10px 18px rgba(33, 177, 124, 0.22);
+}
+
+.back-btn {
+  font-size: 16px;
+  color: #1f8f63;
+  padding: 6px 8px 6px 0;
+  font-weight: 700;
 }
 
 .detail-line {
-  font-size: 13px;
-  color: #8257a0;
-  margin-bottom: 4px;
+  font-size: 15px;
+  color: #217a5b;
+  margin-bottom: 6px;
 }
-.back-btn {
+
+/* =========================
+ * ✅饮食推荐模块（新增样式）
+ * ========================= */
+
+/* 圆形卡片 */
+.diet-circle {
+  width: 520rpx;
+  height: 520rpx;
+  border-radius: 999px;
+  margin: 10rpx auto 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 30% 30%, rgba(160, 255, 214, 0.9), rgba(255, 255, 255, 0.55));
+  border: 2px solid rgba(37, 171, 117, 0.28);
+  box-shadow: 0 16px 32px rgba(31, 143, 99, 0.18);
+}
+
+.diet-circle-inner {
+  width: 88%;
+  text-align: center;
+}
+
+.diet-circle-title {
+  font-size: 22px;
+  font-weight: 900;
+  color: #137c57;
+  letter-spacing: 1px;
+}
+
+.diet-circle-sub {
+  margin-top: 10px;
+  font-size: 16px;
+  color: #145c43;
+  font-weight: 700;
+}
+
+.diet-circle-hint {
+  margin-top: 10px;
   font-size: 14px;
-  color: #9b63d4;
-  padding: 4px 8px 4px 0;
+  color: rgba(20, 92, 67, 0.75);
 }
+
+/* 展开面板 */
+.diet-panel {
+  margin-top: 12px;
+  padding: 10px 10px 6px;
+  border-radius: 16px;
+  background: rgba(230, 255, 244, 0.55);
+  border: 1px solid rgba(37, 171, 117, 0.18);
+}
+
+/* 三餐按钮 */
+.meal-btn-row {
+  display: flex;
+  gap: 8px;
+}
+
+.meal-btn {
+  flex: 1;
+  text-align: center;
+  padding: 12px 8px;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #116b4c;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(37, 171, 117, 0.22);
+  box-shadow: 0 8px 14px rgba(31, 143, 99, 0.10);
+}
+
+.meal-arrow {
+  margin-left: 6px;
+  font-size: 14px;
+  color: rgba(17, 107, 76, 0.75);
+}
+
+.meal-list {
+  margin-top: 12px;
+  padding: 10px 10px 6px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px dashed rgba(37, 171, 117, 0.28);
+}
+
+.meal-title {
+  font-size: 16px;
+  color: #137c57;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+/* 菜品行 */
+.dish-item {
+  padding: 8px 4px;
+  font-size: 16px;
+  color: #1a5e46;
+  line-height: 1.5;
+}
+
+.dish-dot {
+  margin-right: 6px;
+  color: #1f8f63;
+  font-weight: 900;
+}
+
+.dish-main {
+  font-weight: 800;
+  color: #165f45;
+}
+
+.dish-tag {
+  margin-left: 4px;
+  color: #2f6fff; /* ✅括号内容蓝色 */
+  font-weight: 700;
+}
+
+.dish-kcal {
+  margin-left: 4px;
+  color: rgba(22, 95, 69, 0.75);
+  font-weight: 700;
+}
+
+.empty-tip {
+  padding: 10px 0 4px;
+  font-size: 14px;
+  color: rgba(22, 95, 69, 0.6);
+  text-align: center;
+}
+
+/* =========================
+ * ✅居中弹窗（菜品详情）
+ * ========================= */
+
+.modal-mask {
+  position: fixed;
+  left: 0; top: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.modal-card {
+  width: 86%;
+  max-width: 620rpx;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(37, 171, 117, 0.22);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.18);
+  padding: 16px;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #137c57;
+  margin-bottom: 10px;
+}
+
+.modal-name {
+  font-size: 18px;
+  font-weight: 900;
+  color: #145c43;
+  margin-bottom: 8px;
+}
+
+.modal-line {
+  font-size: 15px;
+  color: rgba(20, 92, 67, 0.88);
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.modal-price {
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: 900;
+  color: #1f8f63;
+}
+
+.modal-btn-row {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+}
+
+.modal-btn-primary {
+  flex: 1;
+  padding: 12px 0;
+  border-radius: 30px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #21b17c, #7be3b7);
+}
+
+.modal-btn-ghost {
+  flex: 1;
+  padding: 12px 0;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 900;
+  color: #1f8f63;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(37, 171, 117, 0.22);
+}
+
+/* 占位 */
 .tabbar-space { height: 80px; }

@@ -1,4 +1,4 @@
-<!-- pages/home/home.wxml --> 
+<!-- pages/home/home.wxml -->
 <particle-bg>
   <view class="home-page">
 
@@ -47,12 +47,26 @@
             <view class="bmi-text">{{todayBMI || '--'}}</view>
           </view>
           <view class="bmi-label">BMI</view>
+
+          <!-- ✅ 新增：BMI 对比（只加这里） -->
+          <view class="compare" wx:if="{{bmiDiffText}}">
+            <text class="trend up" wx:if="{{bmiTrend === 1}}">↑ {{bmiDiffText}}</text>
+            <text class="trend down" wx:elif="{{bmiTrend === -1}}">↓ {{bmiDiffText}}</text>
+            <text class="trend flat" wx:else>—</text>
+          </view>
         </view>
 
         <view class="info-block">
           <view class="info-label">今日体重</view>
           <view class="info-value">
             {{todayWeight || '--'}}<text class="info-unit">kg</text>
+          </view>
+
+          <!-- ✅ 新增：体重对比（只加这里） -->
+          <view class="compare" wx:if="{{weightDiffText}}">
+            <text class="trend up" wx:if="{{weightTrend === 1}}">↑ {{weightDiffText}}</text>
+            <text class="trend down" wx:elif="{{weightTrend === -1}}">↓ {{weightDiffText}}</text>
+            <text class="trend flat" wx:else>—</text>
           </view>
         </view>
       </view>
@@ -63,12 +77,80 @@
 
       <view class="btn-area small-btn-area">
         <button class="small-btn" bindtap="goRecord">
-          📅 去猫爪日历记录
+          📅 日历记录
         </button>
       </view>
     </view>
 
-    <!-- 配合运动的小计划 -->
+    <!-- ✅ 今日运动打卡（改成大圆签到 + 次数 + 撤销一次） -->
+    <view class="fancy-card checkin-card">
+      <view class="fancy-border"></view>
+
+      <view class="checkin-top">
+        <view class="checkin-title">今日运动打卡</view>
+        <view class="checkin-count">{{checkinToday}} / {{checkinLimit}}</view>
+      </view>
+
+      <view class="checkin-center">
+        <!-- 大圆按钮：点一次 +1 -->
+        <view class="checkin-circle" bindtap="tapCheckin">
+          <view class="checkin-circle-text">签到</view>
+        </view>
+
+        <view class="checkin-center-sub">
+          今日：{{checkinToday}} / {{checkinLimit}}
+        </view>
+
+        <view class="checkin-total">
+          累计已打卡：{{checkinTotal}} 次 (可用于商城积分兑换)
+        </view>
+
+        <!-- 撤销一次：每天仅一次机会 -->
+        <button class="checkin-undo-btn" bindtap="undoCheckin">
+          撤销一次
+        </button>
+
+        <view class="checkin-sub">
+          每天最多 {{checkinLimit}} 次，像签到一样把运动坚持下来。
+        </view>
+      </view>
+    </view>
+
+    <!-- ✅ 并列入口卡片（拍照饮食 / 助眠解压） -->
+    <view class="proto-row">
+      <view class="proto-card" bindtap="goDietPhoto">
+        <view class="proto-icon">📸</view>
+        <view class="proto-main">
+          <view class="proto-title">拍照记录饮食</view>
+        </view>
+      </view>
+
+      <!-- ✅ 修复：原来 bindtap="goSleep"（不存在），改为 goSleepMusic -->
+      <view class="proto-card" bindtap="goSleepMusic">
+        <view class="proto-icon">🌙</view>
+        <view class="proto-main">
+          <view class="proto-title">助眠解压</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- ✅ 运动视频长卡片 -->
+    <view class="fancy-card video-card">
+      <view class="fancy-border"></view>
+
+      <view class="video-top">
+        <view class="video-title">运动视频</view>
+        <view class="video-sub">跟练 5-10 分钟也很棒，轻松开始。</view>
+      </view>
+
+      <view class="btn-area workout-btn-area">
+        <button class="workout-btn" bindtap="goWorkoutPlan">
+          🎥 前往运动视频
+        </button>
+      </view>
+    </view>
+
+    <!-- 配合运动的小计划（原结构不动，只换色） -->
     <view class="fancy-card workout-card">
       <view class="fancy-border"></view>
 
@@ -85,16 +167,15 @@
 
       <view class="btn-area workout-btn-area">
         <button class="workout-btn" bindtap="goWorkoutPlan">
-          ✨ 前往运动打卡 
+          ✅ 前往运动打卡
         </button>
       </view>
     </view>
 
-    <!-- 温柔建议 + 菜谱推荐（按时间段显示单组） -->
+    <!-- 温柔建议 + 菜谱推荐 -->
     <view class="fancy-card suggestion-card">
       <view class="fancy-border"></view>
 
-      <!-- 今日温柔建议（只显示当前时间段） -->
       <view class="section-title">今日温柔建议 · {{currentCare.label}}</view>
       <view class="section-subtitle">
         不同时间的小小提醒，帮你把一天过得更温柔、也更有节奏感。
@@ -110,16 +191,14 @@
               wx:for="{{currentCare.items}}"
               wx:key="idx"
             >
-               ❀{{item}}
+              ❀ {{item}}
             </view>
           </view>
         </view>
       </view>
 
-      <!-- 分割线 -->
       <view class="divider"></view>
 
-      <!-- 简单菜谱推荐（只显示当前时间段） -->
       <view class="section-title mt16">简单菜谱推荐 · {{currentDiet.label}}</view>
       <view class="section-subtitle">
         按照早中晚的节奏搭配饮食，让胃和心情都轻松一点。

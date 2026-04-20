@@ -1,11 +1,14 @@
 <particle-bg>
   <view class="ai-page">
 
+    <!-- ✅ 顶部留白：整体离顶部更远 -->
+    <view class="ai-top-space"></view>
 
     <!-- 顶部卡片 + 模式开关 -->
     <view class="top-card">
       <view class="top-row">
         <text class="title">AI 分析助手</text>
+
         <view class="mode-toggle" bindtap="handleToggleMode">
           <text class="mode-text">
             {{ useCloud ? '云端 AI' : '离线分析' }}
@@ -16,62 +19,104 @@
         </view>
       </view>
 
-      <button class="primary-btn" loading="{{loading}}" bindtap="handleGenerate">
-        生成 AI 分析
-      </button>
+      <!-- ✅ 三个高光动态圆形入口（开始对话按钮） -->
+      <view class="orb-panel">
+        <view class="orb-panel-title">选择要分析的类型</view>
+
+        <view class="orb-row">
+          <!-- 身体 -->
+          <view
+            class="orb orb-body {{currentTab===0 ? 'orb-active' : ''}}"
+            bindtap="handleGenerateBody"
+          >
+            <view class="orb-halo"></view>
+            <view class="orb-ring ring-a"></view>
+            <view class="orb-ring ring-b"></view>
+
+            <view class="orb-core">
+              <text class="orb-main">身体</text>
+              <text class="orb-sub">分析</text>
+
+              <text wx:if="{{loading && currentTab===0}}" class="orb-loading">分析中…</text>
+              <text wx:else class="orb-hint">身高体重</text>
+            </view>
+          </view>
+
+          <!-- 饮食 -->
+          <view
+            class="orb orb-food {{currentTab===1 ? 'orb-active' : ''}}"
+            bindtap="handleGenerateFood"
+          >
+            <view class="orb-halo"></view>
+            <view class="orb-ring ring-a"></view>
+            <view class="orb-ring ring-b"></view>
+
+            <view class="orb-core">
+              <text class="orb-main">饮食</text>
+              <text class="orb-sub">分析</text>
+
+              <text wx:if="{{loading && currentTab===1}}" class="orb-loading">分析中…</text>
+              <text wx:else class="orb-hint">文字/照片</text>
+            </view>
+          </view>
+
+          <!-- 情绪 -->
+          <view
+            class="orb orb-stress {{currentTab===2 ? 'orb-active' : ''}}"
+            bindtap="handleGenerateStress"
+          >
+            <view class="orb-halo"></view>
+            <view class="orb-ring ring-a"></view>
+            <view class="orb-ring ring-b"></view>
+
+            <view class="orb-core">
+              <text class="orb-main">情绪</text>
+              <text class="orb-sub">分析</text>
+
+              <text wx:if="{{loading && currentTab===2}}" class="orb-loading">分析中…</text>
+              <text wx:else class="orb-hint">压力疏解</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="orb-panel-sub"></view>
+      </view>
 
       <view wx:if="{{errorMsg}}" class="error-tip">
         {{errorMsg}}
       </view>
       <view wx:elif="{{useCloud}}" class="sub-tip">
-        先在下面三类里简单填一下你的情况，再点「生成 AI 分析」。优先使用云端 AI，网络不佳时会自动切到离线。
+        先在下面对应分类里填一点信息，再点上方发光圆开始分析。网络不佳会自动切离线。
       </view>
       <view wx:elif="{{!useCloud}}" class="sub-tip">
-        当前为离线分析模式，适合网络不稳定或节省调用次数的时候使用。
+        当前为离线分析模式，适合网络不稳定或节省调用次数时使用。
       </view>
     </view>
 
-    <!-- 横向 Tab -->
+    <!-- 横向 Tab（保留，用于切换填写区域） -->
     <view class="tab-bar">
-      <view
-        class="tab-item {{currentTab === 0 ? 'active' : ''}}"
-        data-index="0"
-        bindtap="switchTab"
-      >
+      <view class="tab-item {{currentTab === 0 ? 'active' : ''}}" data-index="0" bindtap="switchTab">
         身体情况
       </view>
-      <view
-        class="tab-item {{currentTab === 1 ? 'active' : ''}}"
-        data-index="1"
-        bindtap="switchTab"
-      >
+      <view class="tab-item {{currentTab === 1 ? 'active' : ''}}" data-index="1" bindtap="switchTab">
         饮食 · 食物
       </view>
-      <view
-        class="tab-item {{currentTab === 2 ? 'active' : ''}}"
-        data-index="2"
-        bindtap="switchTab"
-      >
+      <view class="tab-item {{currentTab === 2 ? 'active' : ''}}" data-index="2" bindtap="switchTab">
         心理压力
       </view>
     </view>
 
-    <!-- 1. 身体情况 可爱表单 -->
+    <!-- 1. 身体情况 -->
     <view wx:if="{{currentTab === 0}}" class="cute-card">
-
       <view class="cute-header">
-        <view class="cute-title">身体基本情况（可爱表单）</view>
+        <view class="cute-title">身体基本情况</view>
         <view class="cute-sub">身高 · 体重 · 运动 · 睡眠</view>
       </view>
 
-      <!-- 背景光斑 -->
       <view class="light-dot dot1"></view>
       <view class="light-dot dot2"></view>
 
-      <!-- 两列表格 -->
       <view class="cute-grid">
-
-        <!-- 身高 -->
         <view class="cute-item">
           <text class="cute-label">身高</text>
           <view class="cute-input-box">
@@ -86,7 +131,6 @@
           </view>
         </view>
 
-        <!-- 体重 -->
         <view class="cute-item">
           <text class="cute-label">体重</text>
           <view class="cute-input-box">
@@ -100,23 +144,13 @@
             <text class="cute-unit">kg</text>
           </view>
         </view>
-      <!-- 性别选择 -->
-<view class="gender-row">
-  <view 
-    class="gender-btn {{gender === 'female' ? 'active' : ''}}" 
-    data-gender="female"
-    bindtap="handleChooseGender">
-    女生
-  </view>
 
-  <view 
-    class="gender-btn {{gender === 'male' ? 'active' : ''}}" 
-    data-gender="male"
-    bindtap="handleChooseGender">
-    男生
-  </view>
-</view>
-        <!-- 运动 -->
+        <view class="gender-row">
+          <view class="gender-btn {{gender === 'female' ? 'active' : ''}}" data-gender="female" bindtap="handleChooseGender">女生</view>
+          <view class="gender-btn {{gender === 'male' ? 'active' : ''}}" data-gender="male" bindtap="handleChooseGender">男生</view>
+          <view class="gender-btn {{gender === 'other' ? 'active' : ''}}" data-gender="other" bindtap="handleChooseGender">其他</view>
+        </view>
+
         <view class="cute-item">
           <text class="cute-label">运动</text>
           <view class="cute-input-box">
@@ -131,7 +165,6 @@
           </view>
         </view>
 
-        <!-- 睡眠 -->
         <view class="cute-item">
           <text class="cute-label">睡眠</text>
           <view class="cute-input-box">
@@ -145,10 +178,8 @@
             <text class="cute-unit">小时</text>
           </view>
         </view>
-
       </view>
 
-      <!-- 其他补充 -->
       <view class="cute-extra-title">其他补充（可选）</view>
       <textarea
         class="cute-textarea"
@@ -158,51 +189,98 @@
         bindinput="handleBodyFormInput"
       />
 
-      <view class="result-title">AI 建议（身体情况）</view>
-      <view class="section-body">
-        <text class="section-text">
-{{result.body}}
-        </text>
+      <!-- ✅ 仍保留旧的文字展示（不破坏你原结构） -->
+
+      <!-- ✅ 新增：开始对话后出现的“追问回答框 + 结束对话” -->
+      <view wx:if="{{chatStarted.body}}" class="chat-box">
+        <view class="chat-head">
+          <text class="chat-head-title">身体对话</text>
+          <button class="chat-end-btn" size="mini" bindtap="endBodyChat">结束对话</button>
+        </view>
+
+        <view class="chat-tip">
+          你先回答 AI 的一个关键问题（例如：目标是减脂/增肌？是否久坐？睡眠情况？），我就能给更准确的分析与建议。
+        </view>
+
+        <scroll-view class="chat-list" scroll-y="true" scroll-with-animation="true" scroll-into-view="{{chatAnchorBody}}">
+          <block wx:for="{{chat.body}}" wx:key="ts">
+            <view class="chat-line {{item.role==='user' ? 'me' : 'ai'}}">
+              <view class="bubble {{item.role==='user' ? 'bubble-me' : 'bubble-ai'}}">
+                <text class="bubble-text">{{item.text}}</text>
+              </view>
+            </view>
+          </block>
+          <view id="anchorBody" class="chat-anchor"></view>
+        </scroll-view>
+
+        <view class="chat-reply">
+          <input
+            class="reply-input"
+            placeholder="{{replyPlaceholder.body}}"
+            value="{{replyInput.body}}"
+            bindinput="onReplyInputBody"
+            confirm-type="send"
+            bindconfirm="sendBodyReply"
+          />
+          <button class="reply-send" size="mini" loading="{{loading && currentTab===0}}" bindtap="sendBodyReply">发送</button>
+        </view>
       </view>
     </view>
 
-    <!-- 2. 饮食 · 食物 -->
+    <!-- 2. 饮食 -->
     <view wx:if="{{currentTab === 1}}" class="section-card">
       <view class="section-header">
         <view>
           <view class="section-title">饮食与食物情况</view>
           <view class="section-tag">三餐 · 零食 · 奶茶 · 宵夜</view>
         </view>
-        <button class="mini-btn" size="mini" bindtap="handleChooseImage">
-          拍照 / 选图
-        </button>
+        <button class="mini-btn" size="mini" bindtap="handleChooseImage">拍照 / 选图</button>
       </view>
 
       <view class="section-body">
         <textarea
           class="input-area"
-          placeholder="例如：早饭经常不吃，中午在食堂吃盖饭，晚上点外卖；一周 2～3 次奶茶，爱吃炸鸡薯条…"
+          placeholder="例如：早饭经常不吃，中午在食堂吃盖饭，晚上点外卖；一周 2～3 次奶茶…"
           show-confirm-bar="false"
           auto-height="true"
           value="{{foodInput}}"
           data-field="foodInput"
           bindinput="handleInput"
         />
-
-        <!-- 食物图片预览 -->
-        <image
-          wx:if="{{foodImagePath}}"
-          src="{{foodImagePath}}"
-          mode="aspectFill"
-          class="food-image"
-        />
+        <image wx:if="{{foodImagePath}}" src="{{foodImagePath}}" mode="aspectFill" class="food-image" />
       </view>
 
-      <view class="result-title">AI 建议（饮食 & 热量）</view>
-      <view class="section-body">
-        <text class="section-text">
-{{result.food}}
-        </text>
+      <!-- ✅ 新增：开始对话后出现的“追问回答框 + 结束对话” -->
+      <view wx:if="{{chatStarted.food}}" class="chat-box">
+        <view class="chat-head">
+          <text class="chat-head-title">饮食对话</text>
+          <button class="chat-end-btn" size="mini" bindtap="endFoodChat">结束对话</button>
+        </view>
+
+        <view class="chat-tip">你回答 AI 的追问（份量/饮料/频率等），我就能给更准热量与搭配建议。</view>
+
+        <scroll-view class="chat-list" scroll-y="true" scroll-with-animation="true" scroll-into-view="{{chatAnchorFood}}">
+          <block wx:for="{{chat.food}}" wx:key="ts">
+            <view class="chat-line {{item.role==='user' ? 'me' : 'ai'}}">
+              <view class="bubble {{item.role==='user' ? 'bubble-me' : 'bubble-ai'}}">
+                <text class="bubble-text">{{item.text}}</text>
+              </view>
+            </view>
+          </block>
+          <view id="anchorFood" class="chat-anchor"></view>
+        </scroll-view>
+
+        <view class="chat-reply">
+          <input
+            class="reply-input"
+            placeholder="{{replyPlaceholder.food}}"
+            value="{{replyInput.food}}"
+            bindinput="onReplyInputFood"
+            confirm-type="send"
+            bindconfirm="sendFoodReply"
+          />
+          <button class="reply-send" size="mini" loading="{{loading && currentTab===1}}" bindtap="sendFoodReply">发送</button>
+        </view>
       </view>
     </view>
 
@@ -218,7 +296,7 @@
       <view class="section-body">
         <textarea
           class="input-area"
-          placeholder="例如：最近在准备考试和项目，事情很多；担心家里经济压力；有时会怀疑自己是不是不够努力…"
+          placeholder="例如：最近在准备考试和项目，事情很多；有时会怀疑自己不够努力…"
           show-confirm-bar="false"
           auto-height="true"
           value="{{stressInput}}"
@@ -227,11 +305,37 @@
         />
       </view>
 
-      <view class="result-title">AI 建议（心理压力）</view>
-      <view class="section-body">
-        <text class="section-text">
-{{result.stress}}
-        </text>
+      <!-- ✅ 新增：开始对话后出现的“追问回答框 + 结束对话” -->
+      <view wx:if="{{chatStarted.stress}}" class="chat-box">
+        <view class="chat-head">
+          <text class="chat-head-title">心理对话</text>
+          <button class="chat-end-btn" size="mini" bindtap="endStressChat">结束对话</button>
+        </view>
+
+        <view class="chat-tip">先回答 AI 的一个关键问题（持续多久/是否影响睡眠食欲），我再给更适合你的方案。</view>
+
+        <scroll-view class="chat-list" scroll-y="true" scroll-with-animation="true" scroll-into-view="{{chatAnchorStress}}">
+          <block wx:for="{{chat.stress}}" wx:key="ts">
+            <view class="chat-line {{item.role==='user' ? 'me' : 'ai'}}">
+              <view class="bubble {{item.role==='user' ? 'bubble-me' : 'bubble-ai'}}">
+                <text class="bubble-text">{{item.text}}</text>
+              </view>
+            </view>
+          </block>
+          <view id="anchorStress" class="chat-anchor"></view>
+        </scroll-view>
+
+        <view class="chat-reply">
+          <input
+            class="reply-input"
+            placeholder="{{replyPlaceholder.stress}}"
+            value="{{replyInput.stress}}"
+            bindinput="onReplyInputStress"
+            confirm-type="send"
+            bindconfirm="sendStressReply"
+          />
+          <button class="reply-send" size="mini" loading="{{loading && currentTab===2}}" bindtap="sendStressReply">发送</button>
+        </view>
       </view>
     </view>
 

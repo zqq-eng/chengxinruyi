@@ -5,7 +5,7 @@
     <!-- 顶部返回 + 标题 -->
     <view class="top-bar">
       <button class="back-btn" bindtap="goBack">返回</button>
-      <text class="top-title">小猫陪跑</text>
+     
     </view>
 
     <!-- 顶部信息卡片 -->
@@ -25,12 +25,16 @@
         <view class="run-pace-block">
           <view class="run-label">平均配速</view>
           <view class="run-pace">{{paceStr}}</view>
+
+          <!-- ✅ 新增：移动配速（更像 Keep），不改原布局，只加一行 -->
+          <view class="run-pace-sub">移动配速 {{movingPaceStr}}</view>
+
           <view class="run-unit">min/km</view>
         </view>
       </view>
 
       <view class="run-sub">
-        小猫在前方用爪爪带路，注意安全，量力而行～ 🐾
+        注意安全，量力而行～ 🐾
       </view>
     </view>
 
@@ -59,7 +63,7 @@
           class="irregular-btn"
           bindtap="startRun"
         >
-          🐾 开始跑步
+          开始跑步
         </button>
 
         <button

@@ -15,10 +15,15 @@
         <text class="icon">🏃</text>
         <text class="text">运动记录管理</text>
       </view>
+      <view class="admin-menu-item" bindtap="goMallManage">
+    <text class="icon">🛍️</text>
+    <text class="text">商城管理中心</text>
+  </view>
       <view class="admin-menu-item" bindtap="goAppointmentManage">
         <text class="icon">📅</text>
         <text class="text">预约审核中心</text>
       </view>
+
     </view>
   </view>
 

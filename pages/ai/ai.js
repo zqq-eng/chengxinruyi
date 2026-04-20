@@ -6,14 +6,13 @@ Page({
     useCloud: true,
     loading: false,
     errorMsg: '',
-
     currentTab: 0,
 
     // 食物图片：一个本地预览路径，一个云端 fileID
     foodImagePath: '',
     foodImageFileID: '',
 
-    // 身体情况可爱表单
+    // 身体情况表单（保持原来不变）
     bodyForm: {
       height: '',   // cm
       weight: '',   // kg
@@ -21,68 +20,106 @@ Page({
       sleep: '',    // 小时/天
       gender: '',   // 性别：男 / 女 / 其他
       others: ''    // 其他补充
-    
     },
 
-    // 饮食 / 心理 文本输入
+    // ✅ 兼容你原来的 gender 存法（female/male/other）
+    gender: '',
+
+    // 饮食 / 心理 文本输入（保持原来不变）
     foodInput: '',
     stressInput: '',
 
-    // 三类结果
+    // 三类结果（仍保留，不破坏原布局）
     result: {
-      body: '在上方小表格里填一填身高体重、运动和睡眠，再写一点想说的感受，然后点击下方“生成 AI 分析”。',
-      food: '在“饮食 · 食物”里写写你这段时间的吃饭习惯，也可以拍一张常吃的一顿饭让 AI 帮你看看热量。',
-      stress: '在“心理压力”里把最近的烦恼和压力来源写几句出来，交给 AI 帮你一起分担。'
+      body: '在上方小表格里填一填身高体重、运动和睡眠，然后点上方“身体分析”开始对话。',
+      food: '在“饮食 · 食物”里写写你吃了什么，也可以拍一张食物照片；再点上方“饮食分析”开始对话。',
+      stress: '在“心理压力”里写几句最近的烦恼；再点上方“情绪分析”开始对话。'
     },
 
-    // 离线兜底结果
+    // ✅ 对话记录（每类独立）
+    chat: {
+      body: [],   // [{role:'user'|'assistant', text:'', ts:0}]
+      food: [],
+      stress: []
+    },
+
+    // ✅ 开始对话开关（开始对话后显示聊天框）
+    chatStarted: { body: false, food: false, stress: false },
+
+    // ✅ AI 追问的回复输入框
+    replyInput: { body: '', food: '', stress: '' },
+
+    // ✅ 固定模板（placeholder）
+    replyPlaceholder: {
+      body: '按模板回答：目标(减脂/增肌/维持)+最近变化/困扰',
+      food: '按模板回答：份量(半碗/一碗)+饮料(无糖/奶茶)+频率(每天/每周/偶尔)',
+      stress: '按模板回答：持续多久(天/周)+是否影响睡眠/食欲(是/否)'
+    },
+
+    // ✅ 自动滚动锚点
+    chatAnchorBody: 'anchorBody',
+    chatAnchorFood: 'anchorFood',
+    chatAnchorStress: 'anchorStress',
+
+    // 离线兜底（保留）
     offlineResult: {
       body:
-        '我先根据常见情况给你一个通用建议：\n' +
-        '1）如果体重在一个小范围内上下浮动，其实是正常的，不必太焦虑；\n' +
-        '2）尝试一周保持 3～4 次 30 分钟左右的中等强度运动，比如快走、慢跑、跳操；\n' +
-        '3）别忽视睡眠，尽量在 23 点前上床，让身体有时间恢复。',
+        '我先不乱下结论：从你现在填的信息看，最优先是把睡眠和运动“固定下来”。\n' +
+        '建议：①每周 3 次快走/慢跑 20–30 分钟；②尽量固定入睡时间；③三餐保证蛋白质+蔬菜。\n' +
+        '我想问一句：你一般几点睡、几点起？',
       food:
-        '可以先从“减一点点”开始：\n' +
-        '1）把含糖饮料和奶茶的频率控制在每周 1～2 次；\n' +
-        '2）油炸、烧烤、重油重盐的菜，尽量和蔬菜、蛋白质搭配着吃；\n' +
-        '3）多喝水，多吃蔬菜和优质蛋白（鸡蛋、牛奶、鱼虾、瘦肉），这样既能减脂，又能保持精力。',
+        '我收到了～我先不乱猜热量。\n' +
+        '建议：①告诉我大概份量（半碗/一碗/两碗）；②如果有饮料，优先无糖/少糖；③每餐尽量配一份蔬菜。\n' +
+        '我想问一句：这顿主要吃了哪些？各大概多少？',
       stress:
-        '你现在感受到的压力，说明你很在意自己的生活和未来，这是件好事：\n' +
-        '1）可以试着把大目标拆成每周的小目标，完成一个就给自己一点奖励；\n' +
-        '2）允许自己偶尔什么都不做，发呆、散步、听歌都可以；\n' +
-        '3）如果有信任的人，试着说一说你的感受，不用憋在心里。'
+        '我听见你在承受压力了，我们先稳住身体再处理事情。\n' +
+        '建议：①做 3 分钟呼吸（吸4-停2-呼6，循环6次）；②把最担心的事写成一句话；③今天只做第一步。\n' +
+        '我想问一句：这个压力持续多久了？会影响睡眠/食欲吗？'
     }
   },
 
   onLoad() {},
 
-  // 顶部 Tab 切换
+  /* =====================
+   * 顶部 Tab 切换（不改）
+   * ===================== */
   switchTab(e) {
     const index = Number(e.currentTarget.dataset.index) || 0;
     this.setData({ currentTab: index });
   },
 
-  // 身体小表格输入
+  /* =====================
+   * 身体小表格输入（不改）
+   * ===================== */
   handleBodyFormInput(e) {
     const field = e.currentTarget.dataset.field; // height / weight / ...
     const value = e.detail.value;
     this.setData({ [`bodyForm.${field}`]: value });
   },
+
+  /* =====================
+   * 性别选择（不改）
+   * ===================== */
   handleChooseGender(e) {
-    const g = e.currentTarget.dataset.gender; // male / female
+    const g = e.currentTarget.dataset.gender; // female / male / other
+    const label = g === 'female' ? '女' : g === 'male' ? '男' : '其他';
     this.setData({
-      gender: g
+      gender: g,
+      'bodyForm.gender': label
     });
   },
-  
-  // 饮食 & 心理 文本输入
+
+  /* =====================
+   * 饮食 & 心理 文本输入（不改）
+   * ===================== */
   handleInput(e) {
     const field = e.currentTarget.dataset.field; // foodInput / stressInput
     this.setData({ [field]: e.detail.value });
   },
 
-  // 选择 / 拍摄 食物图片，并上传到云存储
+  /* =====================
+   * 选择 / 拍摄 食物图片（不改）
+   * ===================== */
   handleChooseImage() {
     const that = this;
     wx.chooseImage({
@@ -98,7 +135,6 @@ Page({
           cloudPath: 'food/' + Date.now() + '.jpg',
           filePath: path,
           success(upRes) {
-            console.log('上传成功 fileID:', upRes.fileID);
             that.setData({ foodImageFileID: upRes.fileID });
           },
           fail(err) {
@@ -116,114 +152,239 @@ Page({
     });
   },
 
-  // 把可爱表单拼成一句话
+  /* =====================
+   * ✅ 关键：把表单拼成一句话（身体输入真正传给 AI）
+   * ===================== */
   buildBodyText() {
-    const f = this.data.bodyForm;
+    const f = this.data.bodyForm || {};
     const parts = [];
 
-    if (f.height) parts.push(`身高约 ${f.height} cm`);
-    if (f.weight) parts.push(`体重约 ${f.weight} kg`);
-    if (f.exercise) parts.push(`最近每周运动 ${f.exercise} 次`);
-    if (f.sleep) parts.push(`平均每天睡眠约 ${f.sleep} 小时`);
-    if (f.others) parts.push(`其他情况：${f.others}`);
-    if (this.data.gender) parts.push(`性别：${this.data.gender === 'female' ? '女' : '男'}`);
+    if (f.height) parts.push(`身高 ${f.height}cm`);
+    if (f.weight) parts.push(`体重 ${f.weight}kg`);
+    if (f.exercise) parts.push(`运动 ${f.exercise}次/周`);
+    if (f.sleep) parts.push(`睡眠 ${f.sleep}小时/天`);
+    if (f.gender) parts.push(`性别 ${f.gender}`);
+    if (f.others) parts.push(`其他：${f.others}`);
+
+    if (this.data.gender && !f.gender) {
+      const label = this.data.gender === 'female' ? '女' : this.data.gender === 'male' ? '男' : '其他';
+      parts.push(`性别 ${label}`);
+    }
 
     return parts.join('；');
   },
 
-  // 点击「生成 AI 分析」
-  handleGenerate() {
-    if (this.data.loading) return;
-
-    const bodyText = this.buildBodyText();
-    const hasBody = !!bodyText.trim();
-    const hasFood = !!this.data.foodInput.trim() || !!this.data.foodImageFileID;
-    const hasStress = !!this.data.stressInput.trim();
-
-    if (!hasBody && !hasFood && !hasStress) {
-      wx.showToast({
-        title: '先随便填一点点你的情况吧～',
-        icon: 'none'
-      });
-      return;
-    }
-
-    if (this.data.useCloud) {
-      this.callCloudAI(bodyText);
-    } else {
-      this.applyOffline('已使用离线分析，根据通用情况给你一些温柔建议～');
-    }
-  },
-
-  // 云端 / 离线 切换
+  /* =====================
+   * 云端 / 离线 切换（不改）
+   * ===================== */
   handleToggleMode() {
     const next = !this.data.useCloud;
-    this.setData({
-      useCloud: next,
-      errorMsg: ''
-    });
+    this.setData({ useCloud: next, errorMsg: '' });
+    if (!next) wx.showToast({ title: '已切换到离线分析模式～', icon: 'none' });
+  },
 
-    if (!next) {
-      this.applyOffline('已切换到离线分析模式～');
+  /* =====================
+   * ✅ 三个大圆：开始对话（不改UI，只改逻辑）
+   * ===================== */
+  handleGenerateBody() {
+    this.setData({ currentTab: 0 }, () => this.startChat('body'));
+  },
+
+  handleGenerateFood() {
+    this.setData({ currentTab: 1 }, () => this.startChat('food'));
+  },
+
+  handleGenerateStress() {
+    this.setData({ currentTab: 2 }, () => this.startChat('stress'));
+  },
+
+  /* =====================
+   * ✅ 开始对话：把“当前页面输入”作为首句发给 AI
+   * ===================== */
+  startChat(type) {
+    if (this.data.loading) return;
+
+    let userMsg = '';
+    if (type === 'body') {
+      userMsg = (this.buildBodyText() || '').trim();
+      if (!userMsg) {
+        wx.showToast({ title: '先填一点身高体重/运动睡眠信息吧～', icon: 'none' });
+        return;
+      }
+    } else if (type === 'food') {
+      userMsg = (this.data.foodInput || '').trim();
+      const hasImage = !!this.data.foodImageFileID;
+      if (!userMsg && !hasImage) {
+        wx.showToast({ title: '写一句饮食情况或上传一张食物照片吧～', icon: 'none' });
+        return;
+      }
+    } else {
+      userMsg = (this.data.stressInput || '').trim();
+      if (!userMsg) {
+        wx.showToast({ title: '写一句最近的压力/烦恼吧～', icon: 'none' });
+        return;
+      }
+    }
+
+    const cs = this.data.chatStarted || { body:false, food:false, stress:false };
+    if (!cs[type]) this.setData({ chatStarted: { ...cs, [type]: true } });
+
+    // 首句入对话
+    if (userMsg) this.appendChat(type, 'user', userMsg);
+
+    if (this.data.useCloud) {
+      this.callCloudChatAI(type, userMsg);
+    } else {
+      this.applyOfflineChatFor(type, '已使用离线分析模式～');
     }
   },
 
-  // 调用云函数 ai_analyze
-  callCloudAI(bodyTextFromForm) {
+  /* =====================
+   * ✅ 聊天追加一条（带自动滚动锚点）
+   * ===================== */
+  appendChat(type, role, text) {
+    const chat = this.data.chat || { body: [], food: [], stress: [] };
+    const list = Array.isArray(chat[type]) ? chat[type] : [];
+    const next = list.concat([{ role, text, ts: Date.now() }]);
+    this.setData({ chat: { ...chat, [type]: next } });
+
+    // 自动滚动到底部
+    if (type === 'body') this.setData({ chatAnchorBody: 'anchorBody' });
+    if (type === 'food') this.setData({ chatAnchorFood: 'anchorFood' });
+    if (type === 'stress') this.setData({ chatAnchorStress: 'anchorStress' });
+  },
+
+  /* =====================
+   * ✅ 回复输入监听（三类）
+   * ===================== */
+  onReplyInputBody(e) { this.setData({ 'replyInput.body': e.detail.value }); },
+  onReplyInputFood(e) { this.setData({ 'replyInput.food': e.detail.value }); },
+  onReplyInputStress(e) { this.setData({ 'replyInput.stress': e.detail.value }); },
+
+  /* =====================
+   * ✅ 发送回复（回答 AI 追问）
+   * ===================== */
+  sendBodyReply() {
+    if (this.data.loading) return;
+    const msg = (this.data.replyInput.body || '').trim();
+    if (!msg) { wx.showToast({ title: '按模板回答一句再发～', icon: 'none' }); return; }
+    this.setData({ 'replyInput.body': '' });
+    this.appendChat('body', 'user', msg);
+    if (this.data.useCloud) this.callCloudChatAI('body', msg);
+    else this.applyOfflineChatFor('body', '离线模式～');
+  },
+
+  sendFoodReply() {
+    if (this.data.loading) return;
+    const msg = (this.data.replyInput.food || '').trim();
+    if (!msg) { wx.showToast({ title: '按模板回答一句再发～', icon: 'none' }); return; }
+    this.setData({ 'replyInput.food': '' });
+    this.appendChat('food', 'user', msg);
+    if (this.data.useCloud) this.callCloudChatAI('food', msg);
+    else this.applyOfflineChatFor('food', '离线模式～');
+  },
+
+  sendStressReply() {
+    if (this.data.loading) return;
+    const msg = (this.data.replyInput.stress || '').trim();
+    if (!msg) { wx.showToast({ title: '按模板回答一句再发～', icon: 'none' }); return; }
+    this.setData({ 'replyInput.stress': '' });
+    this.appendChat('stress', 'user', msg);
+    if (this.data.useCloud) this.callCloudChatAI('stress', msg);
+    else this.applyOfflineChatFor('stress', '离线模式～');
+  },
+
+  /* =====================
+   * ✅ 结束对话（清空该模块对话并隐藏聊天框）
+   * ===================== */
+  endBodyChat() { this.endChat('body'); },
+  endFoodChat() { this.endChat('food'); },
+  endStressChat() { this.endChat('stress'); },
+
+  endChat(type) {
+    const chat = this.data.chat || { body: [], food: [], stress: [] };
+    const cs = this.data.chatStarted || { body:false, food:false, stress:false };
+    const reply = this.data.replyInput || { body:'', food:'', stress:'' };
+
     this.setData({
-      loading: true,
-      errorMsg: ''
+      chat: { ...chat, [type]: [] },
+      chatStarted: { ...cs, [type]: false },
+      replyInput: { ...reply, [type]: '' }
     });
 
+    wx.showToast({ title: '已结束对话', icon: 'none' });
+  },
+
+  /* =====================
+   * ✅ 调用云函数 ai_analyze（对话模式）
+   * - 首次：用表单/文本作为 message
+   * - 之后：用 replyInput 作为 message
+   * - history：用 chat[type] 最后 10 条
+   * ===================== */
+  callCloudChatAI(type, userMsg) {
+    this.setData({ loading: true, errorMsg: '' });
+
     const userProfile = app.globalData.userInfo || {};
+    const history = (this.data.chat[type] || []).slice(-10);
 
     wx.cloud.callFunction({
       name: 'ai_analyze',
       data: {
         userProfile,
-        manualInput: {
-          body: bodyTextFromForm,
-          food: this.data.foodInput,
-          stress: this.data.stressInput,
-          // 关键：把图片 fileID 传给云函数
-          foodImageUrl: this.data.foodImageFileID || ''
-        }
+        targetType: type,
+        message: userMsg || '',
+        history,
+        foodImageUrl: type === 'food' ? (this.data.foodImageFileID || '') : ''
       },
       success: (res) => {
-        console.log('云端 AI 返回：', res);
-
         const r = res.result || {};
         if (r.ok && r.data) {
-          const d = r.data;
+          const d = r.data || {};
+          const reply = (d.assistantReply || '').trim();
+
+          if (reply) {
+            this.appendChat(type, 'assistant', reply);
+          } else {
+            this.appendChat(type, 'assistant', '我收到了～你愿意再补充一句关键细节吗？');
+          }
+
+          // 同时更新旧版 result 文本（保持原格式）
+          const newResult = { ...this.data.result };
+          newResult[type] = (newResult[type] ? newResult[type] : '') + (reply ? `\n\n${reply}` : '');
           this.setData({
+            result: newResult,
             loading: false,
-            useCloud: true, // 说明这次是云端成功
-            result: {
-              body: d.body || this.data.offlineResult.body,
-              // 食物：里面已经区分了“文字饮食分析”和“图片热量分析”
-              food: d.food || this.data.offlineResult.food,
-              stress: d.stress || this.data.offlineResult.stress
-            },
+            useCloud: true,
             errorMsg: ''
           });
         } else {
-          this.applyOffline(r.msg || '云端 AI 暂时连不上了～ 已自动切换为离线分析。');
+          this.applyOfflineChatFor(type, r.msg || '云端 AI 暂时连不上了～ 已自动切换为离线分析。');
         }
       },
       fail: (err) => {
         console.error('调用 ai_analyze 失败：', err);
-        this.applyOffline('网络好像有点小问题，云端 AI 暂时连不上了～ 已自动切换为离线分析。');
+        this.applyOfflineChatFor(type, '网络好像有点小问题，云端 AI 暂时连不上了～ 已自动切换为离线分析。');
       }
     });
   },
 
-  // 启用离线分析
-  applyOffline(msg) {
+  /* =====================
+   * ✅ 离线兜底：回一句，并保持对话形态
+   * ===================== */
+  applyOfflineChatFor(type, msg) {
+    let reply = this.data.offlineResult[type] || '我收到了～你再补充一句关键细节好吗？';
+
     this.setData({
       loading: false,
       useCloud: false,
-      result: this.data.offlineResult,
       errorMsg: msg || ''
     });
+
+    this.appendChat(type, 'assistant', reply);
+
+    // 同时更新旧版 result 文本
+    const newResult = { ...this.data.result };
+    newResult[type] = (newResult[type] ? newResult[type] : '') + `\n\n${reply}`;
+    this.setData({ result: newResult });
   }
 });

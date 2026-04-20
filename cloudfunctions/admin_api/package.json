@@ -1,0 +1,9 @@
+{
+  "name": "admin_api",
+  "version": "1.0.0",
+  "description": "PC admin API for WeChat CloudBase",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

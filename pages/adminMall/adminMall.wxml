@@ -1,0 +1,306 @@
+<!-- pages/adminMall/adminMall.wxml -->
+<view class="page">
+  <!-- 顶部栏 -->
+  <view class="topbar">
+    <view class="topbar-left" bindtap="goBack">
+      <view class="circle-btn">←</view>
+    </view>
+    <view class="topbar-title">管理员 · 商城后台</view>
+    <view class="topbar-right"></view>
+  </view>
+
+  <!-- 椭圆分段选项卡 -->
+  <view class="seg-wrap">
+    <view class="seg">
+      <view class="seg-item {{tab==='goods'?'on':''}}" data-tab="goods" bindtap="switchTab">商品</view>
+      <view class="seg-item {{tab==='orders'?'on':''}}" data-tab="orders" bindtap="switchTab">订单</view>
+      <view class="seg-item {{tab==='notify'?'on':''}}" data-tab="notify" bindtap="switchTab">通知</view>
+    </view>
+  </view>
+
+  <!-- 内容区 -->
+  <view class="content">
+
+    <!-- ========== 商品管理 ========== -->
+    <block wx:if="{{tab==='goods'}}">
+      <view class="section-head">
+        <view class="section-title">商品列表</view>
+        <view class="btn-primary" bindtap="openAddGoods">+ 新增</view>
+      </view>
+
+      <view class="hint">最低兑换：时长 ≥ 1 分钟，距离 ≥ 1 km（双条件两者都 ≥ 1）</view>
+
+      <view class="card-list">
+        <block wx:for="{{goods}}" wx:key="_id">
+          <view class="card">
+            <view class="card-row">
+              <!-- 圆形类型徽标 -->
+              <view class="type-badge {{item.type==='time'?'t-time':(item.type==='dist'?'t-dist':'t-both')}}">
+                <text class="type-badge-text">
+                  {{item.type==='time'?'时':(item.type==='dist'?'距':'双')}}
+                </text>
+              </view>
+
+              <view class="card-main" bindtap="openEditGoods" data-id="{{item._id}}">
+                <view class="card-title">
+                  <text>{{item.title}}</text>
+                  <text class="pill {{item.active!==false?'pill-on':'pill-off'}}">
+                    {{item.active!==false?'上架':'下架'}}
+                  </text>
+                </view>
+
+                <view class="card-sub">{{item.subtitle}}</view>
+
+                <view class="card-meta">
+                  <text class="meta">{{item.tag || '—'}}</text>
+                  <text class="dot">•</text>
+                  <text class="meta">sort: {{item.sort || 10}}</text>
+                </view>
+
+                <view class="card-cost">
+                  <block wx:if="{{item.type==='time'}}">
+                    <text class="cost">时长：{{Math.round((item.costSec||0)/60)}} 分钟</text>
+                  </block>
+                  <block wx:elif="{{item.type==='dist'}}">
+                    <text class="cost">距离：{{item.costKm || 0}} km</text>
+                  </block>
+                  <block wx:else>
+                    <text class="cost">时长：{{Math.round((item.costSec||0)/60)}} 分钟</text>
+                    <text class="cost-sep">+</text>
+                    <text class="cost">距离：{{item.costKm || 0}} km</text>
+                  </block>
+                </view>
+              </view>
+
+              <view class="card-actions">
+                <view class="btn-ghost" data-id="{{item._id}}" bindtap="toggleGoodsActive">
+                  {{item.active!==false?'下架':'上架'}}
+                </view>
+                <view class="btn-danger" data-id="{{item._id}}" bindtap="removeGoods">删除</view>
+              </view>
+            </view>
+          </view>
+        </block>
+
+        <view wx:if="{{!goods || goods.length===0}}" class="empty">
+          暂无商品数据
+        </view>
+      </view>
+
+      <!-- 商品编辑器：底部弹层 -->
+      <view class="mask" wx:if="{{showGoodsEditor}}" bindtap="closeGoodsEditor">
+        <view class="sheet" catchtap="stopTap">
+          <view class="sheet-head">
+            <view class="sheet-title">{{editMode==='add'?'新增商品':'编辑商品'}}</view>
+            <view class="sheet-close" bindtap="closeGoodsEditor">✕</view>
+          </view>
+
+          <view class="sheet-body">
+            <view class="form-row">
+              <view class="label">名称</view>
+              <input class="ipt" value="{{form.title}}" placeholder="请输入商品名称" bindinput="onFormTitle"/>
+            </view>
+
+            <view class="form-row">
+              <view class="label">副标题</view>
+              <input class="ipt" value="{{form.subtitle}}" placeholder="展示给用户看的说明" bindinput="onFormSub"/>
+            </view>
+
+            <view class="form-row">
+              <view class="label">类型</view>
+              <picker mode="selector"
+                      range="{{['time','dist','both']}}"
+                      value="{{form.type==='time'?0:(form.type==='dist'?1:2)}}"
+                      bindchange="onFormType">
+                <view class="picker">
+                  <text>{{form.type==='time'?'time(时长)':(form.type==='dist'?'dist(距离)':'both(双条件)')}}</text>
+                  <text class="picker-arrow">›</text>
+                </view>
+              </picker>
+            </view>
+
+            <view class="form-grid">
+              <view class="grid-item" wx:if="{{form.type!=='dist'}}">
+                <view class="label2">时长(分钟)</view>
+                <input class="ipt2" type="number" value="{{form.costMin}}" placeholder="最低 1" bindinput="onFormMin"/>
+              </view>
+              <view class="grid-item" wx:if="{{form.type!=='time'}}">
+                <view class="label2">距离(km)</view>
+                <input class="ipt2" type="number" value="{{form.costKm}}" placeholder="最低 1" bindinput="onFormKm"/>
+              </view>
+            </view>
+
+            <view class="form-row">
+              <view class="label">标签</view>
+              <input class="ipt" value="{{form.tag}}" placeholder="例如：时长兑换 / 距离兑换" bindinput="onFormTag"/>
+            </view>
+
+            <view class="form-row">
+              <view class="label">排序</view>
+              <input class="ipt" type="number" value="{{form.sort}}" placeholder="10" bindinput="onFormSort"/>
+            </view>
+
+            <view class="form-row">
+              <view class="label">上架</view>
+              <switch checked="{{form.active}}" bindchange="onFormActive"/>
+            </view>
+          </view>
+
+          <view class="sheet-foot">
+            <view class="btn-ghost2" bindtap="closeGoodsEditor">取消</view>
+            <view class="btn-primary2" bindtap="saveGoods">保存</view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- ========== 订单（保留你的逻辑，只做简单排版） ========== -->
+    <block wx:if="{{tab==='orders'}}">
+      <view class="section-head">
+        <view class="section-title">订单管理</view>
+      </view>
+
+      <view class="seg2">
+        <view class="seg2-item {{ordersTab==='pending'?'on':''}}" data-tab="pending" bindtap="switchOrdersTab">待审核</view>
+        <view class="seg2-item {{ordersTab==='approved'?'on':''}}" data-tab="approved" bindtap="switchOrdersTab">已通过</view>
+        <view class="seg2-item {{ordersTab==='rejected'?'on':''}}" data-tab="rejected" bindtap="switchOrdersTab">已驳回</view>
+        <view class="seg2-item {{ordersTab==='shipped'?'on':''}}" data-tab="shipped" bindtap="switchOrdersTab">已发货</view>
+      </view>
+
+      <view class="card-list">
+        <view wx:if="{{ordersLoading}}" class="hint">加载中...</view>
+
+        <block wx:for="{{orders}}" wx:key="_id">
+          <view class="card" bindtap="openOrderDetail" data-id="{{item._id}}">
+            <view class="card-title2">{{item.itemTitle}}</view>
+            <view class="card-sub2">状态：{{item.status}} ｜ {{item.createdAtStr || ''}}</view>
+            <view class="card-sub2">收件：{{item.nick}} ｜ {{item.phone}}</view>
+          </view>
+        </block>
+
+        <view wx:if="{{!ordersLoading && (!orders || orders.length===0)}}" class="empty">暂无订单</view>
+      </view>
+
+      <!-- 订单详情弹层（不改你的字段） -->
+      <view class="mask" wx:if="{{orderDetailVisible}}" bindtap="closeOrderDetail">
+        <view class="sheet" catchtap="stopTap">
+          <view class="sheet-head">
+            <view class="sheet-title">订单详情</view>
+            <view class="sheet-close" bindtap="closeOrderDetail">✕</view>
+          </view>
+
+          <view class="sheet-body">
+            <view class="kv"><text class="k">商品</text><text class="v">{{curOrder.itemTitle}}</text></view>
+            <view class="kv"><text class="k">状态</text><text class="v">{{curOrder.status}}</text></view>
+            <view class="kv"><text class="k">昵称</text><text class="v">{{curOrder.nick}}</text></view>
+            <view class="kv"><text class="k">电话</text><text class="v">{{curOrder.phone}}</text></view>
+            <view class="kv"><text class="k">地址</text><text class="v">{{curOrder.address}}</text></view>
+
+            <view class="form-row">
+              <view class="label">备注/原因/发货信息</view>
+              <textarea class="ta" value="{{shipText}}" placeholder="用于驳回原因或发货/发券说明" bindinput="onShipText"/>
+            </view>
+          </view>
+
+          <view class="sheet-foot">
+            <view class="btn-danger2" bindtap="rejectOrder">驳回</view>
+            <view class="btn-ghost2" bindtap="approveOrder">通过</view>
+            <view class="btn-primary2" bindtap="markShipped">发货/发券</view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- ========== 通知（新增批量选择发送，其他不改） ========== -->
+    <block wx:if="{{tab==='notify'}}">
+      <view class="section-head">
+        <view class="section-title">站内信通知</view>
+      </view>
+
+      <view class="notify-panel">
+        <view class="btn-row">
+          <view class="btn-primary" bindtap="openNotifyAll">群发通知</view>
+          <view class="btn-ghost" bindtap="openNotifySelected">选择用户发送</view>
+        </view>
+
+        <view class="hint">订单操作也会自动发站内信；这里用于手动群发 / 单发 / 批量选择发送。</view>
+      </view>
+
+      <view class="mask" wx:if="{{notifyVisible}}" bindtap="closeNotify">
+        <view class="sheet" catchtap="stopTap">
+          <view class="sheet-head">
+            <view class="sheet-title">发送通知</view>
+            <view class="sheet-close" bindtap="closeNotify">✕</view>
+          </view>
+
+          <view class="sheet-body">
+            <view class="kv">
+              <text class="k">对象</text>
+              <text class="v">
+                {{notifyTarget==='all'?'全部用户':(notifyTarget==='one'?'单个用户':'已选择用户')}}
+              </text>
+            </view>
+
+            <view wx:if="{{notifyTarget==='one'}}" class="kv">
+              <text class="k">openid</text>
+              <text class="v">{{notifyOpenid}}</text>
+            </view>
+
+            <!-- 批量选择 -->
+            <view wx:if="{{notifyTarget==='selected'}}" class="select-wrap">
+              <view class="select-toolbar">
+                <view class="hint">
+                  已选 {{notifySelectedOpenids.length}} 人
+                  <text wx:if="{{notifyUsersLoading}}">（加载中...）</text>
+                </view>
+                <view class="toolbar-btns">
+                  <view class="btn-ghost2" bindtap="selectAllNotifyUsers">全选</view>
+                  <view class="btn-ghost2" bindtap="clearAllNotifyUsers">清空</view>
+                </view>
+              </view>
+
+              <scroll-view scroll-y="true" class="user-scroll">
+                <view wx:if="{{!notifyUsersLoading && (!notifyUsers || notifyUsers.length===0)}}" class="empty">
+                  暂无注册用户或 users 集合无数据
+                </view>
+
+                <block wx:for="{{notifyUsers}}" wx:key="openid">
+                  <view class="user-row"
+                        data-openid="{{item.openid || item._openid}}"
+                        catchtap="toggleNotifySelectUser">
+                    <view class="user-left">
+                      <view class="user-name">
+                        {{item.nick || item.nickname || item.name || '未命名用户'}}
+                      </view>
+                      <view class="user-sub">{{item.openid || item._openid}}</view>
+                    </view>
+
+                    <view class="user-right">
+                      <text class="check">{{item._checked ? '✓' : ''}}</text>
+                    </view>
+                  </view>
+                </block>
+              </scroll-view>
+            </view>
+
+            <view class="form-row">
+              <view class="label">标题</view>
+              <input class="ipt" value="{{notifyTitle}}" placeholder="例如：活动提醒" bindinput="onNotifyTitle"/>
+            </view>
+
+            <view class="form-row">
+              <view class="label">内容</view>
+              <textarea class="ta" value="{{notifyContent}}" placeholder="请输入通知内容" bindinput="onNotifyContent"/>
+            </view>
+          </view>
+
+          <view class="sheet-foot">
+            <view class="btn-ghost2" bindtap="closeNotify">取消</view>
+            <view class="btn-primary2" bindtap="submitNotify">发送</view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+  </view>
+</view>

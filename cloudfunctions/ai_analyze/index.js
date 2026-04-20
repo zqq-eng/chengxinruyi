@@ -1,200 +1,379 @@
 // cloudfunctions/ai_analyze/index.js
-const cloud = require('wx-server-sdk');
-const axios = require('axios');
+const cloud = require("wx-server-sdk");
+const axios = require("axios");
+const crypto = require("crypto");
 
-cloud.init({
-  env: cloud.DYNAMIC_CURRENT_ENV
-});
+cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
+const db = cloud.database();
 
-// 统一封装：调用大模型
-async function callBigModel(content) {
-  const apiKey =
-    process.env.ZHIPU_API_KEY||
-    '在这里改成你自己的大模型 API Key'; // 建议改成环境变量
+/* ---------------- utils ---------------- */
+function pad2(x) { return String(x).padStart(2, "0"); }
+function nowStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+}
+function safeStr(s){ return (s===null||s===undefined) ? "" : String(s); }
+function clip(s,maxLen=4000){ s=safeStr(s); return s.length<=maxLen ? s : (s.slice(0,maxLen)+"…"); }
+function sha1(obj){ return crypto.createHash("sha1").update(JSON.stringify(obj||{})).digest("hex"); }
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
 
-  const url = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
+/* ---------------- cache (10 min) ---------------- */
+async function readCache(cacheKey){
+  try{
+    const res = await db.collection("ai_cache").doc(cacheKey).get();
+    const data = res.data;
+    if(!data) return null;
+    const ts = data.createdAtMs || 0;
+    if(Date.now() - ts > 10 * 60 * 1000) return null;
+    return data.payload || null;
+  }catch(e){
+    return null;
+  }
+}
+async function writeCache(cacheKey,payload){
+  try{
+    await db.collection("ai_cache").doc(cacheKey).set({
+      data:{ createdAtMs: Date.now(), payload }
+    });
+  }catch(e){}
+}
 
-  try {
-    const resp = await axios.post(
-      url,
-      {
-        model: 'glm-4-flash',
-        messages: [
-          {
-            role: 'user',
-            content
-          }
-        ]
-      },
-      {
-        timeout: 15000,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + apiKey
-        }
-      }
-    );
+/* ---------------- history render ---------------- */
+function renderHistory(history=[]){
+  const arr = Array.isArray(history) ? history : [];
+  return arr.slice(-12).map(m=>{
+    const role = m.role === "assistant" ? "AI" : "用户";
+    const text = safeStr(m.text).replace(/\n/g," ");
+    return `${role}：${clip(text,220)}`;
+  }).join("\n");
+}
 
-    const choice = resp.data?.choices?.[0];
-    const text = choice?.message?.content || '';
-    return text;
-  } catch (err) {
-    console.error('❌ AI 请求出错:', err);
-    return '';
+/* ---------------- JSON helpers ---------------- */
+function stripCodeFence(s){
+  s = safeStr(s).trim();
+  s = s.replace(/^```(?:json)?/i,"").replace(/```$/i,"").trim();
+  return s;
+}
+function tryParseJSON(s){
+  s = stripCodeFence(s);
+  if(!s) return null;
+  try{ return JSON.parse(s); }catch(e){}
+  const start = s.indexOf("{"), end = s.lastIndexOf("}");
+  if(start >= 0 && end > start){
+    const cut = s.slice(start, end+1);
+    try{ return JSON.parse(cut); }catch(e){}
+  }
+  return null;
+}
+function normArr(a){ return Array.isArray(a) ? a.map(x=>safeStr(x).trim()).filter(Boolean) : []; }
+function normExtracted(ex){
+  ex = ex && typeof ex==="object" ? ex : {};
+  return {
+    foods: normArr(ex.foods),
+    drinks: normArr(ex.drinks),
+    exercise: normArr(ex.exercise),
+    sleep: normArr(ex.sleep),
+    emotions: normArr(ex.emotions),
+    stressors: normArr(ex.stressors),
+    numbers: normArr(ex.numbers)
+  };
+}
+function isValidLevel(x){ return ["健康","一般","偏高风险","高风险","无法判断"].includes(x); }
+
+/* ✅ 把“模型原话”优先当作回复（不再动不动走固定兜底模板） */
+function buildDataFromRawText(rawText, type){
+  const t = safeStr(rawText).trim();
+  const reply = t || "我收到了，但这次模型没有返回有效内容。你再发一句我马上继续。";
+  return {
+    type,
+    assistantReply: reply,
+    healthCheck: { level: "一般", reasons: ["基于当前对话给出的综合建议（非诊断）"] },
+    advice: [],
+    followUpQuestion: "",
+    extracted: { foods:[],drinks:[],exercise:[],sleep:[],emotions:[],stressors:[],numbers:[] }
+  };
+}
+
+function validateAndFixJSON(obj, type){
+  if(!obj || typeof obj!=="object") return null;
+
+  const assistantReply = safeStr(obj.assistantReply||obj.reply||obj.message).trim();
+  const hcObj = obj.healthCheck && typeof obj.healthCheck==="object" ? obj.healthCheck : {};
+  const levelRaw = safeStr(hcObj.level||obj.level).trim();
+  const reasons = normArr(hcObj.reasons||obj.reasons).slice(0,6);
+  const advice = normArr(obj.advice).slice(0,8);
+  const followUpQuestion = safeStr(obj.followUpQuestion||obj.question||obj.followUp).trim();
+  const extracted = normExtracted(obj.extracted);
+
+  const level = isValidLevel(levelRaw) ? levelRaw : "一般";
+  const finalReasons = reasons.length ? reasons : ["基于当前描述给出综合建议（非诊断）"];
+
+  // ✅ 不强行塞“固定三条建议”，避免你觉得每次都一样
+  const finalAdvice = advice; // 允许为空
+  const q = followUpQuestion || "";
+
+  // ✅ assistantReply 必须有，没有就组装一个轻量版（仍然变化依赖内容）
+  let reply = assistantReply;
+  if(!reply){
+    reply =
+      `【你目前的状况】\n` +
+      `我已收到你的描述，会基于现有信息先给建议（非诊断）。\n\n` +
+      `【建议】\n` +
+      (finalAdvice.length ? finalAdvice.map((x,i)=>`${i+1}）${x}`).join("\n") : "你可以再补充一点细节（如目标/频率/份量），我能更具体。") +
+      (q ? `\n\n【我想再确认一句】\n${q}` : "");
+  }
+
+  return {
+    type,
+    assistantReply: reply,
+    healthCheck: { level, reasons: finalReasons },
+    advice: finalAdvice,
+    followUpQuestion: q,
+    extracted
+  };
+}
+
+/* =========================================================
+   ✅ 方舟 Responses API：超鲁棒提取文本
+   关键修复：以前抓不到 text → raw 为空 → 每次走固定兜底
+   ========================================================= */
+
+function deepCollectText(node, out, depth){
+  if(node === null || node === undefined) return;
+  if(depth > 8) return; // 防爆
+
+  const t = typeof node;
+  if(t === "string"){
+    const s = node.trim();
+    // 避免把 key/短字符串也塞进来
+    if(s.length >= 2) out.push(s);
+    return;
+  }
+  if(t !== "object") return;
+
+  if(Array.isArray(node)){
+    for(const it of node) deepCollectText(it, out, depth+1);
+    return;
+  }
+
+  // 对常见字段优先提取
+  const candidates = ["output_text", "text", "content", "message", "answer"];
+  for(const k of candidates){
+    if(Object.prototype.hasOwnProperty.call(node, k)){
+      deepCollectText(node[k], out, depth+1);
+    }
+  }
+
+  // 再遍历所有字段兜底
+  for(const k of Object.keys(node)){
+    deepCollectText(node[k], out, depth+1);
   }
 }
 
-exports.main = async (event, context) => {
-  console.log('收到 event:', JSON.stringify(event, null, 2));
+function pickTextFromArk(respData){
+  if(!respData) return "";
 
-  const { manualInput = {}, userProfile = {}, foodImageFileId = '' } = event;
-  const {
-    body = '',
-    food = '',
-    stress = ''
-  } = manualInput || {};
+  // 常见：output_text
+  if(typeof respData.output_text === "string" && respData.output_text.trim()){
+    return respData.output_text.trim();
+  }
 
-  // ==== 1. 处理食物图片：把 fileID 换成 HTTPS 链接 ====
-  let foodImageUrl = '';
-  if (foodImageFileId) {
-    try {
-      const res = await cloud.getTempFileURL({
-        fileList: [foodImageFileId]
-      });
-      const file = res.fileList && res.fileList[0];
-      if (file && file.tempFileURL) {
-        foodImageUrl = file.tempFileURL;
-        console.log('✅ 获取到 food 图片临时链接:', foodImageUrl);
+  // 常见：output[].content[].text / output[].content[].output_text
+  const output = respData.output;
+  if(Array.isArray(output)){
+    const texts = [];
+    for(const item of output){
+      const content = item && item.content;
+      if(Array.isArray(content)){
+        for(const c of content){
+          if(c && typeof c.text === "string" && c.text.trim()) texts.push(c.text.trim());
+          if(c && typeof c.output_text === "string" && c.output_text.trim()) texts.push(c.output_text.trim());
+        }
       }
-    } catch (e) {
-      console.error('❌ 获取食物图片 tempFileURL 失败:', e);
     }
+    if(texts.length) return texts.join("\n").trim();
   }
 
-  // ==== 2. 构造三个不同维度的提示词 ====
+  // 递归兜底：把所有 text 收集出来，再拼最大块
+  const bag = [];
+  deepCollectText(respData, bag, 0);
 
-  // 2.1 身体情况（加上年龄 + 性别）
-  const age = userProfile.age || '';
-  const gender = userProfile.gender || ''; // 建议前端以后也加上
+  // 过滤明显不是答案的噪声（模型id、baseUrl 之类）
+  const cleaned = bag
+    .map(s=>s.trim())
+    .filter(s=>s.length >= 10) // 答案一般更长
+    .filter(s=>!/^https?:\/\//i.test(s));
 
-  let bodyPrompt =
-    '你是一名非常温柔、细致的健康管理师，要帮用户写一份「身体健康小报告」。保证每次生成都是稳定的格式，不饿能随意缩减\n' +
-    '请用亲切、安慰的语气，像和好朋友聊天一样，但内容要尽量专业、详细，分小标题、分条列出并且男女生成的格式都一样详细。\n\n';
+  if(!cleaned.length) return "";
 
-  if (age || gender) {
-    bodyPrompt += '已知基本信息：\n';
-    if (age) bodyPrompt += `- 年龄：${age} 岁\n`;
-    if (gender) bodyPrompt += `- 性别：${gender}\n`;
+  // 取最长的那段作为“模型主输出”
+  cleaned.sort((a,b)=>b.length-a.length);
+  return cleaned[0].trim();
+}
+
+async function callArkResponses({ model, systemText, userText, timeoutMs=20000, maxRetry=2 }){
+  const apiKey = process.env.ARK_API_KEY || "";
+  if(!apiKey){
+    console.error("❌ 缺少 ARK_API_KEY 环境变量");
+    return "";
   }
 
-  if (body && body.trim()) {
-    bodyPrompt += `\n【用户填写的身体情况】\n${body}\n\n`;
-  }
+  const baseUrl = process.env.ARK_BASE_URL || "https://ark.cn-beijing.volces.com";
+  const url = baseUrl.replace(/\/$/,"") + "/api/v3/responses";
 
-  bodyPrompt +=
-    '请按照下面结构输出（小标题可以用正式一点的风格）：\n' +
-    '① 【体型与指标概览】\n' +
-    '- 用 2～3 句话整体评价当前身高体重是否匹配、体重大致处于偏瘦/正常/偏重哪个区间（如果缺少数据就根据常见情况温柔说明，不要吓人）。\n' +
-    '- 如果能估算 BMI，就给出大致范围和对应的健康解释。\n\n' +
-    '② 【生活习惯深度点评】\n' +
-    '- 分别点评：运动频率、运动强度、作息与睡眠情况、饮食节奏（有无常吃外卖、三餐是否规律等，可以适当合理推断）。\n' +
-    '- 每一点用 1～2 句话说明“哪里做得很好”“哪里可以再小小优化”。\n\n' +
-    '③ 【潜在小风险提醒】\n' +
-    '- 列出 2～4 条“可能需要留意”的小风险，比如：长期熬夜、久坐、饮食结构单一、体脂可能偏高或偏低等。\n' +
-    '- 每条后面都要加一句安抚的话，强调“只是提醒，并不是严重问题”。\n\n' +
-    '④ 【可以立刻开始的小改变】\n' +
-    '- 给出「今天就可以做的 3 件小事」，要求非常具体，比如“今晚 23:30 前躺到床上，手机调成勿扰”等。\n' +
-    '- 给出一个「未来一周的轻计划」，按照 周一～周日，用很简短的方式写（例如：周一：20 分钟快走 + 早点睡；周二：拉伸 10 分钟 等）。\n\n' +
-    '⑤ 【温柔收尾】\n' +
-    '- 用 2～3 句话鼓励对方，强调“你已经做得很好了”“慢慢来就好”，禁止用任何吓人的词语（比如“严重”“危险”“必须立刻”之类不要出现）。\n';
-  // 2.2 饮食与食物（图片和文字分开逻辑）
-  let foodPrompt = '';
-  if (foodImageUrl) {
-    // ✅ 有图片：只基于图片识别，不和文字混在一起
-    foodPrompt =
-      `你是一名专业营养师，请只根据这张食物照片进行分析。\n` +
-      `图片地址：${foodImageUrl}\n\n` +
-      `请完成以下内容：\n` +
-      `1）图片中主要食物大概是什么（例如：奶茶、炸鸡、汉堡、披萨等）；\n` +
-      `2）估算整份食物的大致热量区间（举例：300～400 千卡）；\n` +
-      `3）从减脂/保持身材角度，这样的食物一周大概可以吃几次比较合适；\n` +
-      `4）给出 2～3 条温柔、不苛刻的饮食建议（比如：可以换成什么更轻盈一点的搭配）。\n\n` +
-      `回答时请用第二人称“你”，语气温柔一点。`;
-  } else if (food && food.trim()) {
-    // ✅ 没图片，只有文字：按饮食习惯分析
-    foodPrompt =
-      `你是一名专业营养师，请根据下面这段饮食描述，从热量、营养均衡、对体重的影响等方面做分析，并给出简单可执行的调整建议。\n\n` +
-      `【饮食描述】${food}\n\n` +
-      `请分条回答：\n1）整体热量和饮食结构的评价；\n2）可能会导致发胖或不适的点；\n3）可以马上尝试的 3 条小调整建议。`;
-  }
-
-  // 2.3 心理压力
-  let stressPrompt = '';
-  if (stress && stress.trim()) {
-    stressPrompt =
-      `你是一名温柔的心理咨询师，请用非常温暖、理解的语气，回应下面这段心理压力/情绪描述。\n\n` +
-      `【心理感受】${stress}\n\n` +
-      `请：\n1）先共情，对 TA 的感受表示理解；\n2）帮 TA 梳理可能的压力来源；\n3）给出 2～3 条很具体、能立刻尝试的小建议（比如可以先完成什么小目标，如何跟身边的人沟通，如何给自己一点鼓励）。`;
-  }
-
-  // ==== 3. 并行调用大模型 ====
-  const tasks = [];
-
-  // 身体
-  if (bodyPrompt.trim() && body.trim()) {
-    tasks.push(callBigModel(bodyPrompt));
-  } else {
-    tasks.push(Promise.resolve(''));
-  }
-
-  // 食物：优先图片，其次文字，都没有就不分析
-  if (foodPrompt.trim()) {
-    tasks.push(callBigModel(foodPrompt));
-  } else {
-    tasks.push(Promise.resolve(''));
-  }
-
-  // 心理
-  if (stressPrompt.trim()) {
-    tasks.push(callBigModel(stressPrompt));
-  } else {
-    tasks.push(Promise.resolve(''));
-  }
-
-  const [bodyReply, foodReply, stressReply] = await Promise.all(tasks);
-
-  // ==== 4. 兜底文案 ====
-  const finalBody =
-    bodyReply ||
-    '根据你填写的身高、体重和作息情况，目前整体看是比较健康的。保持适量运动和规律睡眠，就是对身体最好的温柔。';
-
-  let finalFood = '';
-  if (foodReply) {
-    finalFood = foodReply;
-  } else if (foodImageUrl) {
-    finalFood =
-      '我没有成功从图片中识别出具体食物种类，但一般来说，甜饮料、油炸和高脂肪零食的热量都比较高，适当控制频率，多搭配蔬菜和蛋白质，会更有利于身材和健康。';
-  } else if (food && food.trim()) {
-    finalFood =
-      '你已经开始关注自己的饮食，这是很棒的一步。可以从少糖、少油、多蔬菜和优质蛋白开始一点点调整，慢慢来就好。';
-  } else {
-    finalFood =
-      '还没有记录饮食情况。如果方便的话，可以简单写写你最近几天都吃了些什么，我就可以帮你看一看热量和搭配啦。';
-  }
-
-  const finalStress =
-    stressReply ||
-    '如果最近你觉得还挺平稳的，那就继续好好照顾自己。如果哪天觉得累了、难过了，也可以随时把感受写下来，让别人和 AI 一起来听你说。';
-
-  const ret = {
-    ok: true,
-    data: {
-      body: finalBody,
-      food: finalFood,
-      stress: finalStress
-    }
+  // ✅ 云函数里必须 stream:false（你截图 curl 是 true，但那是终端流式）
+  const payload = {
+    model,
+    stream: false,
+    input: [
+      { role: "system", content: [{ type: "input_text", text: systemText }] },
+      { role: "user", content: [{ type: "input_text", text: userText }] }
+    ],
+    temperature: 0.55, // 更像正常聊天
+    top_p: 0.9
   };
 
-  console.log('返回结果:', JSON.stringify(ret, null, 2));
-  return ret;
+  let lastErr = null;
+  for(let i=0;i<=maxRetry;i++){
+    try{
+      const resp = await axios.post(url, payload, {
+        timeout: timeoutMs,
+        headers: {
+          "Content-Type":"application/json",
+          Authorization:"Bearer " + apiKey
+        }
+      });
+
+      const txt = pickTextFromArk(resp.data);
+      return safeStr(txt).trim();
+    }catch(err){
+      lastErr = err;
+      if(i < maxRetry) await sleep(300 + Math.floor(Math.random()*200));
+    }
+  }
+
+  console.error("❌ 方舟调用失败:", lastErr && (lastErr.message || lastErr));
+  return "";
+}
+
+/* ---------------- main ---------------- */
+exports.main = async (event, context) => {
+  const {
+    targetType="",
+    message="",
+    history=[],
+    foodImageUrl: foodImageFileId="",
+    userProfile={}
+  } = event || {};
+
+  const type = (targetType==="body"||targetType==="food"||targetType==="stress") ? targetType : "body";
+  const userMsg = safeStr(message).trim();
+  const histText = renderHistory(history);
+
+  // food: fileID -> temp URL（保留）
+  let foodImageUrl = "";
+  if(type==="food" && foodImageFileId){
+    try{
+      const res = await cloud.getTempFileURL({ fileList:[foodImageFileId] });
+      const file = res.fileList && res.fileList[0];
+      if(file && file.tempFileURL) foodImageUrl = file.tempFileURL;
+    }catch(e){
+      console.error("❌ 获取图片 tempFileURL 失败:", e);
+    }
+  }
+
+  // 空输入提示
+  const noInput = !userMsg && !(type==="food" && foodImageFileId);
+  if(noInput){
+    const data = {
+      type,
+      assistantReply:
+        "我还没收到你的具体内容～\n" +
+        "你用一句话告诉我就行：\n" +
+        (type==="body"
+          ? "例如：身高170cm 体重60kg 一周运动3次 睡眠6小时（目标：减脂）"
+          : type==="food"
+            ? "例如：晚饭米饭一碗+红烧肉+奶茶（大概份量/是否全糖）"
+            : "例如：最近压力来自考试，持续两周，睡眠变差"),
+      healthCheck:{ level:"无法判断", reasons:["没有收到有效描述，无法分析"] },
+      advice:[],
+      followUpQuestion:"你愿意用一句话把情况描述一下吗？",
+      extracted:{ foods:[],drinks:[],exercise:[],sleep:[],emotions:[],stressors:[],numbers:[] }
+    };
+    return { ok:true, data, cached:false, at: nowStr() };
+  }
+
+  // ✅ 默认 model 用你截图这个
+  const model = process.env.ARK_MODEL_ID || "deepseek-v3-2-251201";
+
+  // ✅ system：取消“信息不足只追问”的死板约束
+  const systemText =
+    "你是一个“健康分析对话助手”，像正常AI聊天：自然、具体、可执行，不要像问卷。\n" +
+    "输出必须是严格 JSON（不要 markdown/代码块/多余文字）。\n" +
+    "不管信息够不够，你都要先给分析和建议，再决定是否追问。\n" +
+    "不要编造用户没说过的数据；可以推断但要写“可能/建议核实”。\n" +
+    "不要下诊断结论，用“可能原因/建议检查/如有症状请就医”。\n" +
+    "followUpQuestion：只有真的缺关键变量才问1句，否则输出空字符串。";
+
+  const prompt =
+`只输出 JSON，结构必须完全符合：
+{
+  "type":"${type}",
+  "assistantReply":"",
+  "healthCheck":{"level":"健康/一般/偏高风险/高风险/无法判断","reasons":[]},
+  "advice":[],
+  "followUpQuestion":"",
+  "extracted":{"foods":[],"drinks":[],"exercise":[],"sleep":[],"emotions":[],"stressors":[],"numbers":[]}
+}
+
+对话上下文：
+${histText || "（无）"}
+
+用户本句：
+${userMsg}
+
+补充信息：
+- userProfile：${clip(JSON.stringify(userProfile||{}), 900)}
+- 若为饮食且有图片：${foodImageUrl ? "用户上传了食物图片（你可以提醒用户补充菜名/份量）" : "无图片"}
+
+要求（必须做到）：
+1) assistantReply 必须包含：
+   【你目前的身体状况】/【最优先的3个建议】/【需要注意或何时就医】/（可选）【我想再确认一句】
+2) 先分析、先给建议，不要先问一堆问题。
+3) 每次回复必须紧扣用户这句内容（引用关键词/数字/食物/症状），不要套话。
+4) followUpQuestion 可为空字符串。
+`;
+
+  // ✅ 缓存：为了避免“看起来永远一样”，允许通过环境变量关闭缓存
+  const useCache = (process.env.AI_USE_CACHE || "1") !== "0";
+  const cacheKey = sha1({
+    type,
+    model,
+    msg: clip(userMsg, 1400),
+    hist: clip(histText, 1400),
+    img: foodImageUrl ? "1" : "0"
+  });
+
+  if(useCache){
+    const cached = await readCache(cacheKey);
+    if(cached) return { ok:true, data: cached, cached:true, at: nowStr() };
+  }
+
+  const raw = await callArkResponses({
+    model,
+    systemText,
+    userText: prompt,
+    timeoutMs: 20000,
+    maxRetry: 2
+  });
+
+  // ✅ 关键修复：就算 JSON 解析失败，也把模型原话返回（不再固定兜底）
+  const json = tryParseJSON(raw);
+  let data = validateAndFixJSON(json, type);
+  if(!data){
+    data = buildDataFromRawText(raw, type);
+  }
+
+  if(useCache) await writeCache(cacheKey, data);
+  return { ok:true, data, cached:false, at: nowStr() };
 };

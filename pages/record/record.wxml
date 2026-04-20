@@ -1,10 +1,17 @@
 <particle-bg>
   <view class="record-page">
-<!-- 顶部返回 + 标题 -->
-<view class="top-bar">
-      <button class="back-btn" bindtap="goBack" style="position: relative; left: -1rpx; top: 1475rpx; width: 297rpx; height: 75rpx; display: block; box-sizing: border-box">退出日历</button>
-      
+    <!-- 顶部返回 -->
+    <view class="top-bar">
+      <button
+        class="back-btn"
+        bindtap="goBack"
+        style="position: relative; left: -1rpx; top: 1475rpx; width: 297rpx; height: 75rpx; display: block; box-sizing: border-box"
+      >
+        退出日历
+      </button>
     </view>
+
+    <!-- 日历卡片（保持你原样） -->
     <view class="card" style="width: 643rpx; height: 708rpx; display: block; box-sizing: border-box">
       <view class="calendar-header">
         <view class="cal-arrow" bindtap="prevMonth">〈</view>
@@ -13,7 +20,9 @@
       </view>
 
       <view class="calendar-week-row">
-        <view class="week-cell" wx:for="{{weekNames}}" wx:key="index">{{item}}</view>
+        <view class="week-cell" wx:for="{{weekNames}}" wx:key="index">
+          {{item}}
+        </view>
       </view>
 
       <view class="calendar-grid">
@@ -26,16 +35,18 @@
         >
           <view class="day-number">{{item.day}}</view>
 
-          <!-- 体重爪印 -->
+          <!-- 体重记录爪印 -->
           <view wx:if="{{item.hasRecord}}" class="weight-paw">🐾</view>
 
           <!-- 运动爪印 -->
-          <view wx:if="{{item.sportLevel>0}}" class="sport-paw">{{item.sportIcon}}</view>
+          <view wx:if="{{item.sportLevel>0}}" class="sport-paw">
+            {{item.sportIcon}}
+          </view>
         </view>
       </view>
     </view>
 
-    <!-- 体重+运动详情 -->
+    <!-- 体重 + 运动详情（保持你原样） -->
     <view class="card">
       <view class="section-title">详情：{{selectedDate || '请选择日期'}}</view>
 
@@ -45,18 +56,162 @@
         <view class="detail-line">⚡ 配速：{{sportInfo.paceStr}}</view>
       </view>
 
+      <!-- 体重输入 -->
       <view class="input-wrapper">
         <view class="input-label">体重（kg）</view>
-        <input style="width: 589rpx; display: block; box-sizing: border-box; height: 77rpx" class="pink-input" value="{{inputWeight}}" bindinput="onWeightInput"/>
+        <input
+          class="pink-input"
+          style="width: 589rpx; display: block; box-sizing: border-box; height: 77rpx"
+          value="{{inputWeight}}"
+          bindinput="onWeightInput"
+        />
       </view>
 
+      <!-- BMI 展示（原备注位，不改布局） -->
       <view class="input-wrapper">
-        <view class="input-label">备注</view>
-        <input style="width: 589rpx; display: block; box-sizing: border-box; height: 75rpx" class="pink-input" value="{{inputNote}}" bindinput="onNoteInput"/>
+        <view class="input-label">BMI 状态</view>
+        <input
+          class="pink-input"
+          style="width: 589rpx; display: block; box-sizing: border-box; height: 75rpx"
+          value="{{inputNote}}"
+          disabled
+        />
       </view>
 
       <view class="btn-area">
-        <button class="irregular-btn" bindtap="onSaveRecord" style="position: relative; left: 118rpx; top: 0rpx">💗 保存记录</button>
+        <button
+          class="irregular-btn"
+          bindtap="onSaveRecord"
+          style="position: relative; left: 118rpx; top: 0rpx"
+        >
+          保存记录
+        </button>
+      </view>
+    </view>
+
+    <!-- ===================== ✅最终：饮食推荐模块（圆形卡片 + 三餐折叠 + 居中弹窗） ===================== -->
+    <view class="card">
+      <!-- 圆形卡片入口 -->
+      <view class="diet-circle" bindtap="onDietCardTap">
+        <view class="diet-circle-inner">
+          <view class="diet-circle-title">饮食推荐</view>
+
+          <view class="diet-circle-sub" wx:if="{{bmiTodayInfo}}">
+            BMI {{bmiTodayInfo.bmi}}{{bmiTodayInfo.arrow}} · {{bmiTodayInfo.range}}
+          </view>
+          <view class="diet-circle-sub" wx:else>
+            先点日历选择日期
+          </view>
+
+          <view class="diet-circle-hint">
+            点击{{dietCardOpen ? '收起' : '展开'}}
+          </view>
+        </view>
+      </view>
+
+      <!-- 面板：三餐按钮 + 折叠菜单 -->
+      <view wx:if="{{dietCardOpen}}" class="diet-panel">
+
+        <!-- 三餐按钮 -->
+        <view class="meal-btn-row">
+          <view class="meal-btn" data-meal="breakfast" bindtap="onMealToggle">
+            🌅 早餐
+            <text class="meal-arrow">{{mealOpen.breakfast ? '▲' : '▼'}}</text>
+          </view>
+          <view class="meal-btn" data-meal="lunch" bindtap="onMealToggle">
+            ☀️ 午餐
+            <text class="meal-arrow">{{mealOpen.lunch ? '▲' : '▼'}}</text>
+          </view>
+          <view class="meal-btn" data-meal="dinner" bindtap="onMealToggle">
+            🌙 晚餐
+            <text class="meal-arrow">{{mealOpen.dinner ? '▲' : '▼'}}</text>
+          </view>
+        </view>
+
+        <!-- 早餐列表（按BMI生成：dailyMenus.breakfast） -->
+        <view wx:if="{{mealOpen.breakfast}}" class="meal-list">
+          <view class="meal-title">🌅 今日早餐推荐</view>
+          <view
+            wx:for="{{dailyMenus.breakfast}}"
+            wx:key="name"
+            class="dish-item"
+            data-dish="{{item}}"
+            bindtap="onDishTap"
+          >
+            <text class="dish-dot">•</text>
+            <text class="dish-main">{{item.nameMain}}</text>
+            <text class="dish-tag">{{item.nameTag}}</text>
+            <text class="dish-kcal">｜{{item.kcal}}kcal</text>
+          </view>
+
+          <view wx:if="{{!dailyMenus.breakfast || dailyMenus.breakfast.length===0}}" class="empty-tip">
+            暂无推荐（请先保存体重或选择有记录的日期）
+          </view>
+        </view>
+
+        <!-- 午餐列表 -->
+        <view wx:if="{{mealOpen.lunch}}" class="meal-list">
+          <view class="meal-title">☀️ 今日午餐推荐</view>
+          <view
+            wx:for="{{dailyMenus.lunch}}"
+            wx:key="name"
+            class="dish-item"
+            data-dish="{{item}}"
+            bindtap="onDishTap"
+          >
+            <text class="dish-dot">•</text>
+            <text class="dish-main">{{item.nameMain}}</text>
+            <text class="dish-tag">{{item.nameTag}}</text>
+            <text class="dish-kcal">｜{{item.kcal}}kcal</text>
+          </view>
+
+          <view wx:if="{{!dailyMenus.lunch || dailyMenus.lunch.length===0}}" class="empty-tip">
+            暂无推荐（请先保存体重或选择有记录的日期）
+          </view>
+        </view>
+
+        <!-- 晚餐列表 -->
+        <view wx:if="{{mealOpen.dinner}}" class="meal-list">
+          <view class="meal-title">🌙 今日晚餐推荐</view>
+          <view
+            wx:for="{{dailyMenus.dinner}}"
+            wx:key="name"
+            class="dish-item"
+            data-dish="{{item}}"
+            bindtap="onDishTap"
+          >
+            <text class="dish-dot">•</text>
+            <text class="dish-main">{{item.nameMain}}</text>
+            <text class="dish-tag">{{item.nameTag}}</text>
+            <text class="dish-kcal">｜{{item.kcal}}kcal</text>
+          </view>
+
+          <view wx:if="{{!dailyMenus.dinner || dailyMenus.dinner.length===0}}" class="empty-tip">
+            暂无推荐（请先保存体重或选择有记录的日期）
+          </view>
+        </view>
+
+      </view>
+    </view>
+    <!-- ===================== ✅饮食推荐模块结束 ===================== -->
+
+    <!-- ✅居中弹窗：菜品详情（屏幕正中间） -->
+    <view wx:if="{{selectedDish}}" class="modal-mask" bindtap="closeDishDetail">
+      <view class="modal-card" catchtap="true">
+        <view class="modal-title">📌 菜品详情</view>
+
+        <view class="modal-name">{{selectedDish.name}}</view>
+        <view class="modal-line">菜系：{{selectedDish.cuisine}}</view>
+        <view class="modal-line">热量：{{selectedDish.kcal}} kcal</view>
+        <view class="modal-line">
+          营养：蛋白 {{selectedDish.p}}g｜脂肪 {{selectedDish.f}}g｜碳水 {{selectedDish.c}}g
+        </view>
+        <view class="modal-price">价格：¥ {{selectedDish.price}}</view>
+
+        <view class="modal-btn-row">
+          <button class="modal-btn-primary" bindtap="confirmOrder">订餐预约</button>
+          <button class="modal-btn-ghost" bindtap="closeDishDetail">关闭</button>
+        </view>
       </view>
     </view>
 

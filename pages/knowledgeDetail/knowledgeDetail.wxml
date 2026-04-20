@@ -1,0 +1,17 @@
+<view class="kd-page">
+  <view class="kd-card">
+    <view class="kd-title">{{item.title}}</view>
+    <view class="kd-meta">{{item.source}}<text wx:if="{{item.date}}"> · {{item.date}}</text></view>
+
+    <view class="kd-section">内容摘要</view>
+    <view class="kd-summary">{{item.summary}}</view>
+
+    <view class="kd-actions">
+      <button class="kd-btn" size="default" bindtap="copyLink">复制原文链接</button>
+    </view>
+
+    <view class="kd-note">
+      提示：若原文站点启用了安全防护，请将链接复制到浏览器打开查看全文。
+    </view>
+  </view>
+</view>

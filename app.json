@@ -8,9 +8,13 @@
     "pages/appointment/appointment",
     "pages/workout/workout",
     "pages/run/run",
-    "pages/sportStats/sportStats",
+    "pages/adminMall/adminMall",
+    "pages/fitnessKnowledge/fitnessKnowledge",
+    "pages/mall/mall",
     "pages/record/record",
     "pages/profile/profile",
+    "pages/webview/webview",
+    "pages/knowledgeDetail/knowledgeDetail",
     "pages/admin_import/admin_import",
     "pages/adminLogin/adminLogin",
     "pages/adminPanel/adminPanel",
@@ -18,6 +22,9 @@
     "pages/adminSport/adminSport",
     "pages/adminSportDetail/adminSportDetail",
     "pages/admin_appointment/admin_appointment",
+    "pages/monthlyReport/monthlyReport",
+    "pages/dietPhoto/dietPhoto",
+    "pages/sleepMusic/sleepMusic",
     "pages/sportTrend/sportTrend"
   ],
 
@@ -29,28 +36,29 @@
     "navigationBarTextStyle": "black"
   },
 
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于跑步打卡记录运动轨迹、距离、配速与运动统计展示"
+    }
+  },
+
+  "requiredPrivateInfos": [
+    "getLocation",
+    "startLocationUpdate",
+    "onLocationChange"
+  ],
+
   "tabBar": {
     "color": "#9b7bb8",
     "selectedColor": "#ff6fa8",
     "backgroundColor": "#ffffff",
     "borderStyle": "white",
     "list": [
-      {
-        "pagePath": "pages/home/home",
-        "text": "体重"
-      },
-      {
-        "pagePath": "pages/ai/ai",
-        "text": "AI分析"
-      },
-      {
-        "pagePath": "pages/community/community",
-        "text": "社区"
-      },
-      {
-        "pagePath": "pages/profile/profile",
-        "text": "我的"
-      }
+      { "pagePath": "pages/home/home", "text": "首页" },
+      { "pagePath": "pages/ai/ai", "text": "AI分析" },
+      { "pagePath": "pages/mall/mall", "text": "商城" },
+      { "pagePath": "pages/community/community", "text": "社区" },
+      { "pagePath": "pages/profile/profile", "text": "我的" }
     ]
   },
 

@@ -1,8 +1,20 @@
-/* 页面整体：淡入动画 + 高级灰蓝背景 */
+/* 页面整体：淡绿→淡蓝的高级渐变 */
 .appointment-page {
-  padding: 16px 12px 22px;
-  background: linear-gradient(180deg, #f6f8fc 0%, #edf2fb 100%);
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f2fff8 0%, #eef7ff 100%);
   animation: pageFadeIn 0.6s ease-out;
+  color: #0f1f17;
+  position: relative;
+
+  /* ✅ 关键：底部有固定按钮，页面需要留空间 */
+  padding: 16px 12px 0;
+}
+
+/* ✅ iOS 必须：滚动容器 */
+.ap-scroll{
+  height: 100vh;
+  box-sizing: border-box;
+  padding-bottom: 0; /* 真实底部空间由 ap-bottom-space 提供 */
 }
 
 /* 页面淡入动画 */
@@ -11,187 +23,263 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* 通用文字颜色 */
-.ap-sub {
-  font-size: 12px;
-  color: #4d5f80;
-  margin: 4px 2px 8px;
-  line-height: 1.5;
+/* 顶部浮动装饰：不挡点击 */
+.float-deco {
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
 }
 
-/* 顶部装饰：高级玻璃拟态 + 蓝色光影 */
 .ap-deco-cloud {
-  width: 90px;
-  height: 38px;
-  background: rgba(255, 255, 255, 0.7);
+  width: 92px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.72);
   border-radius: 999px;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
   top: 6vh;
   right: 14px;
-  box-shadow: 0 8px 22px rgba(60, 100, 200, 0.25);
+  box-shadow: 0 10px 24px rgba(28, 185, 125, 0.16), 0 8px 22px rgba(60, 120, 220, 0.10);
   animation: cloudFloat 4s ease-in-out infinite;
 }
 
-/* 浮动动画（高级动效） */
 @keyframes cloudFloat {
   0%   { transform: translateY(0px); }
   50%  { transform: translateY(-6px); }
   100% { transform: translateY(0px); }
 }
 
-/* picker 文本样式 */
-.picker-display {
-  display: flex;
-  align-items: center;
-  min-height: 40px;
-  font-size: 14px;
-  color: #1a3d6f;
+/* 卡片 */
+.card {
+  position: relative;
+  z-index: 1;
+  margin-top: 16px;
+  padding: 18px 16px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(14px);
+  box-shadow:
+    0 10px 26px rgba(28, 185, 125, 0.12),
+    0 8px 22px rgba(60, 120, 220, 0.08);
+  overflow: hidden;
 }
 
-/* 容器行布局 */
-.flex-row { display: flex; }
+/* 标题 */
+.page-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #16a06b;
+  letter-spacing: 0.5px;
+}
+
+.ap-sub {
+  font-size: 12px;
+  color: #2f6fb5;
+  margin: 6px 2px 12px;
+  line-height: 1.6;
+}
+
+.input-wrapper {
+  margin-top: 14px;
+}
+
+.input-label {
+  font-size: 12px;
+  color: #2b5f47;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+/* 两列布局 */
+.flex-row { display: flex; gap: 10px; }
 .flex-half { flex: 1; }
 
-/* 文本域：玻璃拟态 + 鼠标/触摸聚焦动画 */
+/* ✅ 统一 picker 展示：不写死宽高，iOS 才不会断层 */
+.picker-display {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+
+  width: 100% !important;
+  min-height: 44px;
+
+  font-size: 14px;
+  color: #114a33;
+
+  padding: 0 14px !important;
+  box-sizing: border-box !important;
+}
+
+/* 输入容器 */
+.pink-input {
+  background: linear-gradient(135deg, rgba(22, 160, 107, 0.10), rgba(47, 111, 181, 0.08)) !important;
+  border: 1.5px solid rgba(22, 160, 107, 0.22) !important;
+  box-shadow: 0 8rpx 18rpx rgba(22, 160, 107, 0.10) !important;
+  color: #0f2f22 !important;
+  position: relative;
+}
+
+/* picker 默认 pill */
+.picker-display.pink-input,
+.pink-input.picker-display {
+  border-radius: 999px !important;
+}
+
+/* ✅ 日期/时间：利落矩形 */
+.picker-rect{
+  border-radius: 18px !important;
+}
+
+/* ✅ textarea：绝对不要写 top/left/固定宽高 */
 .textarea-input {
-  min-height: 70px;
-  line-height: 1.5;
-  border-radius: 10px;
-  padding: 10px;
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(6px);
-  border: 1px solid #c5d7f2;
+  width: 100% !important;
+  min-height: 120px !important;
+  line-height: 1.6;
+  padding: 12px 14px !important;
+
+  border-radius: 22px 18px 26px 20px !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+  border: 1.5px solid rgba(47, 111, 181, 0.18) !important;
+
   font-size: 13px;
-  color: #1a365d;
-  transition: box-shadow 0.25s, transform 0.25s;
+  color: #143b2a;
+
+  box-shadow: 0 10rpx 22rpx rgba(47, 111, 181, 0.08) !important;
+  box-sizing: border-box !important;
 }
 
-.textarea-input:focus {
-  box-shadow: 0 0 12px rgba(46, 115, 255, 0.35);
-  transform: translateY(-2px);
+.btn-area {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
 }
 
-/* 无预约提示文本 */
+.irregular-btn {
+  width: 100%;
+  max-width: 520rpx;
+  padding: 12px 0;
+  border: none;
+
+  border-radius: 999px 28px 999px 32px;
+  background: linear-gradient(135deg, #16a06b, #2f6fb5);
+  color: #ffffff;
+
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 1px;
+
+  box-shadow: 0 10px 26px rgba(22, 160, 107, 0.22);
+}
+
+.irregular-btn:active {
+  transform: scale(0.97);
+}
+
+/* 我的预约记录 */
+.section-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1b5aa6;
+  margin-bottom: 8px;
+}
+
 .no-ap {
   font-size: 12px;
-  color: #5a6c8f;
+  color: #5a7a6a;
   margin: 6px 4px;
 }
 
-/* 预约卡片：高级玻璃效果 + 进入动画 */
 .ap-item {
   margin-top: 12px;
   padding: 12px 12px 10px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.86);
   backdrop-filter: blur(12px);
-  box-shadow: 0 6px 22px rgba(80, 110, 180, 0.15);
-  animation: cardRise 0.45s ease-out;
-  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 8px 22px rgba(22, 160, 107, 0.10), 0 6px 18px rgba(47, 111, 181, 0.06);
 }
 
-/* 卡片进入动画 */
-@keyframes cardRise {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* 卡片按压动效 */
-.ap-item:active {
-  transform: scale(0.97);
-  box-shadow: 0 4px 14px rgba(50, 80, 150, 0.18);
-}
-
-/* 顶部行 */
 .ap-row-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-/* 类型标题：高级深蓝色 */
 .ap-type {
   font-size: 15px;
-  color: #1d3f74;
-  font-weight: 600;
+  color: #114a33;
+  font-weight: 800;
 }
 
-/* 状态徽章：渐变 + 高级感 */
 .ap-status {
   font-size: 12px;
-  padding: 3px 10px;
+  padding: 4px 10px;
   border-radius: 999px;
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: 0.3px;
-  transition: all 0.25s;
 }
 
-/* 各状态的高级渐变色 */
 .status-pending {
-  background: linear-gradient(135deg, #dce8ff, #bfd3ff);
-  color: #2b62b5;
+  background: linear-gradient(135deg, rgba(47,111,181,0.14), rgba(22,160,107,0.10));
+  color: #1b5aa6;
 }
-
 .status-accepted {
-  background: linear-gradient(135deg, #d9f7e5, #b4eccf);
-  color: #1f7a45;
+  background: linear-gradient(135deg, rgba(22,160,107,0.18), rgba(22,160,107,0.10));
+  color: #0f6a45;
 }
-
 .status-rejected {
-  background: linear-gradient(135deg, #ffe0ea, #ffd0df);
-  color: #3c5bc2;
+  background: linear-gradient(135deg, rgba(47,111,181,0.16), rgba(47,111,181,0.10));
+  color: #2f6fb5;
 }
-
 .status-finished {
-  background: linear-gradient(135deg, #dde2ff, #c7d0ff);
-  color: #3d4fb6;
+  background: linear-gradient(135deg, rgba(22,160,107,0.12), rgba(47,111,181,0.12));
+  color: #2b5f47;
 }
 
-/* 中间内容 */
 .ap-row-mid {
   font-size: 12px;
-  color: #4b5f83;
+  color: #3a6a54;
   margin-top: 6px;
 }
 
-/* 备注 */
 .ap-remark {
   font-size: 12px;
-  color: #445772;
+  color: #375c72;
   margin-top: 6px;
 }
-/* === 底部返回按钮区域 === */
+
+/* ✅ 底部返回按钮：固定到底部 + iOS 安全区 */
 .bottom-back-wrapper {
   position: fixed;
-  bottom: env(safe-area-inset-bottom);
   left: 0;
-  width: 100%;
+  right: 0;
+  bottom: 0;
+
   padding: 14px 20px calc(env(safe-area-inset-bottom) + 10px);
-  background: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 -4px 18px rgba(90, 120, 180, 0.15);
+  background: rgba(255, 255, 255, 0.38);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 -6px 22px rgba(22, 160, 107, 0.10), 0 -4px 18px rgba(47, 111, 181, 0.08);
   z-index: 999;
 }
 
-/* 高级蓝色渐变返回按钮 */
 .back-btn {
   width: 100%;
   padding: 12px 0;
   border-radius: 999px;
   border: none;
 
-  background: linear-gradient(135deg, #2f80ed, #1c4b9e);
+  background: linear-gradient(135deg, rgba(47,111,181,0.95), rgba(22,160,107,0.90));
   color: #ffffff;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 800;
   letter-spacing: 1px;
 
-  box-shadow: 0 6px 20px rgba(46, 115, 255, 0.35);
-  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+  box-shadow: 0 8px 22px rgba(47, 111, 181, 0.20);
 }
 
-/* 点击动画：轻微缩放 + 阴影收缩 */
 .back-btn:active {
-  transform: scale(0.96);
-  box-shadow: 0 3px 10px rgba(46, 115, 255, 0.25);
+  transform: scale(0.97);
+}
+
+/* ✅ 预留底部空间（关键） */
+.ap-bottom-space{
+  height: 130px; /* 覆盖底部返回按钮+安全区 */
 }

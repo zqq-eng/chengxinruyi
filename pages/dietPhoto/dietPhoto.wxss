@@ -1,0 +1,97 @@
+.diet-page{
+  min-height:100vh;
+  padding: 70rpx 24rpx 40rpx;
+  box-sizing:border-box;
+}
+
+.card{
+  margin-top: 20rpx;
+  padding: 24rpx;
+  border-radius: 28rpx;
+  background: radial-gradient(circle at 0 0, #eafff5 0, #ffffff 42%, #e9f3ff 100%);
+  box-shadow: 0 14rpx 36rpx rgba(60, 180, 140, 0.18);
+}
+
+.title{
+  font-size: 34rpx;
+  font-weight: 700;
+  color:#1aa77c;
+}
+
+.sub{
+  margin-top: 6rpx;
+  font-size: 24rpx;
+  color:#4b88c8;
+}
+
+.btn-row{
+  display:flex;
+  gap: 16rpx;
+  margin-top: 18rpx;
+}
+
+.btn{
+  flex:1;
+  border-radius: 999rpx;
+  font-size: 26rpx;
+}
+
+.primary{
+  background: linear-gradient(135deg,#2ad3a5,#1aa77c);
+  color:#fff;
+}
+
+.ghost{
+  background:#ffffff;
+  color:#1d74c9;
+  border: 2rpx solid rgba(29,116,201,0.25);
+}
+
+.date-line{
+  margin-top: 14rpx;
+  font-size: 24rpx;
+  color:#3b6aa6;
+}
+
+.section-title{
+  font-size: 28rpx;
+  font-weight: 700;
+  color:#1d74c9;
+  margin-bottom: 12rpx;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 12rpx;
+}
+
+.img{
+  width:100%;
+  height: 210rpx;
+  border-radius: 18rpx;
+}
+
+.img.small{
+  height: 160rpx;
+}
+
+.empty{
+  font-size: 26rpx;
+  color:#6c8fb3;
+  text-align:center;
+  padding: 18rpx 0;
+}
+
+.history-item{
+  margin-top: 18rpx;
+}
+
+.history-date{
+  font-size: 26rpx;
+  font-weight: 700;
+  color:#1aa77c;
+  margin-bottom: 10rpx;
+}
+
+.space{ height: 90rpx; }

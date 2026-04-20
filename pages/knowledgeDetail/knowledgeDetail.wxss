@@ -1,0 +1,57 @@
+.kd-page {
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+.kd-card {
+  background: #ffffff;
+  border-radius: 22rpx;
+  padding: 26rpx 24rpx;
+  box-shadow: 0 10rpx 26rpx rgba(33, 150, 243, 0.12);
+}
+
+.kd-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #111;
+  line-height: 1.4;
+}
+
+.kd-meta {
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: #6b7280;
+}
+
+.kd-section {
+  margin-top: 24rpx;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #1976d2;
+}
+
+.kd-summary {
+  margin-top: 14rpx;
+  font-size: 26rpx;
+  color: #374151;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+.kd-actions {
+  margin-top: 26rpx;
+}
+
+.kd-btn {
+  border-radius: 999rpx;
+  background: linear-gradient(135deg, rgba(33,150,243,0.95), rgba(76,175,80,0.95));
+  color: #fff;
+  font-weight: 700;
+}
+
+.kd-note {
+  margin-top: 18rpx;
+  font-size: 22rpx;
+  color: #6b7280;
+  line-height: 1.6;
+}

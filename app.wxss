@@ -1,70 +1,113 @@
-/* 全局背景 */
-page {
-  background: radial-gradient(circle at top, #ffe6fa 0%, #f3e5ff 35%, #e0f4ff 70%, #fef6ff 100%);
-  min-height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
-  color: #4d3b5a;
-  position: relative;
-  overflow-x: hidden;
-}
-
-/* 卡片 */
-.card {
-  background: rgba(255, 255, 255, 0.86);
-  border-radius: 22px;
-  box-shadow: 0 10px 30px rgba(255, 182, 193, 0.45);
-  padding: 18px 16px;
-  margin: 14px 12px;
-  backdrop-filter: blur(12px);
-}
-
-/* 不规则按钮 */
-.irregular-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 11px 26px;
-  border-radius: 999px;
-  background: linear-gradient(120deg, #ff9ed0, #ffc7f3, #ffb8e6, #ffe3ff);
-  background-size: 320% 320%;
-  color: #fff;
-  font-size: 15px;
-  font-weight: 600;
-  box-shadow: 0 10px 22px rgba(255,120,180,0.55);
-  animation: btnGradient 6s ease-in-out infinite, btnFloat 3s ease-in-out infinite alternate;
-}
-
-@keyframes btnGradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-@keyframes btnFloat {
-  0% { box-shadow: 0 8px 18px rgba(255,120,180,0.48); }
-  100% { box-shadow: 0 14px 26px rgba(255,120,180,0.68); }
-}
-
-/* 输入框 */
-.pink-input {
-  background: rgba(255, 255, 255, 0.85);
-  border-radius: 18px;
-  padding: 10px 14px;
-  border: 1px solid rgba(255, 182, 193, 0.6);
-  font-size: 14px;
-}
-
-/* 标签 */
-.tag-paw {
-  display: inline-flex;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(255,192,203,0.4);
-  font-size: 12px;
-  color: #ff4f9a;
-}
-
-/* 页面底部 */
-.tabbar-space {
-  height: 64px;
-}
+/* =========================
+   全局背景 · 纯白专业风
+   ========================= */
+   page {
+    background: #ffffff;           /* 纯白背景 */
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    color: #000000;                /* 全局字体：黑色 */
+    position: relative;
+    overflow-x: hidden;
+  }
+  
+  /* =========================
+     卡片 · 白底 + 蓝绿阴影
+     ========================= */
+  .card {
+    background: #ffffff;
+    border-radius: 22px;
+    box-shadow: 
+      0 8px 20px rgba(33, 150, 243, 0.15),   /* 蓝 */
+      0 4px 10px rgba(76, 175, 80, 0.10);    /* 绿 */
+    padding: 18px 16px;
+    margin: 14px 12px;
+  }
+  
+  /* =========================
+     不规则按钮 · 蓝 → 绿
+     （保留原动画）
+     ========================= */
+  .irregular-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 11px 26px;
+    border-radius: 999px;
+    background: linear-gradient(
+      120deg,
+      #2196f3,   /* 蓝 */
+      #42a5f5,
+      #4caf50,   /* 绿 */
+      #66bb6a
+    );
+    background-size: 320% 320%;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    box-shadow:
+      0 10px 22px rgba(33, 150, 243, 0.35),
+      0 6px 12px rgba(76, 175, 80, 0.25);
+    animation: btnGradient 6s ease-in-out infinite,
+               btnFloat 3s ease-in-out infinite alternate;
+  }
+  
+  @keyframes btnGradient {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  @keyframes btnFloat {
+    0%   {
+      box-shadow:
+        0 8px 18px rgba(33,150,243,0.30),
+        0 4px 10px rgba(76,175,80,0.20);
+    }
+    100% {
+      box-shadow:
+        0 14px 26px rgba(33,150,243,0.45),
+        0 8px 14px rgba(76,175,80,0.35);
+    }
+  }
+  
+  /* =========================
+     输入框 · 绿色强调
+     ========================= */
+  .pink-input {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 10px 14px;
+    border: 1.5px solid #4caf50;     /* 绿色描边 */
+    font-size: 14px;
+    color: #000000;                  /* 输入文字：黑色 */
+  }
+  
+  .pink-input::placeholder {
+    color: #4caf50;                  /* 占位文字：绿色 */
+  }
+  
+  /* 聚焦态（如果小程序支持） */
+  .pink-input:focus {
+    border-color: #2196f3;            /* 聚焦：蓝色 */
+  }
+  
+  /* =========================
+     标签 · 蓝绿提示
+     ========================= */
+  .tag-paw {
+    display: inline-flex;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(33, 150, 243, 0.10);
+    font-size: 12px;
+    color: #2196f3;                  /* 蓝色文字 */
+  }
+  
+  /* =========================
+     页面底部占位
+     ========================= */
+  .tabbar-space {
+    height: 64px;
+  }
+  

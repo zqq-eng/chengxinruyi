@@ -1,0 +1,63 @@
+<particle-bg>
+  <scroll-view scroll-y class="diet-page">
+    <view class="card header-card">
+      <view class="title">今日饮食照片</view>
+      <view class="sub">按日期保存，每天一组～</view>
+
+      <view class="btn-row">
+        <button class="btn primary" bindtap="chooseFromCamera">拍照上传</button>
+        <button class="btn ghost" bindtap="chooseFromAlbum">相册选择</button>
+      </view>
+
+      <view class="date-line">日期：{{todayStr}}</view>
+    </view>
+
+    <view class="card" wx:if="{{todayImages.length}}">
+      <view class="section-title">今天已记录（{{todayImages.length}}）</view>
+      <view class="grid">
+        <image
+          wx:for="{{todayImages}}"
+          wx:key="*"
+          class="img"
+          mode="aspectFill"
+          src="{{item}}"
+          data-idx="{{index}}"
+          data-fileid="{{item}}"
+          bindlongpress="deleteTodayImage"
+        ></image>
+      </view>
+    </view>
+
+    <view class="card" wx:if="{{!todayImages.length}}">
+      <view class="empty">今天还没有上传照片～</view>
+    </view>
+
+    <view class="card">
+      <view class="section-title">历史记录</view>
+
+      <view wx:if="{{history.length}}">
+        <view class="history-item" wx:for="{{history}}" wx:key="dateStr">
+          <view class="history-date">{{item.dateStr}}</view>
+          <view class="grid">
+            <image
+             wx:for="{{item.images}}"
+             wx:key="*"
+             class="img small"
+             mode="aspectFill"
+             src="{{item}}"
+             data-date="{{item.dateStr}}"
+             data-idx="{{index}}"
+             data-fileid="{{item}}"
+             bindlongpress="deleteHistoryImage"
+            ></image>
+
+          </view>
+        </view>
+      </view>
+
+      <view wx:else class="empty">还没有历史记录～</view>
+    </view>
+
+    <view class="space"></view>
+  </scroll-view>
+</particle-bg>

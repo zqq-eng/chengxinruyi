@@ -1,0 +1,135 @@
+<!-- pages/xxx/xxx.wxml（按你给的原文件直接“完整最终版”替换） -->
+<particle-bg>
+  <scroll-view scroll-y class="mr-page">
+
+    <!-- 顶部：月份标题 -->
+    <view class="mr-header">
+      <view class="mr-title">健康月报</view>
+      <view class="mr-sub">{{monthLabel}}</view>
+    </view>
+
+    <!-- 概览卡片 -->
+    <view class="mr-card mr-summary">
+      <view class="mr-card-title">本月概览</view>
+
+      <view class="mr-grid">
+        <view class="mr-metric">
+          <view class="mr-metric-label">运动次数</view>
+          <view class="mr-metric-value">{{runCount}}</view>
+        </view>
+
+        <view class="mr-metric">
+          <view class="mr-metric-label">跑步总距离</view>
+          <view class="mr-metric-value">{{totalDistanceKm}} km</view>
+        </view>
+
+        <view class="mr-metric">
+          <view class="mr-metric-label">跑步总时长</view>
+          <view class="mr-metric-value">{{totalDurationStr}}</view>
+        </view>
+
+        <view class="mr-metric">
+          <view class="mr-metric-label">平均配速</view>
+          <view class="mr-metric-value">{{avgPaceStr}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 体重变化卡片 -->
+    <view class="mr-card">
+      <view class="mr-card-title">体重变化</view>
+      <view class="mr-weight-row">
+        <view class="mr-weight-item">
+          <view class="mr-weight-label">本月首条</view>
+          <view class="mr-weight-value">{{firstWeight}} kg</view>
+        </view>
+
+        <view class="mr-weight-item">
+          <view class="mr-weight-label">本月末条</view>
+          <view class="mr-weight-value">{{lastWeight}} kg</view>
+        </view>
+
+        <view class="mr-weight-item">
+          <view class="mr-weight-label">变化</view>
+          <view class="mr-weight-value">
+            {{weightDelta}}
+            <text class="mr-delta-arrow {{deltaClass}}">{{deltaArrow}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view wx:if="{{weightTips}}" class="mr-tip">
+        {{weightTips}}
+      </view>
+    </view>
+
+    <!-- ✅ 运动趋势：圆形卡片（点开后展示三张折线图） -->
+    <view class="mr-card">
+      <view class="mr-card-title">运动趋势</view>
+
+      <view class="mr-circle-wrap">
+        <view class="mr-circle-card" bindtap="openTrendPopup">
+          <view class="mr-circle-num">{{runCount}}</view>
+          <view class="mr-circle-text">本月运动次数</view>
+          <view class="mr-circle-sub">点开查看每日趋势</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- ✅ 弹层：三张折线图（每日次数/距离/时长） -->
+    <view wx:if="{{trendPopupVisible}}" class="mr-mask" catchtouchmove="true">
+      <view class="mr-popup">
+        <view class="mr-popup-head">
+          <text class="mr-popup-title">本月每日运动趋势</text>
+          <button class="mr-popup-close" bindtap="closeTrendPopup">关闭</button>
+        </view>
+
+        <view class="mr-chart-block">
+          <view class="mr-chart-title">每日运动次数</view>
+          <!-- ✅ 新增：触摸事件 + data-cid（不改布局/尺寸） -->
+          <canvas
+            canvas-id="cCount"
+            class="mr-canvas"
+            width="320"
+            height="170"
+            data-cid="cCount"
+            bindtouchstart="onChartTouchStart"
+            bindtouchmove="onChartTouchMove"
+            bindtouchend="onChartTouchEnd"
+          ></canvas>
+        </view>
+
+        <view class="mr-chart-block">
+          <view class="mr-chart-title">每日跑步距离（km）</view>
+          <canvas
+            canvas-id="cDist"
+            class="mr-canvas"
+            width="320"
+            height="170"
+            data-cid="cDist"
+            bindtouchstart="onChartTouchStart"
+            bindtouchmove="onChartTouchMove"
+            bindtouchend="onChartTouchEnd"
+          ></canvas>
+        </view>
+
+        <view class="mr-chart-block">
+          <view class="mr-chart-title">每日运动时长（min）</view>
+          <canvas
+            canvas-id="cDur"
+            class="mr-canvas"
+            width="320"
+            height="170"
+            data-cid="cDur"
+            bindtouchstart="onChartTouchStart"
+            bindtouchmove="onChartTouchMove"
+            bindtouchend="onChartTouchEnd"
+          ></canvas>
+        </view>
+
+      </view>
+    </view>
+
+    <view class="tabbar-space"></view>
+  </scroll-view>
+</particle-bg>

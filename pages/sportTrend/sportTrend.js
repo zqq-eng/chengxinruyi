@@ -1,242 +1,226 @@
 const app = getApp();
 
-// 爪印等级
-function getSportIcon(level) {
-  if (level === 1) return "🐾";
-  if (level === 2) return "🐾🐾";
-  if (level === 3) return "✨🐾✨";
-  return " ";
+function safeNum(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
+// "mm:ss" 或 "m:ss" -> 分钟数（用于粗略计算）
+function durationStrToMinutes(str) {
+  if (!str) return 0;
+  const s = String(str).trim();
+  const parts = s.split(":").map(x => Number(x));
+  if (parts.length !== 2 || parts.some(x => !Number.isFinite(x))) return 0;
+  const mm = parts[0], ss = parts[1];
+  return Math.max(0, Math.round(mm + ss / 60));
+}
+
+function formatDate(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+// 生成最近 N 天日期数组（从今天往前）
+function buildLastNDays(n = 30) {
+  const today = new Date();
+  const arr = [];
+  for (let i = 0; i < n; i++) {
+    const dt = new Date(today.getTime() - i * 86400000);
+    arr.push(formatDate(dt));
+  }
+  return arr; // [today, yesterday, ...]
 }
 
 Page({
   data: {
-    days: [],
-    distList: [],
-    timeList: [],
-    icons: [],
-    maxDistance: 1,
-    maxMinutes: 1
+    loading: false,
+    // 列表：按日期分组
+    dayGroups: [],
+    // 用于空状态提示
+    empty: false
   },
 
-  onLoad() {
-    this.loadRunStats();
+  onShow() {
+    this.loadDailyDetails();
   },
 
   goBack() {
     wx.navigateBack({ delta: 1 });
   },
 
-  // =============================
-  // 加载运动数据
-  // =============================
-  async loadRunStats() {
+  // =========================
+  // 主入口：优先 sport_daily；没有则 fallback 从 workout_checkins 聚合
+  // =========================
+  async loadDailyDetails() {
+    this.setData({ loading: true, empty: false });
+
+    try {
+      // 确保 openid
+      await this.ensureOpenid();
+
+      const ok = await this.loadFromSportDaily();
+      if (!ok) {
+        await this.loadFromWorkoutCheckinsFallback();
+      }
+
+      const empty = !this.data.dayGroups || this.data.dayGroups.length === 0;
+      this.setData({ empty, loading: false });
+    } catch (e) {
+      console.error("loadDailyDetails error:", e);
+      this.setData({ loading: false, empty: true });
+      wx.showToast({ title: "加载失败", icon: "none" });
+    }
+  },
+
+  async ensureOpenid() {
+    if (app.globalData.openid) return;
+    const r = await wx.cloud.callFunction({ name: "login" });
+    const openid = r && r.result && r.result.openid;
+    if (!openid) throw new Error("login 云函数未返回 openid");
+    app.globalData.openid = openid;
+  },
+
+  // =========================
+  // 方案A：读 sport_daily（推荐）
+  // =========================
+  async loadFromSportDaily() {
     const db = wx.cloud.database();
     const _ = db.command;
 
-    const today = new Date();
-    const past30 = new Date(today - 29 * 86400000);
+    const dates = buildLastNDays(30);
+    const start = dates[dates.length - 1];
+    const end = dates[0];
 
-    const start = this.formatDate(past30);
-    const end = this.formatDate(today);
+    let res;
+    try {
+      res = await db.collection("sport_daily")
+        .where({
+          openid: app.globalData.openid,
+          dateStr: _.gte(start).and(_.lte(end))
+        })
+        .orderBy("dateStr", "desc")
+        .get();
+    } catch (e) {
+      console.warn("sport_daily 不存在或无权限/无数据：", e);
+      return false;
+    }
 
-    const res = await db.collection("runs")
-      .where({
-        openid: app.globalData.openid,
-        dateStr: _.gte(start).and(_.lte(end))
-      })
-      .get();
+    const list = res.data || [];
+    if (!list.length) return false;
 
-    const raw = res.data;
-    const map = {};
+    const dayGroups = list.map(day => {
+      const runs = Array.isArray(day.runs) ? day.runs : [];
+      const normalizedRuns = runs.map((r, idx) => {
+        const distanceKm = safeNum(r.distanceKm);
+        const durationSec = safeNum(r.duration);
+        const minutes = safeNum(r.minutes) || (durationSec ? Math.round(durationSec / 60) : durationStrToMinutes(r.durationStr));
+        const avgSpeedKmh = safeNum(r.avgSpeedKmh);
+        return {
+          idx: idx + 1,
+          checkinId: r.checkinId || "",
+          distanceKm: distanceKm ? distanceKm.toFixed(2) : "0.00",
+          durationStr: r.durationStr || (durationSec ? `${String(Math.floor(durationSec / 60)).padStart(2, "0")}:${String(durationSec % 60).padStart(2, "0")}` : "--:--"),
+          minutes,
+          paceStr: r.paceStr || "--'--\"",
+          movingPaceStr: r.movingPaceStr || "--'--\"",
+          avgSpeedKmh: avgSpeedKmh ? avgSpeedKmh.toFixed(1) : "0.0"
+        };
+      });
 
-    raw.forEach(r =>{
-      let level = 0;
-      const km = Number(r.distanceKm);
-
-      if (km >= 5) level = 3;
-      else if (km >= 1) level = 2;
-      else if (km > 0) level = 1;
-
-      map[r.dateStr] = {
-        distance: km,
-        minutes: Math.floor(r.duration / 60),
-        level
+      return {
+        dateStr: day.dateStr,
+        totalDistanceKm: safeNum(day.totalDistanceKm).toFixed(2),
+        totalMinutes: safeNum(day.totalMinutes),
+        runCount: safeNum(day.runCount) || normalizedRuns.length,
+        runs: normalizedRuns
       };
     });
 
-    const days = [], dist = [], time = [], icons = [];
+    this.setData({ dayGroups });
+    return true;
+  },
 
-    for (let i=0;i<30;i++){
-      const d = new Date(today - (29-i)*86400000);
-      const ds = this.formatDate(d);
+  // =========================
+  // 方案B：fallback 从 workout_checkins(type=run) 聚合成按天
+  // =========================
+  async loadFromWorkoutCheckinsFallback() {
+    const db = wx.cloud.database();
+    const openid = app.globalData.openid;
 
-      const info = map[ds] || {distance:0, minutes:0, level:0};
+    // 拉最近 200 条跑步（一般足够覆盖 30 天）
+    const res = await db.collection("workout_checkins")
+      .where({ openid, type: "run" })
+      .orderBy("createTime", "desc")
+      .limit(200)
+      .get();
 
-      days.push(ds.substring(5));
-      dist.push(info.distance);
-      time.push(info.minutes);
-      icons.push(getSportIcon(info.level));
+    const list = res.data || [];
+    if (!list.length) {
+      this.setData({ dayGroups: [] });
+      return;
     }
 
-    this.setData({
-      days,
-      distList: dist,
-      timeList: time,
-      icons,
-      maxDistance: Math.max(...dist,1),
-      maxMinutes: Math.max(...time,1)
-    });
+    // 按 dateStr 分组
+    const map = {};
+    list.forEach(item => {
+      const dateStr = item.dateStr || "";
+      if (!dateStr) return;
 
-    this.drawCharts();
-  },
-
-  formatDate(d){
-    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-  },
-
-  // =============================
-  // 绘制图表
-  // =============================
-  drawCharts(){
-    this.drawBarChart("barCanvas", this.data.distList, this.data.maxDistance);
-    this.drawLineChart("lineCanvas", this.data.timeList, this.data.maxMinutes);
-  },
-
-
-  // ⭐ 带坐标轴的动态柱状图
-  drawBarChart(id, list, max){
-    const ctx = wx.createCanvasContext(id, this);
-    const W=310, H=160, pad=30;
-    const axis="#5876b7";
-
-    let progress=0;
-
-    const animate=()=>{
-      progress+=0.05;
-      if(progress>1) progress=1;
-
-      ctx.setFillStyle("#eef3ff");
-      ctx.fillRect(0,0,W,H);
-
-      const baseY = H-pad;
-
-      // 坐标轴
-      ctx.setStrokeStyle(axis);
-      ctx.setLineWidth(2);
-
-      ctx.beginPath(); ctx.moveTo(pad, pad-10); ctx.lineTo(pad, baseY); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(pad, baseY); ctx.lineTo(W-pad+5, baseY); ctx.stroke();
-
-      // Y刻度
-      const steps = 4;
-      ctx.setFontSize(10);
-      ctx.setFillStyle("#3a4f82");
-
-      for(let i=0;i<=steps;i++){
-        const yVal = Math.round((max/steps)*i);
-        const y = baseY - ( (H-pad*2) * (i/steps) );
-
-        ctx.fillText(`${yVal}`, pad-22, y+4);
-
-        ctx.setStrokeStyle("#d6def5");
-        ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(W-pad, y); ctx.stroke();
+      if (!map[dateStr]) {
+        map[dateStr] = {
+          dateStr,
+          totalDistanceKm: 0,
+          totalMinutes: 0,
+          runs: []
+        };
       }
 
-      // 柱状图
-      const barW=8, gap=10;
-      list.forEach((v,i)=>{
-        const x = pad + i*(barW+gap);
-        const h = (v/max)*(H-pad*2)*progress;
-        ctx.setFillStyle("#6a9bff");
-        ctx.fillRect(x, baseY-h, barW, h);
+      const distanceKm = safeNum(item.distanceKm || (safeNum(item.distance) / 1000));
+      const durationSec = safeNum(item.duration);
+      const minutes = durationSec ? Math.round(durationSec / 60) : durationStrToMinutes(item.durationStr);
+
+      map[dateStr].totalDistanceKm += distanceKm;
+      map[dateStr].totalMinutes += minutes;
+
+      map[dateStr].runs.push({
+        checkinId: item._id,
+        distanceKm: distanceKm ? distanceKm.toFixed(2) : "0.00",
+        durationStr: item.durationStr || "--:--",
+        minutes,
+        paceStr: item.paceStr || "--'--\"",
+        movingPaceStr: item.movingPaceStr || "--'--\"",
+        avgSpeedKmh: safeNum(item.avgSpeedKmh).toFixed(1)
       });
-
-      // X 日期
-      ctx.setFillStyle("#4d5f80");
-      ctx.setFontSize(9);
-      this.data.days.forEach((d,i)=>{
-        const x = pad + i*(barW+gap);
-        ctx.fillText(d, x-6, baseY+14);
-      });
-
-      ctx.draw();
-      if(progress<1) setTimeout(animate,16);
-    };
-    animate();
-  },
-
-  goStats() {
-    wx.navigateTo({
-      url: '/pages/sportStats/sportStats'
     });
+
+    // 转为数组 + 排序（日期降序）
+    const dayGroups = Object.keys(map)
+      .sort((a, b) => (a > b ? -1 : 1))
+      .slice(0, 30)
+      .map(dateStr => {
+        const g = map[dateStr];
+        const runs = g.runs.map((r, idx) => ({
+          idx: idx + 1,
+          ...r
+        }));
+        return {
+          dateStr,
+          totalDistanceKm: g.totalDistanceKm.toFixed(2),
+          totalMinutes: g.totalMinutes,
+          runCount: runs.length,
+          runs
+        };
+      });
+
+    this.setData({ dayGroups });
   },
-  
-  // ⭐ 带坐标轴的动态折线图
-  drawLineChart(id, list, max){
-    const ctx = wx.createCanvasContext(id, this);
-    const W=310, H=160, pad=30;
-    const axis="#5876b7";
 
-    let progress=0;
+  // （可选）以后做“查看轨迹详情”可以用 checkinId 跳详情页
+  onTapRunItem(e) {
+    const { checkinid } = e.currentTarget.dataset;
+    if (!checkinid) return;
 
-    const animate=()=>{
-      progress+=0.05;
-      if(progress>1) progress=1;
-
-      ctx.setFillStyle("#eef3ff");
-      ctx.fillRect(0,0,W,H);
-
-      const baseY = H-pad;
-
-      // 坐标轴
-      ctx.setStrokeStyle(axis);
-      ctx.setLineWidth(2);
-      ctx.beginPath(); ctx.moveTo(pad, pad-10); ctx.lineTo(pad, baseY); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(pad, baseY); ctx.lineTo(W-pad+5, baseY); ctx.stroke();
-
-      // Y刻度
-      const steps=4;
-      ctx.setFontSize(10);
-      ctx.setFillStyle("#3a4f82");
-
-      for(let i=0;i<=steps;i++){
-        const yVal = Math.round((max/steps)*i);
-        const y = baseY - ((H-pad*2)*(i/steps));
-
-        ctx.fillText(`${yVal}`, pad-22, y+4);
-
-        ctx.setStrokeStyle("#d6def5");
-        ctx.beginPath(); ctx.moveTo(pad,y); ctx.lineTo(W-pad,y); ctx.stroke();
-      }
-
-      // 折线
-      const gap=10;
-      ctx.setStrokeStyle("#3b6cff");
-      ctx.setLineWidth(2);
-      ctx.beginPath();
-
-      list.forEach((v,i)=>{
-        const x = pad + i*gap;
-        const y = baseY - ((v/max)*(H-pad*2))*progress;
-        if(i===0) ctx.moveTo(x,y);
-        else ctx.lineTo(x,y);
-      });
-
-      ctx.stroke();
-
-      // X 日期
-      ctx.setFillStyle("#4d5f80");
-      ctx.setFontSize(9);
-      this.data.days.forEach((d,i)=>{
-        const x = pad + i*gap;
-        ctx.fillText(d, x-6, baseY+14);
-      });
-
-      ctx.draw();
-      if(progress<1) setTimeout(animate,16);
-    };
-
-    animate();
+    // 你如果以后做跑步详情页：/pages/runDetail/runDetail?checkinId=xxx
+    // 目前先弹信息即可
+    wx.showToast({ title: `记录ID：${checkinid}`, icon: "none" });
   }
-
 });

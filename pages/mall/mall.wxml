@@ -1,0 +1,218 @@
+<!-- pages/mall/mall.wxml -->
+<particle-bg>
+  <scroll-view scroll-y class="mall-page">
+
+    <!-- ✅ 右上角：收件箱按钮（写在商城页里） -->
+    <view class="mall-inbox-fab" bindtap="openInbox">
+      <text class="mall-inbox-fab-text">收件箱</text>
+      <view wx:if="{{inboxUnread>0}}" class="mall-inbox-badge">
+        {{inboxUnread>99?'99+':inboxUnread}}
+      </view>
+    </view>
+
+    <!-- 标题区 -->
+    <view class="mall-head">
+      <view class="mall-title">兑换商城</view>
+      <view class="mall-sub">本月结算：{{monthKey}}（按月更新清零）</view>
+    </view>
+
+    <!-- 我的额度 -->
+    <view class="mall-card">
+      <view class="mall-card-title">我的运动额度</view>
+
+      <view class="mall-metrics">
+        <view class="metric">
+          <view class="metric-label">本月总时长</view>
+          <view class="metric-value">{{monthTotalSec/60 | 0}} 分钟</view>
+          <view class="metric-sub">已兑换 {{usedSec/60 | 0}} 分钟</view>
+        </view>
+
+        <view class="metric">
+          <view class="metric-label">本月总距离</view>
+          <view class="metric-value">{{monthTotalKm}} km</view>
+          <view class="metric-sub">已兑换 {{usedKm}} km</view>
+        </view>
+      </view>
+
+      
+      <view class="mall-usable">
+        <view class="usable-pill">可用时长：{{availSecStr}}</view>
+      <view class="usable-pill">可用距离：{{availKmStr}}</view>
+   
+      </view>
+
+      <!-- ✅ 积分展示 + 兑换按钮（不小，放在合适位置） -->
+      <view class="mall-points-box">
+        <view class="mp-row">
+          <view class="mp-left">
+            <view class="mp-title">我的积分</view>
+            <view class="mp-sub">规则：1 积分 = 1 秒 或 1 m</view>
+          </view>
+
+          <view class="mp-right">
+            <view class="mp-num">{{points}}</view>
+            <view class="mp-unit">可用</view>
+          </view>
+        </view>
+
+        <view class="mp-actions">
+          <button class="mp-btn mp-btn-primary" data-mode="time" bindtap="openPointsExchange">
+            积分兑时长
+          </button>
+          <button class="mp-btn mp-btn-ghost" data-mode="dist" bindtap="openPointsExchange">
+            积分兑距离
+          </button>
+        </view>
+      </view>
+
+      <view class="mall-tip">兑换成功即扣除本月额度，订单会发送到管理员后台审核。</view>
+    </view>
+
+    <!-- Tab -->
+    <view class="mall-tabs">
+      <view class="tab {{tab==='time'?'tab-on':''}}" data-tab="time" bindtap="switchTab">时长兑换</view>
+      <view class="tab {{tab==='dist'?'tab-on':''}}" data-tab="dist" bindtap="switchTab">距离兑换</view>
+      <view class="tab {{tab==='both'?'tab-on':''}}" data-tab="both" bindtap="switchTab">时长+距离</view>
+    </view>
+
+    <!-- ✅ 商品：整齐 2 列网格 + 圆形卡片 -->
+    <view class="goods-grid" wx:if="{{tab==='time'}}">
+      <view class="goods-circle" wx:for="{{itemsTime}}" wx:key="id" data-id="{{item.id}}" bindtap="openRedeem">
+        <view class="g-title">{{item.title}}</view>
+        <view class="g-sub">{{item.subtitle}}</view>
+        <view class="g-cost">需 {{item.costSec/60 | 0}} 分钟</view>
+        <view class="g-tag">{{item.tag}}</view>
+      </view>
+    </view>
+
+    <view class="goods-grid" wx:if="{{tab==='dist'}}">
+      <view class="goods-circle" wx:for="{{itemsDist}}" wx:key="id" data-id="{{item.id}}" bindtap="openRedeem">
+        <view class="g-title">{{item.title}}</view>
+        <view class="g-sub">{{item.subtitle}}</view>
+        <view class="g-cost">需 {{item.costKm}} km</view>
+        <view class="g-tag">{{item.tag}}</view>
+      </view>
+    </view>
+
+    <view class="goods-grid" wx:if="{{tab==='both'}}">
+      <view class="goods-circle" wx:for="{{itemsBoth}}" wx:key="id" data-id="{{item.id}}" bindtap="openRedeem">
+        <view class="g-title">{{item.title}}</view>
+        <view class="g-sub">{{item.subtitle}}</view>
+        <view class="g-cost">需 {{item.costSec/60 | 0}} 分钟 + {{item.costKm}} km</view>
+        <view class="g-tag">{{item.tag}}</view>
+      </view>
+    </view>
+
+    <!-- 兑换弹窗（商品兑换，保持你原逻辑） -->
+    <view wx:if="{{redeemVisible}}" class="mask" catchtouchmove="true" bindtap="closeRedeem">
+      <view class="popup" catchtap="stopTap">
+        <view class="pop-title">兑换信息</view>
+        <view class="pop-item">{{redeemItem.title}}</view>
+
+        <view class="pop-cost">
+          消耗：
+          <text wx:if="{{redeemItem.costSec>0}}">{{redeemItem.costSec/60 | 0}} 分钟</text>
+          <text wx:if="{{redeemItem.costSec>0 && redeemItem.costKm>0}}"> + </text>
+          <text wx:if="{{redeemItem.costKm>0}}">{{redeemItem.costKm}} km</text>
+        </view>
+
+        <view class="form">
+          <view class="f-row">
+            <view class="f-label">昵称</view>
+            <input class="f-input" placeholder="用于收件人称呼" bindinput="onNick" value="{{formNick}}" />
+          </view>
+
+          <view class="f-row">
+            <view class="f-label">联系方式</view>
+            <input class="f-input" placeholder="手机号/微信号" bindinput="onPhone" value="{{formPhone}}" />
+          </view>
+
+          <view class="f-row">
+            <view class="f-label">地址</view>
+            <input class="f-input" placeholder="宿舍楼/寝室/详细地址" bindinput="onAddr" value="{{formAddr}}" />
+          </view>
+
+          <view class="f-row">
+            <view class="f-label">备注</view>
+            <input class="f-input" placeholder="可选：时间/偏好等" bindinput="onRemark" value="{{formRemark}}" />
+          </view>
+        </view>
+
+        <view class="btn-row">
+          <button class="btn cancel" bindtap="closeRedeem">取消</button>
+          <button class="btn ok" bindtap="submitRedeem">提交审核</button>
+        </view>
+      </view>
+    </view>
+
+    <!-- ✅ 积分兑换弹窗（确认兑换可点击） -->
+    <view wx:if="{{pointsExVisible}}" class="mask" catchtouchmove="true" catchtap="closePointsExchange">
+      <view class="px-pop" catchtap="stopTap">
+
+        <view class="px-head">
+          <view class="px-title">积分兑换{{pointsExMode==='time'?'时长':'距离'}}</view>
+          <view class="px-sub">规则：1 积分 = 1 {{pointsExMode==='time'?'秒':'m'}}</view>
+        </view>
+
+        <view class="px-card">
+          <view class="px-card-row">
+            <view class="px-card-label">当前可用积分</view>
+            <view class="px-card-val">{{points}}</view>
+          </view>
+
+          <view class="px-input-wrap">
+            <view class="px-input-label">使用积分</view>
+            <input
+              class="px-input"
+              type="number"
+              placeholder="输入要使用的积分"
+              value="{{pointsExInput}}"
+              bindinput="onPointsExInput"
+            />
+          </view>
+
+          <view class="px-preview">
+            <view class="px-preview-label">可兑换</view>
+            <view class="px-preview-val">{{pointsExResult}}</view>
+          </view>
+
+          <view class="px-tip">
+            说明：兑换后会立即扣除积分，并把对应{{pointsExMode==='time'?'秒数':'米数'}}加入本月可用额度。
+          </view>
+        </view>
+
+        <view class="px-btn-row">
+          <button class="px-btn px-close" catchtap="closePointsExchange">关闭</button>
+          <button class="px-btn px-ok" catchtap="submitPointsExchange">确认兑换</button>
+        </view>
+
+      </view>
+    </view>
+
+    <!-- ✅ 收件箱弹层（写在商城页里） -->
+    <view wx:if="{{inboxVisible}}" class="mask" catchtouchmove="true" bindtap="closeInbox">
+      <view class="inbox-pop" catchtap="stopTap">
+        <view class="inbox-head">
+          <view class="inbox-title">收件箱</view>
+          <view class="inbox-close" bindtap="closeInbox">×</view>
+        </view>
+
+        <view wx:if="{{inboxLoading}}" class="ibox-tip">加载中...</view>
+        <view wx:if="{{!inboxLoading && inboxList.length===0}}" class="ibox-tip">暂无消息～</view>
+
+        <scroll-view wx:if="{{!inboxLoading && inboxList.length>0}}" scroll-y class="ibox-list">
+          <view class="ibox-item" wx:for="{{inboxList}}" wx:key="_id">
+            <view class="ibox-toprow">
+              <view class="ibox-type">{{item.type || '通知'}}</view>
+              <view class="ibox-time">{{item.createdAtStr || ''}}</view>
+            </view>
+            <view class="ibox-title2">{{item.title || '消息'}}</view>
+            <view class="ibox-content">{{item.content || ''}}</view>
+          </view>
+        </scroll-view>
+      </view>
+    </view>
+
+    <view class="tabbar-space"></view>
+  </scroll-view>
+</particle-bg>

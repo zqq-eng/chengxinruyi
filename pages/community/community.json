@@ -1,5 +1,6 @@
 {
   "navigationBarTitleText": "社区 · 今日体重分享",
+  "enablePullDownRefresh": true,
   "usingComponents": {
     "particle-bg": "/components/particle-bg/particle-bg"
   }

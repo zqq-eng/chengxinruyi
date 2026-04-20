@@ -11,7 +11,7 @@
 <view class="card overview-card">
   <view class="ov-row">
     <view class="ov-block">
-      <view class="ov-label">参与用户</view>
+      <view class="ov-label">参与总用户</view>
       <view class="ov-value">{{totalUsers}}</view>
     </view>
     <view class="ov-block">
@@ -19,43 +19,93 @@
       <view class="ov-value">{{totalRuns}}</view>
     </view>
     <view class="ov-block">
-      <view class="ov-label">累计里程 (km)</view>
+      <view class="ov-label">累计里程(km)</view>
       <view class="ov-value">{{totalDistance}}</view>
     </view>
+    <view class="ov-block">
+      <view class="ov-label">总运动时长</view>
+      <view class="ov-value ov-small">{{totalDurationStr}}</view>
+    </view>
   </view>
+  <view class="ov-tip">（本页为模拟数据：自动生成 50 人运动记录，用于展示后台分析）</view>
+</view>
+
+<!-- 分析折线图 -->
+<view class="card chart-card">
+  <view class="chart-top">
+    <view class="chart-title">整体用户趋势（最近14天）</view>
+
+    <view class="chart-toggle">
+      <text class="toggle-btn {{chartType==='runs'?'active':''}}"
+            data-type="runs"
+            bindtap="switchChartType">每日次数</text>
+      <text class="toggle-btn {{chartType==='duration'?'active':''}}"
+            data-type="duration"
+            bindtap="switchChartType">每日时长</text>
+    </view>
+  </view>
+
+  <view class="chart-hint">
+    点击/触摸折线图可查看当天数据
+    <text class="chart-clear" bindtap="clearChartTooltip">清除提示</text>
+  </view>
+
+  <canvas
+    class="trend-canvas"
+    canvas-id="trendCanvas"
+    bindtouchstart="onChartTouch"
+    bindtouchmove="onChartTouch"
+    bindtouchend="stopTap"
+  ></canvas>
 </view>
 
 <!-- 按用户统计表格 -->
 <view class="card table-card">
   <view class="table-title">按用户统计</view>
+  <view class="export-row">
+    <button class="export-btn" bindtap="exportSummaryCSV">导出汇总CSV</button>
+    <button class="export-btn ghost" bindtap="exportAllRunsCSV">导出明细CSV</button>
+  </view>
 
   <view class="table-header">
     <view class="th name-col">姓名</view>
+    <view class="th acc-col">账号</view>
     <view class="th num-col">次数</view>
     <view class="th num-col">累计(km)</view>
+    <view class="th dur-col">总时长</view>
     <view class="th num-col">平均(km)</view>
     <view class="th op-col">操作</view>
   </view>
 
   <scroll-view scroll-y class="table-body">
-    <!-- 🔥 整行绑定 data-openid 和 bindtap，这样“详情”一定能点开 -->
-    <view
-      class="table-row"
-      wx:for="{{userStats}}"
-      wx:key="openid"
-      data-openid="{{item.openid}}"
-      bindtap="onRowTap"
-    >
-      <view class="td name-col">{{item.name}}</view>
-      <view class="td num-col">{{item.runCount}}</view>
-      <view class="td num-col">{{item.totalDistance}}</view>
-      <view class="td num-col">{{item.avgDistance}}</view>
-      <view class="td op-col">
-        <text class="link-text">详情</text>
-      </view>
-    </view>
+    <block wx:if="{{userStats && userStats.length}}">
+      <view
+        class="table-row"
+        wx:for="{{userStats}}"
+        wx:for-item="item"
+        wx:for-index="index"
+        wx:key="{{item.openid || index}}"
+        data-openid="{{item.openid}}"
+        bindtap="onRowTap"
+      >
+        <view class="td name-col">{{item.name}}</view>
+        <view class="td acc-col">{{item.account}}</view>
+        <view class="td num-col">{{item.runCount}}</view>
+        <view class="td num-col">{{item.totalDistance}}</view>
+        <view class="td dur-col">{{item.totalDurationStr}}</view>
+        <view class="td num-col">{{item.avgDistance}}</view>
 
-    <view wx:if="{{!loading && userStats.length === 0}}" class="empty-tip">
+        <view class="td op-col">
+          <text
+            class="link-text"
+            data-openid="{{item.openid}}"
+            catchtap="onRowTap"
+          >详情</text>
+        </view>
+      </view>
+    </block>
+
+    <view wx:if="{{!loading && (!userStats || userStats.length === 0)}}" class="empty-tip">
       暂无运动记录～
     </view>
   </scroll-view>
@@ -63,7 +113,6 @@
 
 <!-- 详情面板（底部弹出） -->
 <view wx:if="{{showDetail}}" class="detail-mask" catchtap="closeDetail">
-  <!-- 🔥 这里用 catchtap="stopTap" 阻止冒泡，避免一点击就关闭 -->
   <view class="detail-panel" catchtap="stopTap">
 
     <view class="detail-header">
@@ -74,12 +123,12 @@
     </view>
 
     <view class="detail-meta">
+      <view>账号：{{detailUser.account || '-'}}</view>
       <view>总次数：{{detailUser.runCount || 0}}</view>
-      <view>累计里程：{{detailUser.totalDistance || '0.00'}} km</view>
-      <view>平均每次：{{detailUser.avgDistance || '0.00'}} km</view>
+      <view>累计：{{detailUser.totalDistance || '0.00'}} km</view>
     </view>
 
-    <!-- 趋势预览（最近 10 次） -->
+    <!-- 最近 10 次趋势 -->
     <view class="section-subtitle">最近 10 次运动趋势</view>
     <view class="trend-header">
       <text class="trend-date">日期</text>
@@ -89,51 +138,55 @@
     </view>
 
     <scroll-view scroll-y class="trend-body">
-      <view
-        class="trend-row"
-        wx:for="{{trendList}}"
-        wx:key="dateStr"
-      >
-        <text class="trend-date">{{item.dateStr}}</text>
-        <text class="trend-num">{{item.distanceKm}}</text>
-        <text class="trend-num">{{item.durationStr}}</text>
-        <text class="trend-num">{{item.paceStr}}</text>
-      </view>
+      <block wx:if="{{trendList && trendList.length}}">
+        <view
+          class="trend-row"
+          wx:for="{{trendList}}"
+          wx:for-item="item"
+          wx:for-index="index"
+          wx:key="{{item.dateStr || index}}"
+        >
+          <text class="trend-date">{{item.dateStr}}</text>
+          <text class="trend-num">{{item.distanceKm}}</text>
+          <text class="trend-num">{{item.durationStr}}</text>
+          <text class="trend-num">{{item.paceStr}}</text>
+        </view>
+      </block>
 
-      <view wx:if="{{trendList.length === 0}}" class="empty-tip">
+      <view wx:if="{{!trendList || trendList.length === 0}}" class="empty-tip">
         暂无趋势数据～
       </view>
     </scroll-view>
 
-    <!-- 详细列表（全部记录） -->
+    <!-- 全部运动记录 -->
     <view class="section-subtitle">全部运动记录</view>
     <scroll-view scroll-y class="runs-body">
-      <view
-        class="run-row"
-        wx:for="{{detailRuns}}"
-        wx:key="_id"
-      >
-        <view class="run-main">
-          <view class="run-date">
-            {{item.dateStr || (item.startTime && item.startTime.toISOString().slice(0,10))}}
+      <block wx:if="{{detailRuns && detailRuns.length}}">
+        <view
+          class="run-row"
+          wx:for="{{detailRuns}}"
+          wx:for-item="item"
+          wx:for-index="index"
+          wx:key="{{item._id || index}}"
+        >
+          <view class="run-main">
+            <view class="run-date">{{item.dateStr}}</view>
+            <view class="run-meta">
+              距离 {{item.distanceKm}} km · 用时 {{item.durationStr}} · 配速 {{item.paceStr}}
+            </view>
           </view>
-          <view class="run-meta">
-            距离 {{item.distanceKm}} km · 用时 {{item.durationStr}} · 配速 {{item.paceStr}}
+
+          <view class="run-op">
+            <text
+              class="encourage-link"
+              data-runid="{{item._id}}"
+              catchtap="openEncourage"
+            >鼓励 TA</text>
           </view>
         </view>
+      </block>
 
-        <view class="run-op">
-          <text
-            class="encourage-link"
-            data-runid="{{item._id}}"
-            bindtap="openEncourage"
-          >
-            鼓励 TA
-          </text>
-        </view>
-      </view>
-
-      <view wx:if="{{detailRuns.length === 0}}" class="empty-tip">
+      <view wx:if="{{!detailRuns || detailRuns.length === 0}}" class="empty-tip">
         暂无记录～
       </view>
     </scroll-view>
@@ -142,9 +195,8 @@
     <view wx:if="{{encourageModalVisible}}" class="enc-modal-mask" catchtap="cancelEncourage">
       <view class="enc-modal" catchtap="stopTap">
         <view class="enc-title">发送鼓励</view>
-        <view class="enc-hint">
-          给 {{detailUser.name || '这位同学'}} 写几句鼓励的话吧～
-        </view>
+        <view class="enc-hint">给 {{detailUser.name || '这位同学'}} 写几句鼓励的话吧～</view>
+
         <textarea
           class="enc-textarea"
           placeholder="例如：今天也很努力！坚持下去，小猫为你鼓掌～"
@@ -153,6 +205,7 @@
           value="{{encourageText}}"
           bindinput="onEncourageInput"
         />
+
         <view class="enc-btn-row">
           <button class="enc-btn cancel" bindtap="cancelEncourage">取消</button>
           <button class="enc-btn confirm" bindtap="submitEncourage">发送</button>

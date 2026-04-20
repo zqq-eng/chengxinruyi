@@ -1,0 +1,100 @@
+.sleep-page{
+  min-height:100vh;
+  padding: 70rpx 24rpx 40rpx;
+  box-sizing:border-box;
+}
+
+.card{
+  margin-top: 20rpx;
+  padding: 24rpx;
+  border-radius: 28rpx;
+  background: radial-gradient(circle at 0 0, #eafff5 0, #ffffff 42%, #e9f3ff 100%);
+  box-shadow: 0 14rpx 36rpx rgba(60, 180, 140, 0.18);
+}
+
+.title{
+  font-size: 34rpx;
+  font-weight: 800;
+  color:#1aa77c;
+}
+
+.tip{
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color:#3b6aa6;
+  line-height: 1.6;
+}
+
+.section-title{
+  margin-top: 14rpx;
+  font-size: 28rpx;
+  font-weight: 800;
+  color:#1d74c9;
+}
+
+.btn{
+  margin-top: 16rpx;
+  border-radius: 999rpx;
+  font-size: 26rpx;
+}
+
+.primary{
+  background: linear-gradient(135deg,#2ad3a5,#1aa77c);
+  color:#fff;
+}
+
+.ghost{
+  background:#ffffff;
+  color:#1d74c9;
+  border: 2rpx solid rgba(29,116,201,0.25);
+}
+
+.empty{
+  margin-top: 14rpx;
+  font-size: 24rpx;
+  color:#6c8fb3;
+}
+
+.audio-item{
+  margin-top: 12rpx;
+  padding: 16rpx;
+  border-radius: 22rpx;
+  background: rgba(255,255,255,0.92);
+  box-shadow: 0 10rpx 24rpx rgba(29,116,201,0.10);
+  display:flex;
+  justify-content: space-between;
+  align-items:center;
+}
+
+.audio-name{
+  font-size: 26rpx;
+  color:#1f4f8f;
+  font-weight: 700;
+}
+
+.rec-item{
+  margin-top: 10rpx;
+  font-size: 26rpx;
+  color:#245a9a;
+  font-weight: 700;
+}
+
+.rec-sub{
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color:#6c8fb3;
+}
+
+.space{ height: 90rpx; }
+
+/* ✅ 新增：让两个 mini 按钮并排，不改颜色 */
+.audio-actions{
+  display:flex;
+  gap: 12rpx;
+  align-items:center;
+}
+
+/* ✅ 新增：修复 mini 按钮“点不动/点不到”——去掉 btn 默认 margin-top */
+.mini-btn{
+  margin-top: 0 !important;
+}

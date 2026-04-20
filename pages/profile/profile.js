@@ -1,4 +1,4 @@
-// pages/profile/profile.js  （原来的这个文件）
+// pages/profile/profile.js
 const app = getApp();
 const db = wx.cloud.database();
 
@@ -53,7 +53,7 @@ Page({
     else if (userDB.gender === "male") genderIndex = 2;
     else if (userDB.gender === "other") genderIndex = 3;
 
-    // 👉 目标体重默认使用“当前体重”（没有就退回原来的 targetWeight）
+    // 目标体重默认使用“当前体重”（没有就退回 targetWeight）
     const currentOrTarget =
       userDB.currentWeight != null && userDB.currentWeight !== ""
         ? userDB.currentWeight
@@ -75,7 +75,7 @@ Page({
   onTargetInput(e) { this.setData({ targetInput: e.detail.value }); },
   onGenderChange(e) { this.setData({ genderIndex: Number(e.detail.value) }); },
 
-  // 👉 点击头像：从相册/相机选择并上传
+  // 点击头像：从相册/相机选择并上传
   onAvatarTap() {
     const user = app.globalData.userInfo;
     if (!user || !user._id) {
@@ -130,7 +130,7 @@ Page({
     });
   },
 
-  // 保存资料（逻辑不变，只是字段名还是 targetWeight）
+  // 保存资料（字段名还是 targetWeight）
   async onSaveProfile() {
     const { heightInput, ageInput, targetInput, genderIndex } = this.data;
     const user = app.globalData.userInfo;
@@ -167,7 +167,30 @@ Page({
     }
   },
 
-  // 用户预约入口
+  /* ==========================
+     新增：健康月报入口（你 WXML 绑定用）
+     进入月报页面后再统计：本月运动次数 + 体重变化
+  ========================== */
+  goMonthlyReport() {
+    const user = app.globalData.userInfo;
+    if (!user || !user._id) {
+      wx.showToast({ title: "请先登录", icon: "none" });
+      return;
+    }
+    wx.navigateTo({
+      url: "/pages/monthlyReport/monthlyReport"
+    });
+  },
+
+  /* ==========================
+     新增：预约心理咨询室入口（命名更清晰）
+     复用你原有 appointment 页面
+  ========================== */
+  goCounselingAppointment() {
+    this.goAppointment();
+  },
+
+  // 用户预约入口（原有，保留不删，兼容旧绑定）
   goAppointment() {
     const user = app.globalData.userInfo;
 
@@ -181,7 +204,7 @@ Page({
     });
   },
 
-  // 管理员入口
+  // 管理员入口（原有）
   goAdmin() {
     wx.navigateTo({
       url: "/pages/adminLogin/adminLogin"

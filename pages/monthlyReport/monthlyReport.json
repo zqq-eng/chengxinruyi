@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "健康月报",
+  "usingComponents": {
+    "particle-bg": "/components/particle-bg/particle-bg"
+  }
+}

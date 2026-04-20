@@ -1,0 +1,50 @@
+<particle-bg>
+  <view class="sleep-page">
+    <view class="card">
+      <view class="title">助眠音乐</view>
+      <view class="tip">你可以上传自己的音频；无论有没有上传，这里都会给你推荐经典助眠曲。</view>
+
+      <!-- ✅ 两种上传方式（本质同一个选择器，但用两个按钮引导） -->
+      <view class="btn-row">
+        
+        <button class="btn ghost" bindtap="chooseAudioChat">从聊天文件上传</button>
+      </view>
+
+      <view class="my-audio" wx:if="{{myAudioList.length}}">
+        <view class="section-title">我的音频（{{myAudioList.length}}）</view>
+
+        <view class="audio-item" wx:for="{{myAudioList}}" wx:key="_id">
+          <view class="audio-name">{{item.name}}</view>
+
+          <view class="audio-actions">
+            <button class="btn ghost mini-btn" size="mini"
+              data-url="{{item.fileID}}"
+              bindtap="playAudio"
+            >播放</button>
+
+            <button class="btn ghost mini-btn" size="mini"
+              data-id="{{item._id}}"
+              data-fileid="{{item.fileID}}"
+              bindtap="deleteAudio"
+            >删除</button>
+          </view>
+        </view>
+      </view>
+
+      <view wx:else class="empty">你还没有上传音频～下面先试试推荐曲吧。</view>
+    </view>
+
+    <view class="card">
+      <view class="section-title">推荐你听这 3 首入睡</view>
+      <view class="rec-item">1) Marconi Union — Weightless</view>
+      <view class="rec-item">2) Erik Satie — Gymnopédie No.1</view>
+      <view class="rec-item">3) Debussy — Clair de Lune</view>
+      <view class="rec-sub">可以在 QQ音乐 / 网易云 / Spotify 搜索曲名直接播放。</view>
+    </view>
+  
+    <view class="space">
+      <view class="section-title">操作步骤</view>
+      <view class="rec-sub">微信上传文件→选择手机文件→选择音频上传→上传至此</view>
+    </view>
+  </view>
+</particle-bg>

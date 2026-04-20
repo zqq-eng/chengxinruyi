@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "专业健身科普",
+  "usingComponents": {
+    "particle-bg": "/components/particle-bg/particle-bg"
+  }
+}

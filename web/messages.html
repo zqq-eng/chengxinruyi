@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>消息管理 - 秤心如意</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边栏 -->
+        <aside class="bg-green-800 text-white w-64 sidebar">
+            <div class="p-4 border-b border-green-700">
+                <h1 class="text-xl font-bold">秤心如意</h1>
+                <p class="text-sm text-green-200">后台管理系统</p>
+            </div>
+            
+            <nav class="mt-6">
+                <ul>
+                    <li>
+                        <a href="dashboard.html" class="flex items-center px-4 py-3 hover:bg-green-700 transition duration-200">
+                            <i class="fa fa-dashboard w-6"></i>
+                            <span>控制台</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="users.html" class="flex items-center px-4 py-3 hover:bg-green-700 transition duration-200">
+                            <i class="fa fa-users w-6"></i>
+                            <span>用户管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="sports.html" class="flex items-center px-4 py-3 hover:bg-green-700 transition duration-200">
+                            <i class="fa fa-running w-6"></i>
+                            <span>运动管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="appointments.html" class="flex items-center px-4 py-3 hover:bg-green-700 transition duration-200">
+                            <i class="fa fa-calendar w-6"></i>
+                            <span>预约管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="mall.html" class="flex items-center px-4 py-3 hover:bg-green-700 transition duration-200">
+                            <i class="fa fa-shopping-cart w-6"></i>
+                            <span>商城管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="messages.html" class="flex items-center px-4 py-3 bg-green-700">
+                            <i class="fa fa-envelope w-6"></i>
+                            <span>消息管理</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="absolute bottom-0 w-64 p-4 border-t border-green-700">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-green-400 flex items-center justify-center">
+                        <span id="adminUsername" class="text-sm font-medium">A</span>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium" id="adminName">管理员</p>
+                        <button id="logoutBtn" class="text-xs text-green-200 hover:text-white">退出登录</button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <div class="flex-1 overflow-y-auto">
+            <!-- 顶部导航栏 -->
+            <header class="bg-white shadow-sm">
+                <div class="flex items-center justify-between px-6 py-3">
+                    <h2 class="text-lg font-medium text-gray-800">消息管理</h2>
+                    <div class="flex items-center space-x-4">
+                        <button id="sendAllBtn" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-200 btn-hover">
+                            <i class="fa fa-bullhorn mr-2"></i> 发送全员通知
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 内容区域 -->
+            <main class="px-6 py-8">
+                <!-- 统计卡片 -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">总消息数</p>
+                                <p class="text-2xl font-bold text-gray-800" id="totalMessagesStat">0</p>
+                            </div>
+                            <div class="bg-green-100 p-3 rounded-full">
+                                <i class="fa fa-envelope text-green-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-yellow-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">未读消息</p>
+                                <p class="text-2xl font-bold text-gray-800" id="unreadMessages">0</p>
+                            </div>
+                            <div class="bg-yellow-100 p-3 rounded-full">
+                                <i class="fa fa-eye-slash text-yellow-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">已读消息</p>
+                                <p class="text-2xl font-bold text-gray-800" id="readMessages">0</p>
+                            </div>
+                            <div class="bg-green-100 p-3 rounded-full">
+                                <i class="fa fa-eye text-green-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">通知类</p>
+                                <p class="text-2xl font-bold text-gray-800" id="notificationMessages">0</p>
+                            </div>
+                            <div class="bg-blue-100 p-3 rounded-full">
+                                <i class="fa fa-bell text-blue-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 图表区域 -->
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-medium text-gray-800">消息状态分析</h3>
+                    </div>
+                    <div class="h-80">
+                        <canvas id="messageChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- 搜索和筛选 -->
+                <div class="bg-white rounded-lg shadow p-4 mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                        <div class="flex items-center space-x-4">
+                            <div class="relative">
+                                <input type="text" id="searchKeyword" placeholder="搜索用户ID" class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                                    <i class="fa fa-search"></i>
+                                </span>
+                            </div>
+                            <button id="searchBtn" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-200">
+                                搜索
+                            </button>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <select class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                <option value="">全部类型</option>
+                                <option value="通知">通知</option>
+                                <option value="活动">活动</option>
+                                <option value="系统">系统</option>
+                            </select>
+                            <select class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                <option value="">排序方式</option>
+                                <option value="createdAt">创建时间</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 消息列表 -->
+                <div class="bg-white rounded-lg shadow mb-6">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">用户</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">标题</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">类型</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">创建时间</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200 table-hover" id="messageList">
+                                <!-- 消息列表将通过JavaScript动态生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- 分页 -->
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-gray-500">
+                        显示 <span id="showingFrom">1</span> 到 <span id="showingTo">10</span> 共 <span id="totalMessages">0</span> 条记录
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button class="px-3 py-1 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 disabled:opacity-50" id="prevPage" disabled>
+                            <i class="fa fa-chevron-left"></i>
+                        </button>
+                        <button class="px-3 py-1 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 bg-green-600 text-white">1</button>
+                        <button class="px-3 py-1 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50">2</button>
+                        <button class="px-3 py-1 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50">3</button>
+                        <button class="px-3 py-1 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50" id="nextPage">
+                            <i class="fa fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- 发送消息模态框 -->
+    <div id="messageModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-800" id="modalTitle">发送消息</h3>
+                <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <form id="messageForm">
+                    <div class="mb-4">
+                        <label for="messageType" class="block text-sm font-medium text-gray-700 mb-1">消息类型</label>
+                        <select id="messageType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="通知">通知</option>
+                            <option value="活动">活动</option>
+                            <option value="系统">系统</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="messageTitle" class="block text-sm font-medium text-gray-700 mb-1">标题</label>
+                        <input type="text" id="messageTitle" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="messageContent" class="block text-sm font-medium text-gray-700 mb-1">内容</label>
+                        <textarea id="messageContent" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" required></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">发送对象</label>
+                        <div class="flex items-center space-x-4">
+                            <label class="flex items-center">
+                                <input type="radio" name="sendTo" value="single" class="mr-2" checked>
+                                <span>单个用户</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="sendTo" value="all" class="mr-2">
+                                <span>所有用户</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-4" id="singleUserSection">
+                        <label for="userOpenid" class="block text-sm font-medium text-gray-700 mb-1">用户ID</label>
+                        <input type="text" id="userOpenid" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                    </div>
+                    <div class="mt-6">
+                        <button type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition duration-200">
+                            发送
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script src="assets/js/messages.js"></script>
+</body>
+</html>

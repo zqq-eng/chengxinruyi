@@ -1,123 +1,338 @@
 <particle-bg>
-  <scroll-view scroll-y class="comm-page">
+  <view class="page-root">
 
-    <!-- 漂浮装饰，不影响滑动 -->
-    <view class="float-deco deco-bubble-1"></view>
-    <view class="float-deco deco-bubble-2"></view>
-    <view class="float-deco deco-cloud-1"></view>
+    <!-- ✅ 主内容：弹窗打开时禁止滚动 -->
+    <scroll-view
+      class="comm-page"
+      scroll-y="{{!detailVisible}}"
+      enhanced="true"
+      show-scrollbar="false"
+      enable-back-to-top="true"
+    >
+      <!-- 漂浮装饰，不影响滑动 -->
+      <view class="float-deco deco-bubble-1"></view>
+      <view class="float-deco deco-bubble-2"></view>
+      <view class="float-deco deco-cloud-1"></view>
 
-    <!-- 发布卡片 -->
-    <view class="card post-card">
-      <view class="section-title">发布今日体重小记</view>
-
-      <view class="input-wrapper">
-        <view class="input-label">今日体重（kg）</view>
-        <input
-          class="pink-input"
-          type="digit"
-          placeholder="例如：52.3"
-          value="{{inputWeight}}"
-          bindinput="onWeightInput"
-        />
-      </view>
-
-      <view class="input-wrapper">
-        <view class="input-label">心情 / 想说的话</view>
-        <textarea
-          class="pink-input text-area"
-          placeholder="想给今天的自己留一句话～"
-          value="{{inputMood}}"
-          bindinput="onMoodInput"
-        />
-      </view>
-
-      <!-- 图片选择 -->
-      <view class="input-wrapper">
-        <view class="input-label">配图（可选）</view>
-        <view class="img-row">
-          <view
-            wx:if="{{!selectedImage}}"
-            class="img-picker"
-            bindtap="onChooseImage"
-          >
-            <text class="img-plus">＋</text>
-            <text class="img-tip">添加一张今天的照片</text>
+      <!-- 顶部入口 -->
+      <view class="entry-wrap">
+        <view class="entry-row">
+          <view class="entry-circle entry-knowledge" bindtap="goKnowledge">
+            <view class="entry-icon">📚</view>
+            <view class="entry-text">涨知识</view>
           </view>
 
-          <view wx:else class="img-preview-wrap">
-            <image
-              class="img-preview"
-              mode="aspectFill"
-              src="{{selectedImage}}"
-            />
-            <view class="img-actions">
-              <text class="img-change" bindtap="onChooseImage">重新选择</text>
-              <text class="img-clear" bindtap="clearImage">删除图片</text>
+          <view class="entry-circle entry-chat" bindtap="goCommunity">
+            <view class="entry-icon">💬</view>
+            <view class="entry-text">交流</view>
+          </view>
+        </view>
+        <view class="entry-sub">健康社区 · 点击进入对应功能</view>
+      </view>
+
+      <!-- ============ 面板1：涨知识 ============ -->
+      <view wx:if="{{currentPanel === 'knowledge'}}" class="card knowledge-card">
+        <view class="section-title">涨知识</view>
+
+        <view class="k-tab">
+          <view class="k-tab-item {{knowledgeTab==='official' ? 'on' : ''}}"
+                data-tab="official" bindtap="switchKnowledgeTab">
+            权威科普
+          </view>
+          <view class="k-tab-item {{knowledgeTab==='fitness' ? 'on' : ''}}"
+                data-tab="fitness" bindtap="switchKnowledgeTab">
+            健身科普
+          </view>
+        </view>
+
+        <!-- 权威科普 -->
+        <view wx:if="{{knowledgeTab==='official'}}">
+          <view class="sub-tip">来源：国家卫健委 · 中国疾控 · 国家体育总局</view>
+
+          <view wx:if="{{knowledgeLoading}}" class="loading-text">加载中…</view>
+          <view wx:if="{{knowledgeError}}" class="error-text">{{knowledgeError}}</view>
+
+          <view class="know-actions" wx:if="{{!knowledgeLoading}}">
+            <button class="mini-btn" size="mini" bindtap="refreshKnowledge">刷新一批</button>
+          </view>
+
+          <view wx:if="{{!knowledgeLoading && !knowledgeError}}">
+            <view wx:if="{{knowledgeList.length === 0}}" class="empty-text">
+              暂无内容（刷新试试）
+            </view>
+
+            <view wx:for="{{knowledgeList}}" wx:key="url" class="know-item">
+              <view class="know-title" bindtap="openKnowledgeDetail" data-idx="{{index}}">
+                {{item.title}}
+              </view>
+
+              <view class="know-meta">
+                {{item.source}}<text wx:if="{{item.date}}"> · {{item.date}}</text>
+              </view>
+
+              <view class="know-actions">
+                <button class="mini-btn" size="mini" data-idx="{{index}}" bindtap="openKnowledgeDetail">
+                  查看内容
+                </button>
+                <button class="mini-btn" size="mini" data-link="{{item.url}}" bindtap="copyLink">
+                  复制链接
+                </button>
+              </view>
+            </view>
+          </view>
+
+          <view class="note-text">
+            提示：小程序展示摘要，如需全文请复制链接到浏览器打开。
+          </view>
+        </view>
+
+        <!-- 健身科普入口 -->
+        <view wx:elif="{{knowledgeTab==='fitness'}}">
+          <view class="fx-hero">
+            <view class="fx-badge">医学 · 人体构造 · 性别差异 · 科学训练</view>
+            <view class="fx-title">专业健身科普目录</view>
+            <view class="fx-desc">
+              内含：减脂减肥、每日运动时长、器械使用、恢复苏醒、女性/男性训练差异等。
+            </view>
+
+            <button class="fx-btn" bindtap="goFitnessKnowledge">进入科普目录</button>
+
+            <view class="fx-tags">
+              <text class="chip chip-main">减脂</text>
+              <text class="chip">燃脂</text>
+              <text class="chip">器械</text>
+              <text class="chip">恢复</text>
+              <text class="chip chip-green">女性</text>
+              <text class="chip chip-blue">男性</text>
             </view>
           </view>
         </view>
       </view>
 
-      <view class="btn-area">
-        <button class="irregular-btn" bindtap="onPost">
-          <text wx:if="{{!editingId}}">🐾 发布今日报告</text>
-          <text wx:else>✨ 保存修改</text>
-        </button>
-      </view>
-    </view>
+      <!-- ============ 面板2：交流 ============ -->
+      <view wx:elif="{{currentPanel === 'community'}}">
 
-    <!-- 列表卡片 -->
-    <view class="card list-card">
-      <view class="section-title">最近的小伙伴们</view>
-      <view class="comm-list">
-        <view
-          class="comm-item"
-          wx:for="{{posts}}"
-          wx:key="_id"
+        <!-- 发布卡片 -->
+        <view class="card post-card">
+          <view class="section-title">发布今日体重小记</view>
+
+          <view class="input-wrapper">
+            <view class="input-label">今日体重（kg）</view>
+            <input class="pink-input"
+                   type="digit"
+                   placeholder="例如：52.3"
+                   value="{{inputWeight}}"
+                   bindinput="onWeightInput"/>
+          </view>
+
+          <view class="input-wrapper">
+            <view class="input-label">心情 / 想说的话</view>
+            <textarea class="pink-input text-area"
+                      placeholder="想给今天的自己留一句话～"
+                      value="{{inputMood}}"
+                      bindinput="onMoodInput"/>
+          </view>
+
+          <!-- 图片 -->
+          <view class="input-wrapper">
+            <view class="input-label">配图（可选）</view>
+            <view class="img-row">
+              <view wx:if="{{!selectedImage}}"
+                    class="img-picker"
+                    bindtap="onChooseImage">
+                <text class="img-plus">＋</text>
+                <text class="img-tip">添加一张今天的照片</text>
+              </view>
+
+              <view wx:else class="img-preview-wrap">
+                <image class="img-preview" mode="aspectFill" src="{{selectedImage}}"/>
+                <view class="img-actions">
+                  <text class="img-change" bindtap="onChooseImage">重新选择</text>
+                  <text class="img-clear" bindtap="clearImage">删除图片</text>
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 发布 -->
+          <view class="btn-area">
+            <button class="irregular-btn" bindtap="onPost">
+              <text wx:if="{{!editingId}}">🐾 发布今日报告</text>
+              <text wx:else>✨ 保存修改</text>
+            </button>
+
+            <view class="anon-row" bindtap="toggleAnonymous">
+              <view class="anon-check {{isAnonymous ? 'on' : ''}}">
+                <text class="anon-tick">✓</text>
+              </view>
+              <text class="anon-text">匿名发布</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 列表 -->
+        <view class="card list-card">
+          <view class="section-title">最近的小伙伴们</view>
+
+          <view class="comm-list">
+            <view class="comm-item" wx:for="{{posts}}" wx:key="_id">
+              <view class="comm-header">
+                <view class="comm-avatar">{{item.avatarText}}</view>
+
+                <view class="comm-info">
+                  <view class="comm-name">{{item.displayName}}</view>
+                  <view class="comm-meta">
+                    {{item.displaySchool}} · {{item.date}} · {{item.time}}
+                  </view>
+                </view>
+
+                <view class="comm-right">
+                  <view class="comm-weight">{{item.displayWeight}}kg</view>
+                  <view wx:if="{{item.isMine}}"
+                        class="more-dot"
+                        data-id="{{item._id}}"
+                        bindtap="onMoreTap">⋯</view>
+                </view>
+              </view>
+
+              <view class="comm-mood">
+                {{item.mood || '今天悄悄路过，什么都没说~'}}
+              </view>
+
+              <image wx:if="{{item.imageFileId}}"
+                     class="comm-image"
+                     mode="aspectFill"
+                     src="{{item.imageFileId}}"/>
+
+              <view class="social-bar">
+                <view class="social-left">
+                  <view class="social-line" wx:if="{{item.commentCount > 0}}">
+                    <text class="social-label">评论：</text>
+                    <text class="social-text">{{item.commentPreview}}</text>
+                    <text class="social-count"> · 共{{item.commentCount}}评</text>
+                  </view>
+                  <view class="social-line" wx:if="{{item.commentCount === 0}}">
+                    <text class="social-empty">还没有评论，快来写一句～</text>
+                  </view>
+                </view>
+
+                <view class="social-actions">
+                  <button class="action-btn"
+                          size="mini"
+                          data-idx="{{index}}"
+                          bindtap="openPostDetail">💬 评论</button>
+
+                  <button class="action-btn"
+                          size="mini"
+                          data-idx="{{index}}"
+                          bindtap="openPostDetail">查看详情</button>
+                </view>
+              </view>
+            </view>
+
+            <view wx:if="{{!posts.length}}" class="empty-text">
+              还没有人发帖，做第一个分享温柔态度的人吧 🌿
+            </view>
+          </view>
+        </view>
+
+        <view class="tabbar-space"></view>
+      </view>
+
+    </scroll-view>
+
+    <!-- ✅ 弹窗：近全屏 + 唯一滚动区（评论一定能看全） -->
+    <view wx:if="{{detailVisible}}" class="detail-mask" catchtouchmove="stopMove" bindtap="closeDetail">
+      <view class="detail-card" catchtap="stopTap">
+
+        <view class="detail-top">
+          <view class="detail-title">帖子详情</view>
+          <view class="detail-close" bindtap="closeDetail">×</view>
+        </view>
+
+        <!-- ✅ 唯一滚动区 -->
+        <scroll-view
+          wx:if="{{detailPost}}"
+          class="detail-scroll"
+          scroll-y="true"
+          enhanced="true"
+          fast-deceleration="true"
+          show-scrollbar="false"
+          catchtap="stopTap"
         >
-          <view class="comm-header">
-            <view class="comm-avatar">{{item.avatarText}}</view>
+          <view class="detail-author">
+            <text class="detail-name">{{detailPost.displayName}}</text>
+            <text class="detail-meta"> · {{detailPost.date}} {{detailPost.time}}</text>
+          </view>
 
-            <view class="comm-info">
-              <view class="comm-name">{{item.name || '匿名同学'}}</view>
-              <view class="comm-meta">
-                {{item.school || '陕西高校'}} · {{item.date}} · {{item.time}}
+          <view class="detail-body">
+            <view class="detail-weight">体重：{{detailPost.displayWeight}} kg</view>
+            <view class="detail-mood">{{detailPost.mood || '今天悄悄路过，什么都没说~'}}</view>
+
+            <image wx:if="{{detailPost.imageFileId}}"
+                   class="detail-img"
+                   mode="aspectFill"
+                   src="{{detailPost.imageFileId}}"/>
+          </view>
+
+          <!-- 评论 -->
+          <view class="detail-section">
+            <view class="detail-sec-title">评论（{{detailPost.commentCount}}）</view>
+
+            <view wx:if="{{detailPost.comments && detailPost.comments.length}}">
+              <view class="comment-item" wx:for="{{detailPost.comments}}" wx:key="cid">
+                <view class="comment-head">
+                  <view class="comment-left">
+                    <text class="comment-name">{{item.name}}</text>
+                    <text wx:if="{{item.replyTo && item.replyTo.name}}" class="reply-to">
+                      回复 @{{item.replyTo.name}}
+                    </text>
+                  </view>
+                  <text class="comment-time">{{item.time}}</text>
+                </view>
+
+                <view class="comment-content">{{item.content}}</view>
+
+                <view class="comment-actions">
+                  <button class="reply-btn"
+                          size="mini"
+                          data-c="{{item}}"
+                          bindtap="onReplyTap">
+                    回复
+                  </button>
+                </view>
               </view>
             </view>
 
-            <view class="comm-right">
-              <view class="comm-weight">{{item.displayWeight}}kg</view>
-
-              <!-- 仅自己发布的显示更多按钮 -->
-              <view
-                wx:if="{{item.isMine}}"
-                class="more-dot"
-                data-id="{{item._id}}"
-                bindtap="onMoreTap"
-              >
-                ⋯
-              </view>
-            </view>
+            <view wx:else class="detail-empty">暂无评论</view>
           </view>
 
-          <view class="comm-mood">
-            {{item.mood || '今天悄悄路过，什么都没说~'}}
+          <!-- 回复提示 -->
+          <view wx:if="{{replyTarget}}" class="replying-bar">
+            <text class="replying-text">正在回复 @{{replyTarget.name}}</text>
+            <text class="replying-cancel" bindtap="cancelReply">取消</text>
           </view>
 
-          <image
-            wx:if="{{item.imageFileId}}"
-            class="comm-image"
-            mode="aspectFill"
-            src="{{item.imageFileId}}"
-          />
-        </view>
+          <!-- ✅ 输入区放到滚动底部：永远不遮挡评论 -->
+          <view class="comment-editor">
+            <input class="comment-input"
+                   placeholder="{{replyTarget ? ('回复 @' + replyTarget.name + '：') : '写下你的评论…'}}"
+                   value="{{commentInput}}"
+                   bindinput="onCommentInput"/>
+            <button class="send-btn"
+                    size="mini"
+                    data-id="{{detailPost._id}}"
+                    bindtap="submitComment">
+              发送
+            </button>
+          </view>
 
-        <view wx:if="{{!posts.length}}" class="empty-text">
-          还没有人发帖，做第一个分享温柔态度的人吧 🌸
-        </view>
+          <!-- ✅ 底部大留白：保证最后一条评论也能完整滚出来 -->
+          <view class="detail-bottom-space"></view>
+        </scroll-view>
+
       </view>
     </view>
 
-    <view class="tabbar-space"></view>
-  </scroll-view>
+  </view>
 </particle-bg>

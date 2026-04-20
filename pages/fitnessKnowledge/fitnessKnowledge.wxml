@@ -1,0 +1,125 @@
+<!-- pages/fitnessKnowledge/fitnessKnowledge.wxml -->
+<particle-bg>
+  <scroll-view scroll-y class="fx-page">
+
+    <!-- 顶部整体下移 + 浮动装饰 -->
+    <view class="fx-floating fx-bubble-1"></view>
+    <view class="fx-floating fx-bubble-2"></view>
+    <view class="fx-floating fx-bubble-3"></view>
+    <view class="fx-floating fx-wave"></view>
+
+    <view class="fx-header">
+      <view class="fx-h-title">专业健身科普目录</view>
+      <view class="fx-h-sub"></view>
+
+      <!-- 搜索 -->
+      <view class="fx-search">
+        <view class="fx-search-icon">🔎</view>
+        <input
+          class="fx-input"
+          placeholder="搜索：减脂 / 运动时长 / 器械 / 女性 / 恢复…"
+          value="{{keyword}}"
+          bindinput="onInput"
+        />
+        <view wx:if="{{keyword}}" class="fx-clear" bindtap="clearKeyword">×</view>
+      </view>
+
+      <!-- ====== 分类按钮：第一行居中（圆形） ====== -->
+      <scroll-view scroll-x class="fx-top-row" show-scrollbar="{{false}}">
+        <view class="fx-top-inner">
+          <view
+            wx:for="{{categories}}"
+            wx:key="c"
+            wx:if="{{index < 4}}"
+            class="fx-circle-btn {{activeCategory===item ? 'on' : ''}} t{{index}}"
+            data-c="{{item}}"
+            bindtap="pickCategory"
+          >
+            <view class="fx-circle-txt">{{item}}</view>
+            <view class="fx-circle-glow"></view>
+          </view>
+        </view>
+      </scroll-view>
+
+      <!-- ====== 其余分类：3*3 网格（圆形） ====== -->
+      <view class="fx-grid-wrap" wx:if="{{categories.length > 4}}">
+        <view class="fx-grid">
+          <view
+            wx:for="{{categories}}"
+            wx:key="c2"
+            wx:if="{{index >= 4}}"
+            class="fx-circle-btn small {{activeCategory===item ? 'on' : ''}} g{{index%9}}"
+            data-c="{{item}}"
+            bindtap="pickCategory"
+          >
+            <view class="fx-circle-txt small">{{item}}</view>
+            <view class="fx-circle-glow"></view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 列表 -->
+    <view class="fx-list">
+      <view wx:if="{{viewList.length===0}}" class="fx-empty">
+        没有匹配内容，换个关键词试试～
+      </view>
+
+      <view
+        wx:for="{{viewList}}"
+        wx:key="id"
+        class="fx-item"
+        data-id="{{item.id}}"
+        data-cid="{{item.cid}}"
+        data-aid="{{item.aid}}"
+        bindtap="openDetail"
+      >
+        <view class="fx-item-top">
+          <view class="fx-item-title">{{item.title}}</view>
+          <view class="fx-pill">{{item.category}}</view>
+        </view>
+
+        <view class="fx-item-summary">{{item.summary}}</view>
+
+        <view class="fx-tagrow">
+          <text wx:for="{{item.tags}}" wx:key="t" class="fx-tag">{{item}}</text>
+        </view>
+
+        <view class="fx-item-btn">打开科普详情页 →</view>
+      </view>
+    </view>
+
+    <view class="fx-space"></view>
+  </scroll-view>
+
+  <!-- ================= 自定义大弹窗（高级版）================= -->
+  <view wx:if="{{modalVisible}}" class="fx-modal-mask" catchtouchmove="noop" bindtap="closeModal">
+    <view class="fx-modal" catchtap="noop">
+      <!-- 顶部：标题 + 分类 + 关闭 -->
+      <view class="fx-modal-header">
+        <view class="fx-modal-title">{{modalTitle}}</view>
+
+        <view class="fx-modal-subrow">
+          <view class="fx-modal-pill">{{modalCategory}}</view>
+          <view class="fx-modal-count">{{modalAid}}</view>
+        </view>
+
+        <view class="fx-modal-close" bindtap="closeModal">×</view>
+      </view>
+
+      <!-- 内容区：可滚动，排版更整齐 -->
+      <scroll-view scroll-y class="fx-modal-body">
+        <view class="fx-modal-text">
+          <!-- 用 text 保留换行；space="ensp" 可保留缩进空格（若你正文有） -->
+          <text space="ensp">{{modalContent}}</text>
+        </view>
+      </scroll-view>
+
+      <!-- 底部按钮：关闭/上一篇/下一篇 -->
+      <view class="fx-modal-footer">
+        <view class="fx-mbtn ghost" bindtap="prevArticle">上一篇</view>
+        <view class="fx-mbtn" bindtap="nextArticle">下一篇</view>
+      </view>
+    </view>
+  </view>
+</particle-bg>

@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "助眠音乐",
+  "usingComponents": {
+    "particle-bg": "/components/particle-bg/particle-bg"
+  }
+}

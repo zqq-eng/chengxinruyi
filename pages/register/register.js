@@ -11,6 +11,11 @@ Page({
     errorMsg: ""
   },
 
+  // 返回上一页
+  goBack() {
+    wx.navigateBack({ delta: 1 });
+  },
+
   onAccountInput(e) {
     this.setData({ account: e.detail.value, errorMsg: "" });
   },
@@ -45,25 +50,26 @@ Page({
     wx.showLoading({ title: "注册中...", mask: true });
 
     try {
+      // 获取 openid
       const loginRes = await wx.cloud.callFunction({ name: "login" });
       const openid = loginRes.result && loginRes.result.openid;
       app.globalData.openid = openid;
 
       const db = wx.cloud.database();
+
       // 检查账号是否已存在
       const existRes = await db.collection("users")
         .where({ account })
         .get();
 
       if (existRes.data.length) {
-        this.setData({ errorMsg: "该账号已注册，请直接登录~" });
         wx.hideLoading();
+        this.setData({ errorMsg: "该账号已注册，请直接登录~" });
         return;
       }
 
-      const now = new Date();
       // 新建用户
-      const addRes = await db.collection("users").add({
+      await db.collection("users").add({
         data: {
           account,
           name,
@@ -72,9 +78,9 @@ Page({
           password,
           openid,
           createdAt: db.serverDate(),
-          targetWeight: null,   // 目标体重后续可在个人中心设置
+          targetWeight: null,
           avatarUrl: "",
-          role: "student"       // 后面可以用 role 区分 admin
+          role: "student"
         }
       });
 
@@ -89,6 +95,7 @@ Page({
       setTimeout(() => {
         wx.navigateBack({ delta: 1 });
       }, 800);
+
     } catch (err) {
       console.error("注册失败", err);
       wx.hideLoading();

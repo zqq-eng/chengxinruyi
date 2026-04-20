@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商城管理 - 秤心如意</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边栏 -->
+        <aside class="bg-green-800 text-white w-64 sidebar">
+            <div class="p-4 border-b border-green-700">
+                <h1 class="text-xl font-bold">秤心如意</h1>
+                <p class="text-sm text-green-200">后台管理系统</p>
+            </div>
+            
+            <nav class="mt-6">
+                <ul>
+                    <li>
+                        <a href="dashboard.html" class="flex items-center px-4 py-3 hover:bg-green-700 transition duration-200">
+                            <i class="fa fa-dashboard w-6"></i>
+                            <span>控制台</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="users.html" class="flex items-center px-4 py-3 hover:bg-green-700 transition duration-200">
+                            <i class="fa fa-users w-6"></i>
+                            <span>用户管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="sports.html" class="flex items-center px-4 py-3 hover:bg-green-700 transition duration-200">
+                            <i class="fa fa-running w-6"></i>
+                            <span>运动管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="appointments.html" class="flex items-center px-4 py-3 hover:bg-green-700 transition duration-200">
+                            <i class="fa fa-calendar w-6"></i>
+                            <span>预约管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="mall.html" class="flex items-center px-4 py-3 bg-green-700">
+                            <i class="fa fa-shopping-cart w-6"></i>
+                            <span>商城管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="messages.html" class="flex items-center px-4 py-3 hover:bg-green-700 transition duration-200">
+                            <i class="fa fa-envelope w-6"></i>
+                            <span>消息管理</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="absolute bottom-0 w-64 p-4 border-t border-green-700">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-green-400 flex items-center justify-center">
+                        <span id="adminUsername" class="text-sm font-medium">A</span>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium" id="adminName">管理员</p>
+                        <button id="logoutBtn" class="text-xs text-green-200 hover:text-white">退出登录</button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <div class="flex-1 overflow-y-auto">
+            <!-- 顶部导航栏 -->
+            <header class="bg-white shadow-sm">
+                <div class="flex items-center justify-between px-6 py-3">
+                    <h2 class="text-lg font-medium text-gray-800">商城管理</h2>
+                    <div class="flex items-center space-x-4">
+                        <button id="addGoodsBtn" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-200 btn-hover">
+                            <i class="fa fa-plus mr-2"></i> 添加商品
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 内容区域 -->
+            <main class="px-6 py-8">
+                <!-- 选项卡 -->
+                <div class="mb-6 border-b border-gray-200">
+                    <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="mallTabs" role="tablist">
+                        <li class="mr-2" role="presentation">
+                            <button class="inline-block p-4 border-b-2 border-green-600 text-green-600 rounded-t-lg active" id="goods-tab" data-tab="goods" type="button" role="tab" aria-controls="goods" aria-selected="true">
+                                商品管理
+                            </button>
+                        </li>
+                        <li class="mr-2" role="presentation">
+                            <button class="inline-block p-4 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 rounded-t-lg" id="orders-tab" data-tab="orders" type="button" role="tab" aria-controls="orders" aria-selected="false">
+                                订单管理
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- 商品管理 -->
+                <div class="tab-content" id="goods-content">
+                    <!-- 搜索和筛选 -->
+                    <div class="bg-white rounded-lg shadow p-4 mb-6">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                            <div class="flex items-center space-x-4">
+                                <div class="relative">
+                                    <input type="text" id="goodsSearch" placeholder="搜索商品名称" class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                                        <i class="fa fa-search"></i>
+                                    </span>
+                                </div>
+                                <button id="goodsSearchBtn" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-200">
+                                    搜索
+                                </button>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <select class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                    <option value="">全部类型</option>
+                                    <option value="time">时长</option>
+                                    <option value="km">公里</option>
+                                </select>
+                                <select class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                    <option value="">排序方式</option>
+                                    <option value="sort">排序</option>
+                                    <option value="createdAt">创建时间</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 商品列表 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                        <!-- 商品卡片将通过JavaScript动态生成 -->
+                    </div>
+                    
+                    <!-- 分页 -->
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-gray-500">
+                            显示 <span id="showingFromGoods">1</span> 到 <span id="showingToGoods">10</span> 共 <span id="totalGoods">0</span> 条记录
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="px-3 py-1 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 disabled:opacity-50" id="prevPageGoods" disabled>
+                                <i class="fa fa-chevron-left"></i>
+                            </button>
+                            <button class="px-3 py-1 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 bg-green-600 text-white">1</button>
+                            <button class="px-3 py-1 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50">2</button>
+                            <button class="px-3 py-1 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50">3</button>
+                            <button class="px-3 py-1 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50" id="nextPageGoods">
+                                <i class="fa fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 订单管理 -->
+                <div class="tab-content hidden" id="orders-content">
+                    <!-- 搜索和筛选 -->
+                    <div class="bg-white rounded-lg shadow p-4 mb-6">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                            <div class="flex items-center space-x-4">
+                                <div class="relative">
+                                    <input type="text" id="orderSearch" placeholder="搜索订单ID或用户ID" class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                                        <i class="fa fa-search"></i>
+                                    </span>
+                                </div>
+                                <button id="orderSearchBtn" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-200">
+                                    搜索
+                                </button>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <select class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                    <option value="">全部状态</option>
+                                    <option value="pending">待处理</option>
+                                    <option value="completed">已完成</option>
+                                    <option value="cancelled">已取消</option>
+                                </select>
+                                <select class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                    <option value="">排序方式</option>
+                                    <option value="createdAt">创建时间</option>
+                                    <option value="status">状态</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 订单列表 -->
+                    <div class="bg-white rounded-lg shadow mb-6">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">订单号</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">用户</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">商品</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">创建时间</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200 table-hover" id="orderList">
+                                    <!-- 订单列表将通过JavaScript动态生成 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- 分页 -->
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-gray-500">
+                            显示 <span id="showingFromOrders">1</span> 到 <span id="showingToOrders">10</span> 共 <span id="totalOrders">0</span> 条记录
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="px-3 py-1 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 disabled:opacity-50" id="prevPageOrders" disabled>
+                                <i class="fa fa-chevron-left"></i>
+                            </button>
+                            <button class="px-3 py-1 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 bg-green-600 text-white">1</button>
+                            <button class="px-3 py-1 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50">2</button>
+                            <button class="px-3 py-1 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50">3</button>
+                            <button class="px-3 py-1 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50" id="nextPageOrders">
+                                <i class="fa fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- 商品编辑模态框 -->
+    <div id="goodsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-800" id="modalTitle">添加商品</h3>
+                <button id="closeGoodsModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <form id="goodsForm">
+                    <input type="hidden" id="goodsId">
+                    <div class="mb-4">
+                        <label for="title" class="block text-sm font-medium text-gray-700 mb-1">商品名称</label>
+                        <input type="text" id="title" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="subtitle" class="block text-sm font-medium text-gray-700 mb-1">商品描述</label>
+                        <input type="text" id="subtitle" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    </div>
+                    <div class="mb-4">
+                        <label for="type" class="block text-sm font-medium text-gray-700 mb-1">类型</label>
+                        <select id="type" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="time">时长</option>
+                            <option value="dist">距离</option>
+                            <option value="both">双条件</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="tag" class="block text-sm font-medium text-gray-700 mb-1">标签</label>
+                        <input type="text" id="tag" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    </div>
+                    <div class="mb-4">
+                        <label for="sort" class="block text-sm font-medium text-gray-700 mb-1">排序</label>
+                        <input type="number" id="sort" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" value="10">
+                    </div>
+                    <div class="mb-4" id="costMinContainer">
+                        <label for="costMin" class="block text-sm font-medium text-gray-700 mb-1">时长消耗 (分钟)</label>
+                        <input type="number" id="costMin" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" value="1">
+                    </div>
+                    <div class="mb-4" id="costKmContainer">
+                        <label for="costKm" class="block text-sm font-medium text-gray-700 mb-1">公里消耗 (公里)</label>
+                        <input type="number" id="costKm" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" value="1">
+                    </div>
+                    <div class="mb-4">
+                        <label for="active" class="block text-sm font-medium text-gray-700 mb-1">状态</label>
+                        <select id="active" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <option value="true">启用</option>
+                            <option value="false">禁用</option>
+                        </select>
+                    </div>
+                    <div class="mt-6">
+                        <button type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition duration-200">
+                            保存
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="assets/js/mall.js"></script>
+</body>
+</html>

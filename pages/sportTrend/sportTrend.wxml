@@ -1,57 +1,60 @@
 <particle-bg>
-  <view class="trend-page">
-
-    <!-- 30天运动趋势 -->
-    <view class="card animate-card">
-      <view class="page-title">30 天运动趋势</view>
-      <view class="sub-text">每天的运动距离（柱状图）</view>
-
-      <canvas canvas-id="barCanvas" class="chart animate-scale"></canvas>
-
-      <!-- 日期行 -->
-      <view class="row days">
-        <view wx:for="{{days}}" wx:key="i" 
-          class="day-label animate-day" 
-          style="animation-delay: {{i * 0.03}}s">
-          {{item}}
-        </view>
-      </view>
-    </view>
-    <button class="to-stats-btn" bindtap="goStats">查看更详细的运动统计</button>
-
-    <!-- 运动时长趋势 -->
-    <view class="card animate-card">
-      <view class="page-title">运动时长趋势</view>
-      <view class="sub-text">每日运动分钟数（折线图）</view>
-
-      <canvas canvas-id="lineCanvas" class="chart animate-scale"></canvas>
-    </view>
-
-    <!-- 爪印等级 -->
-    <view class="card animate-card">
-      <view class="page-title">运动爪印等级</view>
-
-      <view class="row paw-row">
-        <view wx:for="{{icons}}" wx:key="i" 
-              class="paw-item paw-animate"
-              style="animation-delay: {{i * 0.05}}s">
-          {{item}}
-        </view>
-      </view>
-
-      <view class="legend">
-        <view>🐾 轻度</view>
-        <view>🐾🐾 中度</view>
-        <view>✨🐾✨ 高强度</view>
-      </view>
-    </view>
-
-    <!-- 悬浮返回按钮 -->
-    <view class="floating-back">
+  <scroll-view scroll-y class="sporttrend-page">
+    <!-- 顶部 -->
+    <view class="top-bar">
       <button class="back-btn" bindtap="goBack">返回</button>
+      <text class="top-title">运动趋势（按天明细）</text>
     </view>
+
+    <!-- 加载中 -->
+    <view class="loading" wx:if="{{loading}}">
+      <text>加载中...</text>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty" wx:if="{{!loading && empty}}">
+      <text>最近暂无跑步记录</text>
+      <text class="sub">去「运动与训练」→「去跑圈打卡」开始记录吧～</text>
+    </view>
+
+    <!-- 列表：按天 -->
+    <block wx:for="{{dayGroups}}" wx:key="dateStr">
+      <view class="card day-card">
+        <view class="day-header">
+          <text class="date">{{item.dateStr}}</text>
+          <text class="summary">
+            总里程 {{item.totalDistanceKm}} km · 总时长 {{item.totalMinutes}} min · {{item.runCount}} 次
+          </text>
+        </view>
+
+        <!-- 明细表头 -->
+        <view class="table header">
+          <text class="c1">#</text>
+          <text class="c2">距离(km)</text>
+          <text class="c3">用时</text>
+          <text class="c4">配速</text>
+          <text class="c5">移动配速</text>
+          <text class="c6">均速</text>
+        </view>
+
+        <!-- 明细行 -->
+        <block wx:for="{{item.runs}}" wx:key="idx">
+          <view class="table row" data-checkinid="{{item.checkinId}}" bindtap="onTapRunItem">
+            <text class="c1">{{item.idx}}</text>
+            <text class="c2">{{item.distanceKm}}</text>
+            <text class="c3">{{item.durationStr}}</text>
+            <text class="c4">{{item.paceStr}}</text>
+            <text class="c5">{{item.movingPaceStr}}</text>
+            <text class="c6">{{item.avgSpeedKmh}}</text>
+          </view>
+        </block>
+
+        <view class="tip" wx:if="{{!item.runs || !item.runs.length}}">
+          <text>当天没有跑步明细</text>
+        </view>
+      </view>
+    </block>
 
     <view class="tabbar-space"></view>
-
-  </view>
+  </scroll-view>
 </particle-bg>

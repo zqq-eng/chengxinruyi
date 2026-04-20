@@ -75,6 +75,12 @@ Page({
       url: '/pages/admin_appointment/admin_appointment'
     });
   },
+//  新增：商城管理入口
+goMallManage() {
+  wx.navigateTo({
+    url: "/pages/adminMall/adminMall"
+  });
+},
 
   // 退出后台 -> 回到管理员登录界面
   exitAdmin() {

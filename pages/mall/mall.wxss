@@ -1,0 +1,691 @@
+.mall-page{
+  min-height: 100vh;
+  padding: 18px 14px 26px;
+  padding-top: 24rpx;  
+  box-sizing: border-box;
+  background: linear-gradient(180deg, #eefbf5 0%, #f2f8ff 55%, #ffffff 100%);
+  color:#0f172a;
+}
+
+/* 标题区（给右上角按钮留位） */
+.mall-head{
+  padding-top: 18px;
+  padding-bottom: 8px;
+}
+
+.mall-title{
+  font-size: 20px;
+  font-weight: 900;
+  color:#0b4aa2;
+}
+
+.mall-sub{
+  margin-top: 6px;
+  font-size: 12px;
+  color: rgba(15,23,42,0.55);
+}
+
+/* ✅ 右上角固定收件箱 */
+.mall-inbox-fab{
+  position: fixed;
+  top: 88px;
+  right: 14px;
+  z-index: 999;  
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255,255,255,0.92);
+  border: 1px solid rgba(59,130,246,0.18);
+  box-shadow: 0 12px 26px rgba(15,23,42,0.12);
+}
+
+.mall-inbox-fab:active{
+  opacity: 0.76;
+  transform: translateY(1px);
+}
+
+.mall-inbox-fab-text{
+  font-size: 12px;
+  font-weight: 900;
+  color:#0b4aa2;
+}
+
+.mall-inbox-badge{
+  margin-left: 6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+
+  background: #ef4444;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 900;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* 卡片 */
+.mall-card{
+  background:#fff;
+  border-radius: 18px;
+  padding: 14px 12px;
+  border: 1px solid rgba(15,23,42,0.06);
+  box-shadow: 0 12px 28px rgba(15,23,42,0.10);
+}
+
+.mall-card-title{
+  font-size: 14px;
+  font-weight: 900;
+  color:#0b4aa2;
+  margin-bottom: 10px;
+}
+
+.mall-metrics{
+  display:flex;
+  gap: 10px;
+}
+
+.metric{
+  flex:1;
+  border-radius: 16px;
+  padding: 10px 10px;
+  background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(46,213,115,0.08));
+  border: 1px solid rgba(15,23,42,0.05);
+}
+
+.metric-label{
+  font-size: 11px;
+  color: rgba(15,23,42,0.55);
+  font-weight: 650;
+}
+
+.metric-value{
+  margin-top: 6px;
+  font-size: 16px;
+  font-weight: 900;
+  color:#0f172a;
+}
+
+.metric-sub{
+  margin-top: 4px;
+  font-size: 11px;
+  color: rgba(15,23,42,0.50);
+}
+
+.mall-usable{
+  margin-top: 10px;
+  display:flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.usable-pill{
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(59,130,246,0.10);
+  color:#0b4aa2;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.mall-tip{
+  margin-top: 10px;
+  font-size: 12px;
+  color: rgba(15,23,42,0.55);
+}
+
+/* Tabs */
+.mall-tabs{
+  margin-top: 12px;
+  display:flex;
+  gap: 8px;
+}
+
+.tab{
+  flex:1;
+  text-align:center;
+  padding: 9px 0;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.92);
+  border: 1px solid rgba(15,23,42,0.06);
+  font-size: 12px;
+  color: rgba(15,23,42,0.60);
+  font-weight: 800;
+}
+
+.tab-on{
+  background: linear-gradient(135deg, rgba(46,213,115,0.22), rgba(59,130,246,0.22));
+  border-color: rgba(59,130,246,0.18);
+  color:#0b4aa2;
+}
+
+/* ✅ 商品整齐排列：标准 2 列 Grid，间距一致 */
+.goods-grid{
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+/* 圆形商品卡 */
+.goods-circle{
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #ffffff 0%, rgba(46,213,115,0.10) 48%, rgba(59,130,246,0.10) 100%);
+  border: 1px solid rgba(15,23,42,0.06);
+  box-shadow: 0 14px 28px rgba(15,23,42,0.10);
+  padding: 12px 10px;
+  box-sizing: border-box;
+
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.goods-circle:active{
+  transform: scale(0.985);
+  opacity: 0.92;
+}
+
+.g-title{
+  font-size: 13px;
+  font-weight: 900;
+  color:#0f172a;
+}
+
+.g-sub{
+  margin-top: 6px;
+  font-size: 11px;
+  color: rgba(15,23,42,0.55);
+}
+
+.g-cost{
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 900;
+  color:#0b4aa2;
+}
+
+.g-tag{
+  margin-top: 8px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(46,213,115,0.14);
+  color: #166534;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+/* 弹层通用 */
+.mask{
+  position: fixed;
+  left:0; top:0; right:0; bottom:0;
+  background: rgba(15,23,42,0.22);
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  z-index: 999;
+}
+
+.popup{
+  width: 100%;
+  border-top-left-radius: 22px;
+  border-top-right-radius: 22px;
+  background:#fff;
+  padding: 14px 14px 18px;
+  box-shadow: 0 -18px 40px rgba(15,23,42,0.16);
+}
+
+.pop-title{
+  font-size: 16px;
+  font-weight: 900;
+  color:#0f172a;
+}
+
+.pop-item{
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 900;
+  color:#0b4aa2;
+}
+
+.pop-cost{
+  margin-top: 6px;
+  font-size: 12px;
+  color: rgba(15,23,42,0.60);
+}
+
+.form{ margin-top: 12px; }
+.f-row{ margin-bottom: 10px; }
+
+.f-label{
+  font-size: 12px;
+  color: rgba(15,23,42,0.60);
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.f-input{
+  height: 40px;
+  border-radius: 14px;
+  padding: 0 10px;
+  border: 1px solid rgba(15,23,42,0.10);
+  background: rgba(59,130,246,0.05);
+  font-size: 13px;
+  color:#0f172a;
+}
+
+.btn-row{
+  display:flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.btn{
+  flex:1;
+  height: 42px;
+  line-height: 42px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.cancel{
+  background: rgba(15,23,42,0.06);
+  color: rgba(15,23,42,0.70);
+}
+
+.ok{
+  background: linear-gradient(135deg, #2ed573 0%, #3b82f6 100%);
+  color:#fff;
+}
+
+/* ✅ 收件箱弹层样式 */
+.inbox-pop{
+  width: 100%;
+  max-height: 82vh;
+  border-top-left-radius: 22px;
+  border-top-right-radius: 22px;
+  background:#fff;
+  padding: 14px 14px 18px;
+  box-shadow: 0 -18px 40px rgba(15,23,42,0.16);
+  overflow: hidden;
+}
+
+.inbox-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom: 10px;
+}
+
+.inbox-title{
+  font-size: 16px;
+  font-weight: 900;
+  color:#0f172a;
+}
+
+.inbox-close{
+  font-size: 20px;
+  padding: 0 6px;
+  color: rgba(15,23,42,0.45);
+}
+
+.ibox-tip{
+  text-align:center;
+  color: rgba(15,23,42,0.55);
+  font-size: 12px;
+  padding: 18px 0;
+}
+
+.ibox-list{
+  max-height: 70vh;
+}
+
+.ibox-item{
+  background:#fff;
+  border-radius: 16px;
+  padding: 12px 12px;
+  border: 1px solid rgba(15,23,42,0.06);
+  box-shadow: 0 12px 26px rgba(15,23,42,0.10);
+  margin-bottom: 10px;
+}
+
+.ibox-toprow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.ibox-type{
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(46,213,115,0.14);
+  color: #166534;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.ibox-time{
+  font-size: 11px;
+  color: rgba(15,23,42,0.45);
+}
+
+.ibox-title2{
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 900;
+  color:#0f172a;
+}
+
+.ibox-content{
+  margin-top: 6px;
+  font-size: 12px;
+  color: rgba(15,23,42,0.60);
+  line-height: 1.55;
+}
+
+.tabbar-space{ height: 70px; }
+/* ✅ 新增：规则提示条（椭圆/胶囊，和现有蓝绿风格一致） */
+.mall-rulebar{
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  padding: 10px 10px;
+  border-radius: 999px; /* 椭圆容器 */
+  background: rgba(255,255,255,0.90);
+  border: 1px solid rgba(15,23,42,0.06);
+  box-shadow: 0 10px 22px rgba(15,23,42,0.08);
+}
+
+.rule-pill{
+  padding: 6px 10px;
+  border-radius: 999px; /* 胶囊 */
+  background: linear-gradient(135deg, rgba(46,213,115,0.14), rgba(59,130,246,0.14));
+  border: 1px solid rgba(59,130,246,0.14);
+
+  color: #0b4aa2;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+}
+/* =========================
+   ✅ 只改“积分兑换”这一部分（不动商品圆形高光绿）
+   追加到 pages/mall/mall.wxss 文件末尾即可
+   ========================= */
+
+/* ===== 积分展示区：短椭圆 + 矩形组合 ===== */
+.mall-points-box{
+  margin-top: 12px;
+  padding: 12px 12px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.96);
+  border: 1px solid rgba(15,23,42,0.06);
+  box-shadow: 0 12px 26px rgba(15,23,42,0.10);
+}
+
+/* 顶部一行：左文案 + 右大数字 */
+.mp-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+}
+
+.mp-left{
+  display:flex;
+  flex-direction:column;
+  gap: 6px;
+}
+
+.mp-title{
+  font-size: 15px;          /* 字体更清晰更大 */
+  font-weight: 900;
+  color:#0f172a;
+}
+
+.mp-sub{
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(15,23,42,0.60);
+}
+
+/* 右侧积分数字：大、清晰 */
+.mp-right{
+  display:flex;
+  align-items:baseline;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 999px;     /* 短椭圆 */
+  background: linear-gradient(135deg, rgba(46,213,115,0.16), rgba(59,130,246,0.16));
+  border: 1px solid rgba(59,130,246,0.14);
+}
+
+.mp-num{
+  font-size: 24px;          /* 更大 */
+  font-weight: 900;
+  color:#0b4aa2;
+  line-height: 1;
+}
+
+.mp-unit{
+  font-size: 12px;
+  font-weight: 900;
+  color: rgba(15,23,42,0.55);
+}
+
+/* 按钮区：两个大矩形按钮 */
+.mp-actions{
+  margin-top: 10px;
+  display:flex;
+  gap: 10px;
+}
+
+.mp-btn{
+  flex: 1;
+  height: 44px;
+  border-radius: 14px;      /* 圆角矩形 */
+  font-size: 14px;          /* 字更大 */
+  font-weight: 900;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  /* 去掉微信按钮默认边框影响 */
+  border: none;
+  padding: 0;
+}
+
+/* 主按钮：更高级的蓝绿渐变 */
+.mp-btn-primary{
+  background: linear-gradient(135deg, #2ed573 0%, #3b82f6 100%);
+  color: #fff;
+  box-shadow: 0 14px 28px rgba(59,130,246,0.20);
+}
+
+.mp-btn-primary:active{
+  transform: translateY(1px);
+  opacity: 0.92;
+}
+
+/* 次按钮：白底描边矩形，清晰 */
+.mp-btn-ghost{
+  background: rgba(255,255,255,0.95);
+  color: #0b4aa2;
+  border: 1px solid rgba(59,130,246,0.18);
+  box-shadow: 0 12px 24px rgba(15,23,42,0.10);
+}
+
+.mp-btn-ghost:active{
+  transform: translateY(1px);
+  opacity: 0.90;
+}
+
+/* ===== 积分兑换弹窗：高级底部抽屉，字更大更清楚 ===== */
+/* 你的 .mask 已经是 bottom sheet，这里只设计弹窗本体 */
+.px-pop{
+  width: 100%;
+  border-top-left-radius: 22px;
+  border-top-right-radius: 22px;
+  background: #fff;
+  padding: 14px 14px 18px;
+  box-shadow: 0 -18px 40px rgba(15,23,42,0.16);
+}
+
+/* 标题区 */
+.px-head{
+  display:flex;
+  flex-direction:column;
+  gap: 6px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(15,23,42,0.06);
+}
+
+.px-title{
+  font-size: 16px;      /* 更大 */
+  font-weight: 900;
+  color:#0f172a;
+}
+
+.px-sub{
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(15,23,42,0.55);
+}
+
+/* 主体卡片：矩形卡 */
+.px-card{
+  margin-top: 12px;
+  border-radius: 18px;
+  background: rgba(59,130,246,0.04);
+  border: 1px solid rgba(15,23,42,0.06);
+  padding: 12px 12px;
+}
+
+/* 当前积分条：短椭圆 */
+.px-card-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 10px 10px;
+  border-radius: 999px;  /* 椭圆 */
+  background: rgba(255,255,255,0.96);
+  border: 1px solid rgba(15,23,42,0.06);
+  box-shadow: 0 10px 20px rgba(15,23,42,0.08);
+}
+
+.px-card-label{
+  font-size: 12px;
+  font-weight: 900;
+  color: rgba(15,23,42,0.60);
+}
+
+.px-card-val{
+  font-size: 18px;     /* 更大更清楚 */
+  font-weight: 900;
+  color:#0b4aa2;
+}
+
+/* 输入区域：矩形块 + 大输入框 */
+.px-input-wrap{
+  margin-top: 10px;
+}
+
+.px-input-label{
+  font-size: 12px;
+  font-weight: 900;
+  color: rgba(15,23,42,0.60);
+  margin-bottom: 6px;
+}
+
+.px-input{
+  height: 44px;
+  border-radius: 14px;
+  padding: 0 12px;
+  border: 1px solid rgba(15,23,42,0.10);
+  background: rgba(255,255,255,0.98);
+  font-size: 15px;     /* 输入字体更大 */
+  font-weight: 900;
+  color:#0f172a;
+}
+
+/* 预览结果：短矩形突出显示 */
+.px-preview{
+  margin-top: 10px;
+  padding: 12px 12px;
+  border-radius: 16px;  /* 短矩形 */
+  background: linear-gradient(135deg, rgba(46,213,115,0.14), rgba(59,130,246,0.14));
+  border: 1px solid rgba(59,130,246,0.14);
+}
+
+.px-preview-label{
+  font-size: 12px;
+  font-weight: 900;
+  color: rgba(15,23,42,0.65);
+}
+
+.px-preview-val{
+  margin-top: 6px;
+  font-size: 15px;    /* 更大 */
+  font-weight: 900;
+  color:#0f172a;
+}
+
+/* 说明文字：清晰 */
+.px-tip{
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(15,23,42,0.55);
+  line-height: 1.55;
+}
+
+/* 两按钮：只保留 关闭 / 确认兑换 */
+.px-btn-row{
+  margin-top: 12px;
+  display:flex;
+  gap: 10px;
+}
+
+.px-btn{
+  flex:1;
+  height: 44px;
+  line-height: 44px;
+  border-radius: 14px;
+  font-size: 14px;    /* 大字 */
+  font-weight: 900;
+  border: none;
+  padding: 0;
+}
+
+/* 关闭：灰白矩形 */
+.px-close{
+  background: rgba(15,23,42,0.06);
+  color: rgba(15,23,42,0.72);
+}
+
+/* 确认：蓝绿高级渐变 */
+.px-ok{
+  background: linear-gradient(135deg, #2ed573 0%, #3b82f6 100%);
+  color:#fff;
+  box-shadow: 0 14px 28px rgba(59,130,246,0.20);
+}
+
+.px-ok:active,
+.px-close:active{
+  transform: translateY(1px);
+  opacity: 0.92;
+}

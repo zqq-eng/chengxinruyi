@@ -48,7 +48,7 @@
 
       <view class="btn-area">
         <button class="irregular-btn login-btn glow-btn" bindtap="onLoginTap" style="position: relative; left: -1rpx; top: 0rpx">
-          ✨ 登录
+          登录
         </button>
       </view>
 

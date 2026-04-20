@@ -1,11 +1,12 @@
 <particle-bg>
   <view class="profile-page">
 
-    <!-- 头部信息 -->
+    <!-- ====== 头部信息：圆形头像 + 椭圆信息卡 ====== -->
     <view class="card profile-header">
       <view class="profile-row">
-        <!-- 头像：默认首字 + 可点击上传 -->
-        <view class="profile-avatar" bindtap="onAvatarTap" style="width: 112rpx; height: 104rpx; display: block; box-sizing: border-box" style="width: 185rpx; display: block; box-sizing: border-box">
+
+        <!-- 头像：圆形 + 可点击上传 -->
+        <view class="profile-avatar" bindtap="onAvatarTap">
           <image
             wx:if="{{userInfo.avatarUrl}}"
             class="avatar-img"
@@ -15,8 +16,12 @@
           <view wx:else class="avatar-placeholder">
             {{userInfo.name ? userInfo.name[0] : "我"}}
           </view>
+
+          <!-- 小三角装饰 -->
+          <view class="tri-badge"></view>
         </view>
 
+        <!-- 右侧信息 -->
         <view class="profile-info">
           <view class="profile-name">
             {{userInfo.name || '未设置姓名'}}
@@ -25,19 +30,41 @@
             {{userInfo.school || '陕西高校'}} · {{userInfo.major || '专业未设置'}}
           </view>
           <view class="profile-tip">点击头像可更换个人照片</view>
-        </view>
-      </view>
 
-      <view class="profile-tag-row">
-        <view class="tag-paw">身高：{{userInfo.height || '--'}} cm</view>
-        <!-- 👉 显示当前体重（没有就退回目标体重） -->
-        <view class="tag-paw">
-          当前体重：{{userInfo.currentWeight || userInfo.targetWeight || '--'}} kg
+          <!-- 圆角标签行 -->
+          <view class="profile-tag-row">
+            <view class="tag-pill">身高：{{userInfo.height || '--'}} cm</view>
+            <view class="tag-pill">
+              当前体重：{{userInfo.currentWeight || userInfo.targetWeight || '--'}} kg
+            </view>
+          </view>
+        </view>
+
+      </view>
+    </view>
+
+    <!-- ====== 功能入口：两个并列椭圆卡片（健康月报 / 心理咨询预约） ====== -->
+    <view class="card">
+      <view class="section-title">健康与支持</view>
+
+      <view class="oval-grid">
+        <!-- 健康月报（新增） -->
+        <view class="oval-card oval-green" bindtap="goMonthlyReport">
+          <view class="oval-icon">📈</view>
+          <view class="oval-title">健康月报</view>
+          <view class="oval-sub">本月运动次数 · 体重变化</view>
+        </view>
+
+        <!-- 预约心理咨询室（并列） -->
+        <view class="oval-card oval-blue" bindtap="goCounselingAppointment">
+          <view class="oval-icon">🧠</view>
+          <view class="oval-title">心理咨询预约</view>
+          <view class="oval-sub">预约学校心理咨询室</view>
         </view>
       </view>
     </view>
 
-    <!-- 基础信息设置 -->
+    <!-- ====== 基础信息设置（原功能保持） ====== -->
     <view class="card">
       <view class="section-title">基础信息设置</view>
 
@@ -59,7 +86,6 @@
       </view>
 
       <view class="input-wrapper">
-        <!-- 👉 文案改为“当前体重”，实际字段仍用 targetInput，逻辑保持 -->
         <view class="input-label">当前体重（kg）</view>
         <input class="blue-input" type="digit" value="{{targetInput}}" bindinput="onTargetInput" />
       </view>
@@ -71,33 +97,28 @@
       </view>
     </view>
 
-    <!-- 其它信息 -->
-    <view class="card">
+    <!-- ====== 其它信息（保持） ====== -->
+    <view class="card" style="height: 237rpx; display: block; box-sizing: border-box; left: 0rpx; top: 0rpx">
       <view class="section-title">其它</view>
 
       <view class="misc-line">
         <text>版本信息：</text>
         <text class="misc-strong">秤心如意 v1.0 正式版</text>
+        
       </view>
 
       <view class="misc-line">
         <text>作者：</text>
         <text>陕西大学生体重管理课题小组</text>
       </view>
-    </view>
-
-    <!-- 功能 -->
-    <view class="card">
-      <view class="section-title">功能</view>
-
-      <view class="menu-item" bindtap="goAppointment">
-        📘 预约学校咨询室
-      </view>
-
-      <view wx:if="{{isAdmin}}" class="menu-item" bindtap="goAdmin">
-        🔐 管理员入口
+      <view class="misc-line">
+        <text>软件技术咨询：</text>
+        <text>3372117526@qq.com（张芊芊）</text>
+        
       </view>
     </view>
+
+
 
     <view class="tabbar-space"></view>
 

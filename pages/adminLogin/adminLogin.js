@@ -16,12 +16,15 @@ Page({
   ADMIN_ACCOUNT: "admin",
   ADMIN_PASSWORD: "123456",
 
-  loginAdmin() {
+  async loginAdmin() {
     const { account, password } = this.data;
 
     if (account === this.ADMIN_ACCOUNT && password === this.ADMIN_PASSWORD) {
       // 保存管理员 token（有效标记）
       wx.setStorageSync("adminToken", "OK");
+
+      
+     
 
       wx.showToast({
         title: "登录成功",

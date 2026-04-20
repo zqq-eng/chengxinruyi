@@ -1,20 +1,28 @@
-/* 页面整体 */
+/* =========================
+   页面整体（绿主蓝辅）
+========================= */
 .profile-page {
-  padding: 16px 12px 22px;
-  background: #f5f7fb;
+  padding: 18px 12px 22px;
+  background: linear-gradient(180deg, #eaf9f1 0%, #f6fbff 35%, #ffffff 100%);
+  color: #111;
 }
 
-/* 卡片原样，只是颜色尽量偏蓝（如果全局已有 .card，可以少改） */
+/* =========================
+   通用卡片（白底 + 蓝绿阴影）
+========================= */
 .card {
   background: #ffffff;
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 14px 12px;
-  box-shadow: 0 4px 10px rgba(8, 46, 94, 0.06);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow: 0 10px 24px rgba(33, 150, 243, 0.10);
   margin-bottom: 12px;
 }
 
 .profile-header {
   margin-bottom: 10px;
+  overflow: hidden;
+  position: relative;
 }
 
 /* 顶部行 */
@@ -23,15 +31,19 @@
   align-items: center;
 }
 
-/* 头像区域：纯蓝风格 + 圆形 */
+/* =========================
+   头像区域：圆形 + 蓝绿描边 + 三角徽章
+========================= */
 .profile-avatar {
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   border-radius: 999px;
   overflow: hidden;
-  background: #e3eeff;
-  border: 1px solid #2f80ed;
+  background: radial-gradient(circle at 30% 20%, #ffffff 0%, rgba(76, 175, 80, 0.20) 45%, rgba(33, 150, 243, 0.16) 100%);
+  border: 2px solid rgba(33, 150, 243, 0.28);
+  box-shadow: 0 10px 18px rgba(76, 175, 80, 0.10);
   margin-right: 12px;
+  position: relative;
 }
 
 .avatar-img {
@@ -43,36 +55,50 @@
   width: 100%;
   height: 100%;
   text-align: center;
-  line-height: 56px;
-  color: #2f80ed;
+  line-height: 64px;
+  color: #0b4aa2;
   font-size: 22px;
-  font-weight: 700;
+  font-weight: 800;
 }
 
-/* 用户信息 */
+/* 小三角装饰（配合 WXML 的 .tri-badge） */
+.tri-badge {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 0;
+  height: 0;
+  border-left: 16px solid transparent;
+  border-top: 16px solid rgba(76, 175, 80, 0.85);
+  filter: drop-shadow(0 6px 10px rgba(76, 175, 80, 0.18));
+}
+
+/* =========================
+   用户信息
+========================= */
 .profile-info {
   flex: 1;
 }
 
 .profile-name {
   font-size: 16px;
-  color: #13315c;
-  font-weight: 600;
+  color: #0f172a;
+  font-weight: 800;
 }
 
 .profile-meta {
   font-size: 12px;
-  color: #5a6c8f;
+  color: #475569;
   margin-top: 2px;
 }
 
 .profile-tip {
   font-size: 11px;
-  color: #8a9bb8;
+  color: #64748b;
   margin-top: 4px;
 }
 
-/* 标签行 */
+/* 标签行（椭圆小标签） */
 .profile-tag-row {
   margin-top: 10px;
   display: flex;
@@ -80,12 +106,78 @@
   gap: 6px;
 }
 
+/* 你 WXML 用的是 tag-pill，这里给 tag-pill；也兼容旧 tag-paw */
+.tag-pill,
 .tag-paw {
-  padding: 4px 8px;
-  border-radius: 10px;
-  background: #e0ecff;
-  color: #1f4f8f;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(33, 150, 243, 0.12), rgba(76, 175, 80, 0.12));
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  color: #0f172a;
   font-size: 11px;
+  font-weight: 600;
+}
+
+/* =========================
+   “健康与支持” 并列椭圆卡片（新增）
+========================= */
+.oval-grid {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.oval-card {
+  flex: 1;
+  border-radius: 999px;
+  padding: 14px 12px;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow: 0 12px 24px rgba(33, 150, 243, 0.10);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 92px;
+}
+
+.oval-green {
+  background: radial-gradient(circle at 25% 20%, #ffffff 0%, rgba(76, 175, 80, 0.16) 45%, rgba(33, 150, 243, 0.08) 100%);
+}
+
+.oval-blue {
+  background: radial-gradient(circle at 25% 20%, #ffffff 0%, rgba(33, 150, 243, 0.16) 45%, rgba(76, 175, 80, 0.08) 100%);
+}
+
+.oval-icon {
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+
+.oval-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.oval-sub {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #475569;
+}
+
+/* 点击反馈 */
+.oval-card:active {
+  transform: scale(0.99);
+  opacity: 0.95;
+}
+
+/* =========================
+   标题与表单
+========================= */
+.section-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0b4aa2; /* 蓝色标题 */
+  margin-bottom: 10px;
 }
 
 /* 基础信息表单 */
@@ -95,60 +187,85 @@
 
 .input-label {
   font-size: 13px;
-  color: #334e77;
+  color: #334155;
   margin-bottom: 4px;
+  font-weight: 600;
 }
 
-/* 纯蓝输入框 */
+/* 输入框：白底 + 蓝绿边 + 聚焦更明显 */
 .blue-input {
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid #c4d4f5;
-  background-color: #f9fbff;
+  padding: 10px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(33, 150, 243, 0.20);
+  background: #ffffff;
   font-size: 14px;
-  color: #1a365d;
+  color: #0f172a;
+  box-shadow: 0 8px 16px rgba(76, 175, 80, 0.06);
 }
 
-/* 其它信息 */
-.misc-line {
-  font-size: 12px;
-  color: #5a6c8f;
-  margin-top: 4px;
+/* button 容器 */
+.btn-area {
+  margin-top: 6px;
 }
 
-.misc-strong {
-  color: #1f78ff;
-}
-
-/* 菜单项 */
-.menu-item {
-  padding: 12px 6px;
-  font-size: 14px;
-  color: #1f4f8f;
-  border-bottom: 1px solid #dde3f0;
-}
-
-.menu-item:last-child {
-  border-bottom: none;
-}
-
-/* 主按钮：正式蓝色 */
+/* 主按钮：蓝绿渐变 */
 .primary-btn {
   width: 100%;
   margin-top: 16px;
-  padding: 10px 0;
+  padding: 11px 0;
   border-radius: 999px;
-  background: #2f80ed;
+  background: linear-gradient(135deg, #1e88e5, #43a047);
   color: #ffffff;
   font-size: 15px;
+  font-weight: 800;
   border: none;
+  box-shadow: 0 14px 26px rgba(33, 150, 243, 0.16);
 }
 
 .primary-btn:active {
-  background: #2563c9;
+  opacity: 0.92;
+  transform: scale(0.995);
 }
 
-/* 预留底部 Tabbar 空间 */
+/* =========================
+   其它信息
+========================= */
+.misc-line {
+  font-size: 12px;
+  color: #475569;
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+.misc-strong {
+  color: #0b4aa2;
+  font-weight: 800;
+}
+
+/* =========================
+   菜单项（矩形条目）
+========================= */
+.menu-item {
+  padding: 12px 10px;
+  font-size: 14px;
+  color: #0f172a;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(33, 150, 243, 0.08), rgba(76, 175, 80, 0.06));
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  margin-top: 10px;
+}
+
+.menu-item:active {
+  opacity: 0.92;
+}
+
+/* 备用入口更淡一点 */
+.menu-muted {
+  color: #334155;
+  background: #f8fafc;
+}
+
+/* 底部留白 */
 .tabbar-space {
   height: 60px;
 }

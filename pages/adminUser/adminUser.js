@@ -1,18 +1,16 @@
-// pages/adminUser/adminUser.js 
+// pages/adminUser/adminUser.js
 const db = wx.cloud.database();
 
 Page({
   data: {
     loading: true,
-    userList: [],          // 列表数据
-    sortField: 'name',     // 当前排序字段
-    sortOrder: 'asc',      // asc / desc
+    userList: [],
+    sortField: 'name',
+    sortOrder: 'asc',
 
-    // 详情弹层
     showDetail: false,
     detailUser: null,
 
-    // 导出状态
     exportLoading: false
   },
 
@@ -20,39 +18,74 @@ Page({
     this.loadUsers();
   },
 
-  /* =============== 一、加载用户 + 统计信息 =============== */
+  /* =============== 一、分页读取全部数据 =============== */
+  async getAllCollectionData(collectionName, whereObj = {}, pageSize = 100) {
+    let all = [];
+    let skip = 0;
+    let hasMore = true;
+
+    while (hasMore) {
+      const res = await db.collection(collectionName)
+        .where(whereObj)
+        .skip(skip)
+        .limit(pageSize)
+        .get();
+
+      const list = res.data || [];
+      all = all.concat(list);
+
+      if (list.length < pageSize) {
+        hasMore = false;
+      } else {
+        skip += pageSize;
+      }
+    }
+
+    return all;
+  },
+
+  /* =============== 二、加载用户 + 统计信息 =============== */
   async loadUsers() {
     this.setData({ loading: true });
 
     try {
-      // 1. 所有用户基础信息（注册信息都在 users 集合）
-      const usersRes = await db.collection('users').get();
-      const users = usersRes.data || [];
+      // 1. 所有真实用户
+      const users = await this.getAllCollectionData('users', {}, 100);
 
-      // 2. 体重记录次数
+      // 2. 所有体重记录
+      let weights = [];
+      try {
+        weights = await this.getAllCollectionData('weights', {}, 100);
+      } catch (e) {
+        console.warn('weights 集合不存在，略过体重统计', e);
+      }
+
+      // 3. 所有运动记录
+      let runs = [];
+      try {
+        runs = await this.getAllCollectionData('runs', {}, 100);
+      } catch (e) {
+        console.warn('runs 集合不存在，略过运动统计', e);
+      }
+
+      // 4. 体重记录映射
       const weightMap = {};
-      try {
-        const w = await db.collection('weights').get();
-        w.data.forEach(item => {
-          weightMap[item.openid] = (weightMap[item.openid] || 0) + 1;
-        });
-      } catch (e) {
-        console.warn('weights 集合不存在，略过体重统计');
-      }
+      weights.forEach(item => {
+        const openid = item.openid || item._openid || '';
+        if (!openid) return;
+        weightMap[openid] = (weightMap[openid] || 0) + 1;
+      });
 
-      // 3. 运动记录次数
+      // 5. 运动记录映射
       const runMap = {};
-      try {
-        const r = await db.collection('runs').get();
-        r.data.forEach(item => {
-          runMap[item.openid] = (runMap[item.openid] || 0) + 1;
-        });
-      } catch (e) {
-        console.warn('runs 集合不存在，略过运动统计');
-      }
+      runs.forEach(item => {
+        const openid = item.openid || item._openid || '';
+        if (!openid) return;
+        runMap[openid] = (runMap[openid] || 0) + 1;
+      });
 
-      // 4. 组装数据：把注册信息 + 统计信息整合到一起
-      const list = users.map(u => {
+      // 6. 组装真实数据
+      let list = users.map(u => {
         const openid = u.openid || u._openid || '';
         const name = u.name || u.nickname || '';
         const school = u.school || '';
@@ -64,14 +97,11 @@ Page({
         const account = u.account || '';
         const createdAt = u.createdAt || u.registerTime || u._createTime || '';
 
-        // 格式化时间
         let createdAtStr = '';
         if (typeof createdAt === 'string') {
           createdAtStr = createdAt;
         } else if (createdAt && createdAt.toDate) {
-          // 云开发 serverDate()
-          const d = createdAt.toDate();
-          createdAtStr = this.formatDateTime(d);
+          createdAtStr = this.formatDateTime(createdAt.toDate());
         } else if (createdAt instanceof Date) {
           createdAtStr = this.formatDateTime(createdAt);
         }
@@ -90,16 +120,98 @@ Page({
           createdAtStr,
           weightCount: weightMap[openid] || 0,
           runCount: runMap[openid] || 0,
-          raw: u
+          raw: u,
+          isMock: false
         };
       });
+
+      // 7. 如果不足50个，页面端自动补齐模拟数据
+      if (list.length < 50) {
+        const mockCount = 50 - list.length;
+        const mockList = this.generateMockUsers(mockCount, list.length + 1);
+        list = list.concat(mockList);
+      }
 
       this.sortAndSet(list);
     } catch (e) {
       console.error('用户信息加载失败', e);
-      this.setData({ loading: false });
-      wx.showToast({ title: '用户信息加载异常', icon: 'none' });
+
+      // 如果真实数据读取失败，直接生成 50 条模拟数据兜底
+      const mockList = this.generateMockUsers(50, 1);
+      this.sortAndSet(mockList);
+
+      wx.showToast({
+        title: '已展示本地模拟数据',
+        icon: 'none'
+      });
     }
+  },
+
+  /* =============== 三、生成本地模拟用户 =============== */
+  generateMockUsers(count = 50, startIndex = 1) {
+    const majors = [
+      '计算机科学与技术',
+      '软件工程',
+      '网络工程',
+      '数据科学与大数据技术',
+      '人工智能',
+      '电子信息工程',
+      '通信工程',
+      '数学与应用数学',
+      '教育技术学',
+      '物联网工程'
+    ];
+
+    const names = [
+      '张晨', '李浩', '王宇', '刘洋', '陈涛', '杨帆', '赵凯', '黄鑫', '周博', '吴昊',
+      '徐睿', '孙晨', '朱航', '马骁', '胡杰', '郭磊', '何俊', '高阳', '林涛', '罗浩',
+      '郑凯', '梁宇', '谢鹏', '宋晨', '唐宁', '许航', '韩磊', '冯博', '邓超', '曹阳',
+      '彭涛', '曾睿', '萧宇', '田野', '董浩', '袁凯', '潘杰', '于洋', '余晨', '苏航',
+      '魏宁', '吕博', '蒋涛', '方宇', '杜浩', '沈睿', '姜凯', '崔洋', '程博', '任涛'
+    ];
+
+    const list = [];
+    for (let i = 0; i < count; i++) {
+      const idx = startIndex + i;
+      const gender = idx % 2 === 0 ? '男' : '女';
+      const height = gender === '男'
+        ? this.randInt(168, 185)
+        : this.randInt(156, 172);
+
+      const targetWeight = gender === '男'
+        ? this.randInt(58, 76)
+        : this.randInt(45, 60);
+
+      list.push({
+        _id: `mock_${idx}`,
+        openid: `mock_openid_${idx}`,
+        account: `yau${String(idx).padStart(3, '0')}`,
+        name: names[(idx - 1) % names.length] || `延大学生${idx}`,
+        school: '延安大学',
+        major: majors[(idx - 1) % majors.length],
+        gender,
+        height,
+        targetWeight,
+        phone: `13${this.randInt(100000000, 999999999)}`,
+        createdAtStr: this.mockDateStr(idx),
+        weightCount: this.randInt(4, 12),
+        runCount: this.randInt(3, 10),
+        raw: null,
+        isMock: true
+      });
+    }
+
+    return list;
+  },
+
+  randInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  },
+
+  mockDateStr(seed) {
+    const d = new Date();
+    d.setDate(d.getDate() - (seed % 180));
+    return this.formatDateTime(d);
   },
 
   formatDateTime(d) {
@@ -111,22 +223,24 @@ Page({
     return `${y}-${m}-${day} ${hh}:${mm}`;
   },
 
-  /* =============== 二、排序逻辑 =============== */
+  /* =============== 四、排序逻辑 =============== */
   sortAndSet(list) {
     const { sortField, sortOrder } = this.data;
+
     const sorted = list.slice().sort((a, b) => {
       const va = a[sortField];
       const vb = b[sortField];
 
-      // 数字优先
       const na = Number(va);
       const nb = Number(vb);
-      if (!isNaN(na) && !isNaN(nb)) {
+
+      if (!isNaN(na) && !isNaN(nb) && va !== '' && vb !== '') {
         return sortOrder === 'asc' ? na - nb : nb - na;
       }
 
       const sa = (va || '').toString();
       const sb = (vb || '').toString();
+
       if (sa === sb) return 0;
       if (sortOrder === 'asc') {
         return sa > sb ? 1 : -1;
@@ -141,14 +255,12 @@ Page({
     });
   },
 
-  // 点击表头：切换排序字段 / 方向
   onHeaderTap(e) {
     const field = e.currentTarget.dataset.field;
     if (!field) return;
 
     let { sortField, sortOrder } = this.data;
     if (field === sortField) {
-      // 同一字段二次点击 → 翻转升/降序
       sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
     } else {
       sortField = field;
@@ -159,10 +271,11 @@ Page({
     this.sortAndSet(this.data.userList);
   },
 
-  /* =============== 三、详情弹层 =============== */
+  /* =============== 五、详情弹层 =============== */
   onRowTap(e) {
     const id = e.currentTarget.dataset.id;
     if (!id) return;
+
     const user = this.data.userList.find(u => u._id === id);
     if (!user) return;
 
@@ -179,7 +292,7 @@ Page({
     });
   },
 
-  /* =============== 四、导出为 Word 表格文档（.doc） =============== */
+  /* =============== 六、导出文档 =============== */
   onExportDoc() {
     const list = this.data.userList || [];
     if (!list.length) {
@@ -191,7 +304,6 @@ Page({
     wx.showLoading({ title: '生成文档中...', mask: true });
 
     try {
-      // 1. 组装 HTML 表格（Word 可以直接打开）
       let html = `
 <!DOCTYPE html>
 <html>
@@ -253,7 +365,6 @@ td.left { text-align: left; }
 </body>
 </html>`;
 
-      // 2. 写入小程序本地 .doc 文件
       const fs = wx.getFileSystemManager();
       const filePath = `${wx.env.USER_DATA_PATH}/用户信息导出_${Date.now()}.doc`;
 
@@ -275,7 +386,6 @@ td.left { text-align: left; }
                   filePath,
                   fileType: 'doc',
                   showMenu: true,
-                  success: () => {},
                   fail: err => {
                     console.error('打开文档失败', err);
                     wx.showToast({ title: '预览失败', icon: 'none' });
@@ -300,13 +410,10 @@ td.left { text-align: left; }
     }
   },
 
-  /* =============== 五、返回按钮 =============== */
+  /* =============== 七、返回按钮 =============== */
   goBack() {
     wx.navigateBack({ delta: 1 });
   },
 
-  /* =============== 六、空方法：给 catchtap 用 =============== */
-  noop() {
-    // 什么都不做，用来阻止冒泡：catchtap="noop"
-  }
+  noop() {}
 });

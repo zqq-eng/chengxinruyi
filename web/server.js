@@ -13,10 +13,10 @@ app.use(express.static(path.join(__dirname)));
 
 // 微信云开发配置 - 请替换为你自己的配置
 const WECHAT_CONFIG = {
-   'APPID': 'wxffedf08a214b83d9',           # 小程序AppID
-    'SECRET': 'd5c219d916a7208d1d0fd3c914618b30',         # 小程序AppSecret
-    'CLOUD_ENV': 'cloudqq-4g32uhb816255d70', 
-    CLOUD_FUNCTION_URL: 'https://api.weixin.qq.com/tcb/invokecloudfunction'
+  APPID: process.env.WECHAT_APPID,
+  SECRET: process.env.WECHAT_SECRET,
+  ENV_ID: process.env.WECHAT_ENV_ID,
+  CLOUD_FUNCTION_URL: 'https://api.weixin.qq.com/tcb/invokecloudfunction'
 };
 // 获取access_token
 let accessToken = null;

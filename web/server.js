@@ -13,11 +13,11 @@ app.use(express.static(path.join(__dirname)));
 
 // 微信云开发配置 - 请替换为你自己的配置
 const WECHAT_CONFIG = {
-    APPID: 'your-appid',           // 替换为你的小程序AppID
-    SECRET: 'your-secret',         // 替换为你的小程序AppSecret
+    APPID: process.env.WECHAT_APPID,
+    SECRET: process.env.WECHAT_SECRET,
+    ENV_ID: process.env.WECHAT_ENV_ID,
     CLOUD_FUNCTION_URL: 'https://api.weixin.qq.com/tcb/invokecloudfunction'
 };
-
 // 获取access_token
 let accessToken = null;
 let tokenExpireTime = 0;

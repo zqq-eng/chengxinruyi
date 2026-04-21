@@ -23,7 +23,7 @@ def after_request(response):
 WECHAT_CONFIG = {
     'APPID': os.environ.get('WECHAT_APPID', 'wxffedf08a214b83d9'),           # 小程序AppID
     'SECRET': os.environ.get('WECHAT_SECRET', 'd5c219d916a7208d1d0fd3c914618b30'),         # 小程序AppSecret
-    'CLOUD_ENV': os.environ.get('WECHAT_CLOUD_ENV', 'cloudqq-4g32uhb816255d70'),  # 云开发环境ID
+    'CLOUD_ENV': os.environ.get('WECHAT_CLOUD_ENV', os.environ.get('WECHAT_ENV_ID', 'cloudqq-4g32uhb816255d70')),  # 云开发环境ID
     'CLOUD_FUNCTION_NAME': os.environ.get('WECHAT_CLOUD_FUNCTION', 'admin_api')
 }
 
@@ -195,18 +195,24 @@ def get_stats():
         }), 500
 
 if __name__ == '__main__':
+    # 使用环境变量PORT，默认3000
+    port = int(os.environ.get('PORT', 3000))
+    
     print("""
 ╔══════════════════════════════════════════════════════════╗
 ║                                                          ║
 ║   Web后台代理服务已启动                                   ║
 ║                                                          ║
-║   访问地址: http://localhost:3000                         ║
-║   Web页面:  http://localhost:3000/index.html              ║
+║   访问地址: http://localhost:{port}                       ║
+║   Web页面:  http://localhost:{port}/index.html            ║
 ║                                                          ║
 ║   请先配置 proxy.py 中的微信云开发参数:                   ║
 ║   - APPID                                               ║
 ║   - SECRET                                               ║
 ║                                                          ║
 ╚══════════════════════════════════════════════════════════╝
-    """)
-    app.run(host='0.0.0.0', port=3000, debug=True)
+    """.format(port=port))
+    
+    # 生产环境关闭debug
+    debug = os.environ.get('DEBUG', 'False').lower() == 'true'
+    app.run(host='0.0.0.0', port=port, debug=debug)

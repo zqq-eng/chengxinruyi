@@ -195,9 +195,11 @@ def get_stats():
         }), 500
 
 if __name__ == '__main__':
-    # 使用环境变量PORT，默认3000
-    port = int(os.environ.get('PORT', 3000))
-    
+    port = int(os.environ.get('PORT', 10000))
+    debug = os.environ.get('DEBUG', 'False').lower() == 'true'
+
+    print(f'服务启动中，端口: {port}')
+    app.run(host='0.0.0.0', port=port, debug=debug)
     print("""
 ╔══════════════════════════════════════════════════════════╗
 ║                                                          ║

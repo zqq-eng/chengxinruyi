@@ -73,6 +73,13 @@ async function ensureDefaultAdmin() {
 
   // Ensure admin_tokens collection exists by doing a count operation
   await db.collection(CONFIG.COL_ADMIN_TOKENS).count().catch(() => null);
+  // Ensure user_inbox collection exists by doing a count operation
+  await db.collection(CONFIG.COL_USER_INBOX).count().catch(() => null);
+  // Ensure other collections exist
+  await db.collection(CONFIG.COL_MALL_GOODS).count().catch(() => null);
+  await db.collection(CONFIG.COL_MALL_ORDERS).count().catch(() => null);
+  await db.collection(CONFIG.COL_APPOINTMENTS).count().catch(() => null);
+  await db.collection(CONFIG.COL_RUNS).count().catch(() => null);
 }
 
 async function requireAdmin(token) {
@@ -476,6 +483,9 @@ exports.main = async (event, context) => {
       const type = String(event.type || '通知').trim();
       if (!toOpenid || !title || !content) return bad('缺少参数');
 
+      // 确保user_inbox集合存在
+      await db.collection(CONFIG.COL_USER_INBOX).count().catch(() => null);
+      
       await db.collection(CONFIG.COL_USER_INBOX).add({
         data: {
           openid: toOpenid,
@@ -494,6 +504,9 @@ exports.main = async (event, context) => {
       const content = String(event.content || '').trim();
       const type = String(event.type || '通知').trim();
       if (!title || !content) return bad('缺少参数');
+
+      // 确保user_inbox集合存在
+      await db.collection(CONFIG.COL_USER_INBOX).count().catch(() => null);
 
       // list users openid in pages to avoid 1000 limit
       const pageSize = 200;

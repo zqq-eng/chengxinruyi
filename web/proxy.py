@@ -6,18 +6,32 @@ Web后台代理服务 - 使用Flask实现
 from flask import Flask, request, jsonify, send_from_directory
 import requests
 import json
+import os
 
 app = Flask(__name__, static_folder='.')
 app.config['JSON_AS_ASCII'] = False
 
-# 微信云开发配置 - 请替换为你自己的配置
+# 添加CORS支持
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
 
+# 微信云开发配置 - 优先使用环境变量
 WECHAT_CONFIG = {
-    'APPID': 'wxffedf08a214b83d9',           # 小程序AppID
-    'SECRET': 'd5c219d916a7208d1d0fd3c914618b30',         # 小程序AppSecret
-    'CLOUD_ENV': 'cloudqq-4g32uhb816255d70',  # 云开发环境ID
-    'CLOUD_FUNCTION_NAME': 'admin_api'
+    'APPID': os.environ.get('WECHAT_APPID', 'wxffedf08a214b83d9'),           # 小程序AppID
+    'SECRET': os.environ.get('WECHAT_SECRET', 'd5c219d916a7208d1d0fd3c914618b30'),         # 小程序AppSecret
+    'CLOUD_ENV': os.environ.get('WECHAT_CLOUD_ENV', 'cloudqq-4g32uhb816255d70'),  # 云开发环境ID
+    'CLOUD_FUNCTION_NAME': os.environ.get('WECHAT_CLOUD_FUNCTION', 'admin_api')
 }
+
+print('微信配置:', {
+    'APPID': WECHAT_CONFIG['APPID'][:8] + '...',
+    'CLOUD_ENV': WECHAT_CONFIG['CLOUD_ENV'],
+    'CLOUD_FUNCTION_NAME': WECHAT_CONFIG['CLOUD_FUNCTION_NAME']
+})
 
 # 获取access_token
 access_token = None
@@ -28,24 +42,32 @@ def get_access_token():
     import time
     
     if access_token and time.time() < token_expire_time:
+        print(f'使用缓存的access_token，剩余时间: {token_expire_time - time.time():.0f}秒')
         return access_token
     
     url = f"https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={WECHAT_CONFIG['APPID']}&secret={WECHAT_CONFIG['SECRET']}"
     
     try:
-        response = requests.get(url)
+        print(f'请求access_token URL: {url}')
+        response = requests.get(url, timeout=10)
+        print(f'access_token响应状态码: {response.status_code}')
+        print(f'access_token响应内容: {response.text}')
+        
         data = response.json()
         
         if 'access_token' in data:
             access_token = data['access_token']
             token_expire_time = time.time() + data['expires_in'] - 200
-            print('Access token obtained successfully')
+            print(f'Access token获取成功，有效期: {data["expires_in"]}秒')
             return access_token
         else:
-            raise Exception(f"Failed to get access_token: {json.dumps(data)}")
+            error_msg = f"Failed to get access_token: {json.dumps(data)}"
+            print(error_msg)
+            raise Exception(error_msg)
     except Exception as e:
-        print(f'获取access_token失败: {e}')
-        raise e
+        error_msg = f'获取access_token失败: {e}'
+        print(error_msg)
+        raise Exception(error_msg)
 
 def call_cloud_function(action, data=None):
     """调用微信云函数"""
@@ -57,25 +79,33 @@ def call_cloud_function(action, data=None):
         if data:
             request_data.update(data)
         
-        print(f'请求云函数URL: {url}')
+        print(f'调用云函数: {action}')
         print(f'请求数据: {request_data}')
+        print(f'请求URL: {url[:100]}...{url[-50:]}')  # 截断URL以避免日志过长
         
-        response = requests.post(url, json=request_data, headers={'Content-Type': 'application/json'})
+        response = requests.post(url, json=request_data, headers={'Content-Type': 'application/json'}, timeout=30)
+        print(f'云函数响应状态码: {response.status_code}')
+        
         result = response.json()
-        
         print(f'微信API返回: {result}')
         
         # 云函数返回的数据在 resp_data 里
         if 'resp_data' in result:
-            resp_data = json.loads(result['resp_data'])
-            print(f'云函数返回数据: {resp_data}')
-            return resp_data
+            try:
+                resp_data = json.loads(result['resp_data'])
+                print(f'云函数返回数据: {resp_data}')
+                return resp_data
+            except json.JSONDecodeError as e:
+                print(f'解析resp_data失败: {e}')
+                print(f'resp_data内容: {result["resp_data"]}')
+                raise e
         
         print(f'云函数返回(无resp_data): {result}')
         return result
     except Exception as e:
-        print(f'调用云函数失败: {e}')
-        raise e
+        error_msg = f'调用云函数失败: {e}'
+        print(error_msg)
+        raise Exception(error_msg)
 
 # 提供静态文件
 @app.route('/')
